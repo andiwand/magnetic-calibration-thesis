@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package indoors.pipeline.protocol;
+
+message Hello {
+    string from = 1;
+    repeated ChannelHello channels = 2;
+}
+
+message Bye {
+}
+
+message ChannelHello {
+    uint32 channel = 1;
+    string annotation = 2;
+    Event eventExample = 3;
+}
+
+message Event {
+    double t = 1;
+    uint32 channel = 2;
+    oneof _ {
+        Hello hello = 3;
+        Bye bye = 4;
+        Void void = 5;
+        bool switch = 6;
+        double scalar = 7;
+        Clock clock = 8;
+        Vector3 vector3 = 9;
+    }
+}
+
+message Void {
+}
+
+message Clock {
+    double unix_utc = 1;
+}
+
+message Vector3 {
+    double x = 1;
+    double y = 2;
+    double z = 3;
+}

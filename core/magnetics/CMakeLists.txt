@@ -1,0 +1,16 @@
+add_library(magnetics STATIC
+        src/gl_util.cpp
+        src/magneto_sphere.cpp
+        src/task.cpp
+        )
+target_include_directories(magnetics
+        PUBLIC
+        include
+        PRIVATE
+        ${Boost_INCLUDE_DIRS}
+        )
+target_link_libraries(magnetics
+        PUBLIC
+        pipeline
+        glm
+        )
