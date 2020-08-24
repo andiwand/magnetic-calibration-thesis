@@ -48,7 +48,7 @@ public class Collector {
     private List<CollectorListener> listeners = new LinkedList<>();
 
     long startTime;
-    int defaultMaxReportLatencyUs = 10000;
+    int defaultMaxReportLatencyUs = 0;
 
     private Clock clock = new Clock(100000);
     private Thread clockThread;

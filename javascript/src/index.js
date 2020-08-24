@@ -2,7 +2,7 @@ import Plotly from 'plotly.js'
 import './indoors/pipeline/protocol/message_pb'
 
 var channels = [];
-var channel_to_trace = {};
+var channel_to_trace = new Map();
 
 function createPlot() {
   var layout = {margin: {
@@ -22,8 +22,8 @@ function connect() {
     return;
   }
 
-  var ws = new WebSocket("ws://localhost:8080");
-  //var ws = new WebSocket("ws://192.168.43.169:8080");
+  //var ws = new WebSocket("ws://localhost:8080");
+  var ws = new WebSocket("ws://192.168.159.234:8080");
   ws.binaryType = "arraybuffer";
 
   ws.onopen = function() {
@@ -51,12 +51,12 @@ function connect() {
             opacity: 0.8
           }
         }]);
-        channel_to_trace[channels.length] = channel.getChannel();
+        channel_to_trace.set(channels.length, channel.getChannel());
         channels.push(channel.getChannel());
       });
     } else if (event.hasVector3()) {
       var vector3 = event.getVector3();
-      var trace = channel_to_trace[event.getChannel()];
+      var trace = channel_to_trace.get(event.getChannel());
       Plotly.extendTraces('gd', {x: [[vector3.getX()]], y: [[vector3.getY()]], z: [[vector3.getZ()]]}, [trace]);
     }
   };
