@@ -38,7 +38,7 @@ WebSocket::WebSocket(std::string annotation, io_context &ioc,
   accept();
 }
 
-void WebSocket::iterate(std::uint32_t) {
+void WebSocket::iterate() {
 }
 
 void WebSocket::accept() {

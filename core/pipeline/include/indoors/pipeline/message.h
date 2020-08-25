@@ -27,10 +27,10 @@ template <typename T> struct DelayedEvent {
 };
 
 template <typename T> struct Series final {
-  const double m_time_begin;
-  const double m_time_end;
-  const T *const m_data_begin;
-  const T *const m_data_end;
+  const double time_begin;
+  const double time_end;
+  const T *const data_begin;
+  const T *const data_end;
 };
 
 struct Void {

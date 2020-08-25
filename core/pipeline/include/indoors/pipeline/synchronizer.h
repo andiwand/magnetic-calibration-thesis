@@ -43,7 +43,7 @@ public:
   std::pair<std::shared_ptr<Input<T>>, std::shared_ptr<Output<T>>>
   create_slave_channel(std::string annotation) {}
 
-  void iterate(std::uint32_t index) override;
+  void iterate() override;
 
 private:
   const std::string m_annotation;

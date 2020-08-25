@@ -6,6 +6,7 @@ add_executable(magnetics-test
         csv_test.cpp
         http_test.cpp
         magneto_sphere_test.cpp
+        moving_average_test.cpp
         opengl_test.cpp
         )
 target_link_libraries(magnetics-test

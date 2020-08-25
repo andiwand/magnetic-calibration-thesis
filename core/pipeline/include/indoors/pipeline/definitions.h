@@ -16,7 +16,7 @@ class Loopable {
 public:
   virtual ~Loopable() = default;
 
-  virtual void iterate(std::uint32_t index) = 0;
+  virtual void iterate() = 0;
 
   // TODO parallel?
 

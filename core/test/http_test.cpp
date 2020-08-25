@@ -19,7 +19,7 @@ TEST(http, hello) {
 
   std::thread([&]() {
     while (true) {
-      webSocket.iterate(0);
+      webSocket.iterate();
       protocol::Event event;
       event.set_t(0);
       event.set_channel(0);

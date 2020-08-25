@@ -36,7 +36,7 @@ public:
   WebSocket(std::string annotation, io_context &ioc, const std::string &address,
             std::uint16_t port, Output<protocol::Event> *output);
 
-  void iterate(std::uint32_t index) override;
+  void iterate() override;
 
 private:
   using acceptor = boost::asio::ip::tcp::acceptor;

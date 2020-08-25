@@ -85,7 +85,6 @@ void ProtocolEncoder::EncoderOutput::unplug(Input<protocol::Event> *input) noexc
 }
 
 void ProtocolEncoder::EncoderOutput::push(protocol::Event event) noexcept {
-  StandardOutput<protocol::Event>::push(event);
   m_time = event.t();
 }
 

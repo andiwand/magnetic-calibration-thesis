@@ -8,7 +8,6 @@ add_library(pipeline STATIC
         src/platform.cpp
         src/protocol.cpp
         src/synchronizer.cpp
-        src/sliding_window.cpp
         src/worker.cpp
         )
 target_include_directories(pipeline

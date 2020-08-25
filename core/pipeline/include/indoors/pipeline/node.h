@@ -194,7 +194,7 @@ public:
       : StandardInput<T>(std::move(annotation), node), m_buffer{
                                                            initial_capacity} {}
 
-  Buffer<T> buffer() noexcept { return m_buffer; }
+  Buffer<T> &buffer() noexcept { return m_buffer; }
   const Buffer<T> &buffer() const noexcept { return m_buffer; }
 
   std::vector<T> swap() noexcept { return m_buffer.swap(); }
@@ -202,11 +202,13 @@ public:
   void push(T data) noexcept override {
     m_buffer.push(data);
     StandardInput<T>::push(data);
+    StandardInterface::m_time = m_buffer.time_end();
   }
 
   void skip(const double time) noexcept override {
     m_buffer.skip(time);
     StandardInput<T>::skip(time);
+    StandardInterface::m_time = m_buffer.time_end();
   }
 
 private:

@@ -16,8 +16,9 @@ Looper::~Looper() {
 
 void Looper::run() {
   while (!m_done) {
-    m_loopable->iterate(m_iteration++);
+    m_loopable->iterate();
     std::this_thread::sleep_for(m_interval);
+    ++m_iteration;
   }
 }
 
