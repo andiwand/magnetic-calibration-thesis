@@ -10,14 +10,14 @@ class Platform : public StandardNode {
 public:
   explicit Platform(std::string annotation);
 
-  virtual std::shared_ptr<Output<Event<Clock>>> clock() const = 0;
+  virtual Output<Event<Clock>> *clock() = 0;
 
-  virtual std::shared_ptr<Output<Event<Vector3>>> accelerometer() const = 0;
-  virtual std::shared_ptr<Output<Event<Vector3>>> gyroscope() const = 0;
-  virtual std::shared_ptr<Output<Event<Vector3>>> magnetometer() const = 0;
+  virtual Output<Event<Vector3>> *accelerometer() = 0;
+  virtual Output<Event<Vector3>> *gyroscope() = 0;
+  virtual Output<Event<Vector3>> *magnetometer() = 0;
 
-  virtual std::shared_ptr<Output<Event<Vector3>>>
-  magnetometer_uncalibrated() const = 0;
+  virtual Output<Event<Vector3>> *
+  magnetometer_uncalibrated() = 0;
 };
 
 class StandardPlatform : public Platform,
@@ -25,20 +25,20 @@ class StandardPlatform : public Platform,
 public:
   explicit StandardPlatform(std::string annotation);
 
-  std::shared_ptr<Output<Event<Clock>>> clock() const override;
+  Output<Event<Clock>> *clock() override;
 
-  std::shared_ptr<Output<Event<Vector3>>> accelerometer() const override;
-  std::shared_ptr<Output<Event<Vector3>>> gyroscope() const override;
-  std::shared_ptr<Output<Event<Vector3>>> magnetometer() const override;
+  Output<Event<Vector3>> *accelerometer() override;
+  Output<Event<Vector3>> *gyroscope() override;
+  Output<Event<Vector3>> *magnetometer() override;
 
-  std::shared_ptr<Output<Event<Vector3>>>
-  magnetometer_uncalibrated() const override;
+  Output<Event<Vector3>> *
+  magnetometer_uncalibrated() override;
 
-  std::shared_ptr<StandardOutput<Event<Clock>>> m_clock;
-  std::shared_ptr<StandardOutput<Event<Vector3>>> m_accelerometer;
-  std::shared_ptr<StandardOutput<Event<Vector3>>> m_gyroscope;
-  std::shared_ptr<StandardOutput<Event<Vector3>>> m_magnetometer;
-  std::shared_ptr<StandardOutput<Event<Vector3>>> m_magnetometer_uncalibrated;
+  StandardOutput<Event<Clock>> m_clock;
+  StandardOutput<Event<Vector3>> m_accelerometer;
+  StandardOutput<Event<Vector3>> m_gyroscope;
+  StandardOutput<Event<Vector3>> m_magnetometer;
+  StandardOutput<Event<Vector3>> m_magnetometer_uncalibrated;
 };
 
 // TODO AndroidPlatform for platform specific channels

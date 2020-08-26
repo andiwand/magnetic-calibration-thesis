@@ -8,37 +8,32 @@ Platform::Platform(std::string annotation)
 StandardPlatform::StandardPlatform(std::string annotation)
     : Platform(std::move(annotation)),
       std::enable_shared_from_this<StandardPlatform>(),
-      m_clock{std::make_shared<StandardOutput<Event<Clock>>>("clock", nullptr)},
-      m_accelerometer{std::make_shared<StandardOutput<Event<Vector3>>>(
-          "accelerometer", nullptr)},
-      m_gyroscope{std::make_shared<StandardOutput<Event<Vector3>>>("gyroscope",
-                                                                   nullptr)},
-      m_magnetometer{std::make_shared<StandardOutput<Event<Vector3>>>(
-          "magnetometer", nullptr)},
-      m_magnetometer_uncalibrated{
-          std::make_shared<StandardOutput<Event<Vector3>>>(
-              "magnetometer uncalibrated", nullptr)} {}
+      m_clock{"clock", this},
+      m_accelerometer{"accelerometer", this},
+      m_gyroscope{"gyroscope", this},
+      m_magnetometer{"magnetometer", this},
+      m_magnetometer_uncalibrated{"magnetometer uncalibrated", this} {}
 
-std::shared_ptr<Output<Event<Clock>>> StandardPlatform::clock() const {
-  return m_clock;
+Output<Event<Clock>> *StandardPlatform::clock() {
+  return &m_clock;
 }
 
-std::shared_ptr<Output<Event<Vector3>>>
-StandardPlatform::accelerometer() const {
-  return m_accelerometer;
+Output<Event<Vector3>> *
+StandardPlatform::accelerometer() {
+  return &m_accelerometer;
 }
 
-std::shared_ptr<Output<Event<Vector3>>> StandardPlatform::gyroscope() const {
-  return m_gyroscope;
+Output<Event<Vector3>> *StandardPlatform::gyroscope() {
+  return &m_gyroscope;
 }
 
-std::shared_ptr<Output<Event<Vector3>>> StandardPlatform::magnetometer() const {
-  return m_magnetometer;
+Output<Event<Vector3>> *StandardPlatform::magnetometer() {
+  return &m_magnetometer;
 }
 
-std::shared_ptr<Output<Event<Vector3>>>
-StandardPlatform::magnetometer_uncalibrated() const {
-  return m_magnetometer_uncalibrated;
+Output<Event<Vector3>> *
+StandardPlatform::magnetometer_uncalibrated() {
+  return &m_magnetometer_uncalibrated;
 }
 
 } // namespace indoors::pipeline

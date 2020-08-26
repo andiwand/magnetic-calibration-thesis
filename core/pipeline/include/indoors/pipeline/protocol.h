@@ -28,6 +28,10 @@ public:
     return input;
   }
 
+  template <typename T> void create_input(Output<T> *output) {
+    output->plug(create_input<T>(output->annotation()));
+  }
+
   Output<protocol::Event> *output();
 
 private:

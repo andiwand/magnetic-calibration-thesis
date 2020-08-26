@@ -44,9 +44,9 @@ public class MainActivity extends AppCompatActivity {
 
         collector = new Collector((SensorManager) getSystemService(Context.SENSOR_SERVICE));
         collector.setClockInterval(100000);
-        collector.addRequest(Sensor.TYPE_ACCELEROMETER, 100000);
-        collector.addRequest(Sensor.TYPE_GYROSCOPE, 100000);
-        collector.addRequest(Sensor.TYPE_MAGNETIC_FIELD_UNCALIBRATED, 100000);
+        collector.addRequest(Sensor.TYPE_ACCELEROMETER, 1000);
+        collector.addRequest(Sensor.TYPE_GYROSCOPE, 1000);
+        collector.addRequest(Sensor.TYPE_MAGNETIC_FIELD_UNCALIBRATED, 1000);
 
         androidPlatform = new AndroidPlatform();
         collector.addListener(androidPlatform.getCollectorListener());

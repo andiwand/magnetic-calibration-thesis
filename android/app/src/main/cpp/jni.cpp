@@ -98,7 +98,7 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_at_stefl_magnetics_core_AndroidPlatform_pushClock(JNIEnv *env, jobject thiz, jdouble time,
                                                        jdouble unix_utc) {
-    get_platform(env, thiz)->m_clock->push({time, unix_utc});
+    get_platform(env, thiz)->m_clock.push({time, unix_utc});
 }
 
 extern "C"
@@ -106,14 +106,14 @@ JNIEXPORT void JNICALL
 Java_at_stefl_magnetics_core_AndroidPlatform_pushAccelerometer(JNIEnv *env, jobject thiz,
                                                                jdouble time, jdouble x, jdouble y,
                                                                jdouble z) {
-    get_platform(env, thiz)->m_accelerometer->push({time, x, y, z});
+    get_platform(env, thiz)->m_accelerometer.push({time, x, y, z});
 }
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_at_stefl_magnetics_core_AndroidPlatform_pushGyroscope(JNIEnv *env, jobject thiz, jdouble time,
                                                            jdouble x, jdouble y, jdouble z) {
-    get_platform(env, thiz)->m_gyroscope->push({time, x, y, z});
+    get_platform(env, thiz)->m_gyroscope.push({time, x, y, z});
 }
 
 extern "C"
@@ -121,7 +121,7 @@ JNIEXPORT void JNICALL
 Java_at_stefl_magnetics_core_AndroidPlatform_pushMagnetometer(JNIEnv *env, jobject thiz,
                                                               jdouble time, jdouble x, jdouble y,
                                                               jdouble z) {
-    get_platform(env, thiz)->m_magnetometer->push({time, x, y, z});
+    get_platform(env, thiz)->m_magnetometer.push({time, x, y, z});
 }
 
 extern "C"
@@ -129,7 +129,7 @@ JNIEXPORT void JNICALL
 Java_at_stefl_magnetics_core_AndroidPlatform_pushMagnetometerUncalibrated(JNIEnv *env, jobject thiz,
                                                                           jdouble time, jdouble x,
                                                                           jdouble y, jdouble z) {
-    get_platform(env, thiz)->m_magnetometer_uncalibrated->push({time, x, y, z});
+    get_platform(env, thiz)->m_magnetometer_uncalibrated.push({time, x, y, z});
 }
 
 extern "C"

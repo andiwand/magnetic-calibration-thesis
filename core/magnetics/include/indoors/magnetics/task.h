@@ -8,7 +8,8 @@ namespace indoors::magnetics {
 
 class Task {
 public:
-  static std::shared_ptr<Task> create_default(std::shared_ptr<pipeline::Platform> platform);
+  static std::shared_ptr<Task>
+  create_default(std::shared_ptr<pipeline::Platform> platform);
 
   virtual ~Task() = default;
 

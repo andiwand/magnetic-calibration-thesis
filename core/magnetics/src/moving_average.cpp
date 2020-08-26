@@ -8,13 +8,15 @@ MovingAverage::MovingAverage(const double window, const double interval)
 MovingAverage::MovingAverage(std::string annotation, const double window,
                              const double interval)
     : pipeline::StandardNode(std::move(annotation)), m_window{window},
-      m_interval{interval}, m_times{"times", this} {}
+      m_interval{interval} {}
 
 std::pair<pipeline::Input<pipeline::Event<pipeline::Vector3>> *,
           pipeline::Output<pipeline::Event<pipeline::Vector3>> *>
 MovingAverage::create_channel(std::string annotation) {
-  auto &&tmp = m_channels.emplace_back(std::move(annotation), this);
-  return {&tmp, &tmp.m_output};
+  // TODO remove new
+  auto input = new Channel(std::move(annotation), this);
+  m_channels.push_back(std::unique_ptr<Channel>(input));
+  return {input, &input->m_output};
 }
 
 pipeline::Output<pipeline::Event<pipeline::Vector3>> *
@@ -27,7 +29,7 @@ MovingAverage::create_channel(
 
 void MovingAverage::iterate() {
   for (auto &&channel : m_channels) {
-    channel.process();
+    channel->process();
   }
 }
 

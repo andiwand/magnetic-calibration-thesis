@@ -36,7 +36,7 @@ private:
     pipeline::StandardOutput<pipeline::Event<pipeline::Vector3>> m_output;
   };
 
-  std::vector<Channel> m_channels;
+  std::vector<std::unique_ptr<Channel>> m_channels;
 };
 
 } // namespace indoors::magnetics

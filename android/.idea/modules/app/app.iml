@@ -116,6 +116,9 @@
       <excludeFolder url="file://$MODULE_DIR$/../../../app/.externalNativeBuild" />
       <excludeFolder url="file://$MODULE_DIR$/../../../app/build" />
     </content>
+    <content url="file://$MODULE_DIR$/../../../../core">
+      <sourceFolder url="file://$MODULE_DIR$/../../../../core" isTestSource="false" />
+    </content>
     <content url="file://$MODULE_DIR$/../../../../core/magnetics/src">
       <sourceFolder url="file://$MODULE_DIR$/../../../../core/magnetics/src" isTestSource="false" />
     </content>
