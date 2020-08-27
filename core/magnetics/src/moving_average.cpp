@@ -48,10 +48,10 @@ void MovingAverage::Channel::process() noexcept {
 
     pipeline::Event<pipeline::Vector3> result;
     result.time = time;
-    for (auto i = series.data_begin; i != series.data_end; ++i) {
-      result.data.x += i->data.x;
-      result.data.y += i->data.y;
-      result.data.z += i->data.z;
+    for (auto &&event : series) {
+      result.data.x += event.data.x;
+      result.data.y += event.data.y;
+      result.data.z += event.data.z;
     }
     const std::size_t size = series.data_end - series.data_begin;
     result.data.x /= size;

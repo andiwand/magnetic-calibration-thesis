@@ -1,6 +1,6 @@
 import Plotly from "plotly.js";
 
-export class Scatter {
+class Scatter {
     constructor(plot) {
         this._plot = plot;
         this._channel_to_trace = new Map();
@@ -69,3 +69,5 @@ export class Scatter {
         this._clearBuffer();
     }
 }
+
+export { Scatter };

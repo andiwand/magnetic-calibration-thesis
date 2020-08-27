@@ -1,7 +1,7 @@
 import Plotly from "plotly.js";
 import * as THREE from "three";
 
-export class Cube {
+class Cube {
     constructor(plot) {
         this._plot = plot;
 
@@ -61,3 +61,5 @@ export class Cube {
         camera.up = new THREE.Vector3(0, 1, 0).applyQuaternion(quaternion).toArray();
     }
 }
+
+export { Cube };

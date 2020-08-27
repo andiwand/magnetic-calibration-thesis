@@ -1,5 +1,6 @@
-import './indoors/pipeline/protocol/event_pb'
-import './scatter'
+import './indoors/pipeline/protocol/event_pb';
+import {Scatter} from './scatter';
+import {Cube} from './cube';
 
 function connect() {
     console.log("connect");

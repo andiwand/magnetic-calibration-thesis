@@ -9,6 +9,7 @@ add_executable(magnetics-test
         moving_average_test.cpp
         opengl_test.cpp
         orientation_filter_test.cpp
+        synchronizer_test.cpp
         )
 target_link_libraries(magnetics-test
         PRIVATE

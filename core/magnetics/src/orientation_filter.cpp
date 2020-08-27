@@ -36,10 +36,7 @@ void MadgwickImu::iterate() {
   auto &&acc = m_accelerometer.buffer().vector();
   auto &&gyr = m_gyroscope.buffer().vector();
 
-  //assert(acc.size() == gyr.size());
-  if (acc.size() != gyr.size()) {
-    return;
-  }
+  assert(acc.size() == gyr.size());
 
   auto q0 = (float)m_last_orientation.w;
   auto q1 = (float)m_last_orientation.x;

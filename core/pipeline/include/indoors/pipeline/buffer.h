@@ -49,10 +49,10 @@ public:
     return result;
   }
 
-  Series<T> pop_until(const double time) const {
+  Series<T> pop_until(const double time) {
     auto result = front(time);
     const auto buffer_end =
-        std::begin(m_buffer) + result.data_end - m_buffer.data();
+        std::begin(m_buffer) + (result.data_end - m_buffer.data());
     m_buffer_begin = buffer_end - std::begin(m_buffer);
     return result;
   }

@@ -8,48 +8,75 @@
 
 namespace indoors::pipeline {
 
-class Synchronizer final : public Node,
-                           public Loopable,
-                           public std::enable_shared_from_this<Synchronizer> {
+class Synchronizer final : public StandardNode,
+                           public Loopable {
 public:
   explicit Synchronizer(double max_slave_delay);
   Synchronizer(std::string annotation, double max_slave_delay);
 
-  const std::string &annotation() const override {
-    return m_annotation;
+  template <typename T>
+  std::pair<Input<T> *, Output<T> *>
+  create_channel(std::string annotation) {
+    // TODO remove new
+    auto input = new ChannelImpl<T>(std::move(annotation), this);
+    m_channels.push_back(std::unique_ptr<Channel>(input));
+    return {input, &input->m_output};
   }
 
   template <typename T>
-  std::shared_ptr<Output<T>>
-  create_master_channel(std::shared_ptr<Output<T>> output) {
-    auto channel = create_channel(output->annotation());
+  Output<T> *
+  create_channel(Output<T> *output) {
+    auto channel = create_channel<T>(output->annotation());
     output->plug(channel.first);
     return channel.second;
   }
-
-  template <typename T>
-  std::pair<std::shared_ptr<Input<T>>, std::shared_ptr<Output<T>>>
-  create_master_channel(std::string annotation) {}
-
-  template <typename T>
-  std::shared_ptr<Output<T>>
-  create_slave_channel(std::shared_ptr<Output<T>> output) {
-    auto channel = create_channel(output->annotation());
-    output->plug(channel.first);
-    return channel.second;
-  }
-
-  template <typename T>
-  std::pair<std::shared_ptr<Input<T>>, std::shared_ptr<Output<T>>>
-  create_slave_channel(std::string annotation) {}
 
   void iterate() override;
 
 private:
-  const std::string m_annotation;
   const double m_max_slave_delay{0};
-  std::vector<std::shared_ptr<int>> m_masters;
-  std::vector<std::shared_ptr<int>> m_slaves;
+  double m_time{0};
+
+  class Channel : public Flushable, public virtual Interface {
+  public:
+    ~Channel() override = default;
+  };
+
+  template<typename T>
+  class ChannelImpl
+      : public Channel, public BufferedInput<T> {
+  public:
+    ChannelImpl(std::string annotation, Node *node) : BufferedInput<T>(annotation, node), m_output{annotation, node} {
+    }
+
+    void push(T data) override {
+      std::lock_guard<std::mutex> lk(reinterpret_cast<Synchronizer *>(node())->m_mutex);
+      BufferedInput<T>::push(data);
+    }
+
+    void skip(const double time) override {
+      std::lock_guard<std::mutex> lk(reinterpret_cast<Synchronizer *>(node())->m_mutex);
+      BufferedInput<T>::skip(time);
+    }
+
+    void flush_until(const double time) override {
+      BufferedInput<T>::skip(time);
+      auto series = BufferedInput<T>::buffer().pop_until(time);
+      for (auto &&event : series) {
+        m_output.push(event);
+      }
+      BufferedInput<T>::buffer().rotate();
+
+      if (m_output.time() < time) {
+        m_output.skip(time);
+      }
+    }
+
+    StandardOutput<T> m_output;
+  };
+
+  std::vector<std::unique_ptr<Channel>> m_channels;
+  std::mutex m_mutex;
 };
 
 } // namespace indoors::pipeline

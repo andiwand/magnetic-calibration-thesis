@@ -1,6 +1,7 @@
 #include <indoors/magnetics/moving_average.h>
 #include <indoors/magnetics/orientation_filter.h>
 #include <indoors/magnetics/task.h>
+#include <indoors/pipeline/synchronizer.h>
 #include <indoors/pipeline/http.h>
 #include <indoors/pipeline/node.h>
 #include <indoors/pipeline/protocol.h>
@@ -31,6 +32,7 @@ private:
   const std::string m_annotation;
   const std::shared_ptr<pipeline::Platform> m_platform;
 
+  pipeline::Synchronizer m_synchronizer;
   MovingAverage m_moving_average;
   MadgwickImu m_madgwick;
   pipeline::ProtocolEncoder m_encoder;
@@ -46,13 +48,19 @@ private:
 StandardTask::StandardTask(std::string annotation,
                            std::shared_ptr<pipeline::Platform> platform)
     : m_annotation{std::move(annotation)}, m_platform{std::move(platform)},
+      m_synchronizer{0.1},
       m_moving_average{0.05, 0.05}, m_ioc{1},
       m_websocket(m_ioc, "0.0.0.0", 8080, m_encoder.output()) {
-  m_moving_average.create_channel(m_platform->accelerometer())->plug(m_madgwick.accelerometer());
-  m_moving_average.create_channel(m_platform->gyroscope())->plug(m_madgwick.gyroscope());
+  auto accelerometer = m_synchronizer.create_channel(m_platform->accelerometer());
+  auto gyroscope = m_synchronizer.create_channel(m_platform->gyroscope());
+  auto magnetometer = m_synchronizer.create_channel(m_platform->magnetometer());
+  auto magnetometer_uncalibrated = m_synchronizer.create_channel(m_platform->magnetometer_uncalibrated());
 
-  m_encoder.create_input(m_moving_average.create_channel(m_platform->magnetometer()));
-  m_encoder.create_input(m_moving_average.create_channel(m_platform->magnetometer_uncalibrated()));
+  m_moving_average.create_channel(accelerometer)->plug(m_madgwick.accelerometer());
+  m_moving_average.create_channel(gyroscope)->plug(m_madgwick.gyroscope());
+
+  m_encoder.create_input(m_moving_average.create_channel(magnetometer));
+  m_encoder.create_input(m_moving_average.create_channel(magnetometer_uncalibrated));
   m_encoder.create_input(m_madgwick.orientation());
 }
 
@@ -63,6 +71,7 @@ void StandardTask::start() {
   m_io_runner = std::thread([this]() { m_ioc.run(); });
   m_looper = std::thread([this]() {
     while (!m_stop) {
+      m_synchronizer.iterate();
       m_moving_average.iterate();
       m_madgwick.iterate();
       std::this_thread::sleep_for(std::chrono::milliseconds(1));

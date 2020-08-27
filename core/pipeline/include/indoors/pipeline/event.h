@@ -63,6 +63,9 @@ template <typename T> struct Series final {
   const double time_end;
   const T *const data_begin;
   const T *const data_end;
+
+  const T *begin() const { return data_begin; }
+  const T *end() const { return data_end; }
 };
 
 struct Void {
