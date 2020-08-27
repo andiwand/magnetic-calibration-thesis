@@ -8,6 +8,7 @@ add_executable(magnetics-test
         magneto_sphere_test.cpp
         moving_average_test.cpp
         opengl_test.cpp
+        orientation_filter_test.cpp
         )
 target_link_libraries(magnetics-test
         PRIVATE

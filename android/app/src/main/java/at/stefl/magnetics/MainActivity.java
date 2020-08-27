@@ -66,20 +66,20 @@ public class MainActivity extends AppCompatActivity {
 
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
-        settings.setLoadWithOverviewMode(true);
-        settings.setUseWideViewPort(true);
-        settings.setSupportZoom(true);
-        settings.setBuiltInZoomControls(false);
-        settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
-        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-        settings.setDomStorageEnabled(true);
-        webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
-        webView.setScrollbarFadingEnabled(true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        } else {
-            webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        }
+        //settings.setLoadWithOverviewMode(true);
+        //settings.setUseWideViewPort(true);
+        //settings.setSupportZoom(true);
+        //settings.setBuiltInZoomControls(false);
+        //settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+        //settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        //settings.setDomStorageEnabled(true);
+        //webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+        //webView.setScrollbarFadingEnabled(true);
+        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        //    webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        //} else {
+        //    webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        //}
 
         String html = null;
         try {

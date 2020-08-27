@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "google-protobuf": "^3.13.0",
-    "plotly.js": "^1.54.7"
+    "plotly.js": "^1.54.7",
+    "three": "^0.120.0"
   }
 }

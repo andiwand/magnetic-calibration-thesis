@@ -15,5 +15,4 @@ target_link_libraries(magnetics
         PUBLIC
         pipeline
         glm
-        madgwick
         )

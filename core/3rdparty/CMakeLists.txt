@@ -1,5 +1,4 @@
 include(protobuf.cmake)
 include(boost.cmake)
 include(glm.cmake)
-include(madgwick.cmake)
 include(googletest.cmake)

@@ -85,14 +85,14 @@ struct Vector3 {
   Vector3(const double x, const double y, const double z) : x{x}, y{y}, z{z} {}
 };
 
-struct Vector4 {
+struct Quaternion {
+  double w{0};
   double x{0};
   double y{0};
   double z{0};
-  double w{0};
 
-  Vector4() = default;
-  Vector4(const double x, const double y, const double z, const double w) : x{x}, y{y}, z{z}, w{w} {}
+  Quaternion() = default;
+  Quaternion(const double w, const double x, const double y, const double z) : w{w}, x{x}, y{y}, z{z} {}
 };
 
 } // namespace indoors::pipeline

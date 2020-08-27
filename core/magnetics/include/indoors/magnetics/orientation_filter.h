@@ -14,17 +14,17 @@ public:
 
   pipeline::Input<pipeline::Event<pipeline::Vector3>> *accelerometer();
   pipeline::Input<pipeline::Event<pipeline::Vector3>> *gyroscope();
-  pipeline::Output<pipeline::Event<pipeline::Vector4>> *orientation();
+  pipeline::Output<pipeline::Event<pipeline::Quaternion>> *orientation();
 
   void iterate() override;
 
 private:
   bool m_initialized{false};
-  pipeline::Vector4 m_last_orientation;
+  pipeline::Quaternion m_last_orientation{1, 0, 0, 0};
 
   pipeline::BufferedInput<pipeline::Event<pipeline::Vector3>> m_accelerometer;
   pipeline::BufferedInput<pipeline::Event<pipeline::Vector3>> m_gyroscope;
-  pipeline::StandardOutput<pipeline::Event<pipeline::Vector4>> m_orientation;
+  pipeline::StandardOutput<pipeline::Event<pipeline::Quaternion>> m_orientation;
 };
 
 } // namespace indoors::magnetics

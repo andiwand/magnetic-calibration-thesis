@@ -49,6 +49,8 @@
       <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/protobuf-src/src/google/protobuf" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/protobuf-src/src/google/protobuf/io" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/protobuf-src/src/google/protobuf/stubs" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/madgwick-src/MadgwickAHRS" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/madgwick-src/MahonyAHRS" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/src/main/cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/protobuf-src/src/google/protobuf/util" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/protobuf-src/src/google/protobuf/util/internal" isTestSource="false" />
