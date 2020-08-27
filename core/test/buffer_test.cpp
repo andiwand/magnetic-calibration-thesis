@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <indoors/pipeline/buffer.h>
-#include <indoors/pipeline/message.h>
+#include <indoors/pipeline/event.h>
 
 using namespace indoors::pipeline;
 

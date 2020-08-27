@@ -3,7 +3,7 @@
 
 #include <fstream>
 #include <indoors/pipeline/definitions.h>
-#include <indoors/pipeline/message.h>
+#include <indoors/pipeline/event.h>
 #include <indoors/pipeline/node.h>
 #include <memory>
 #include <optional>
@@ -23,7 +23,7 @@ public:
   CsvWriter();
   CsvWriter(std::string annotation, std::string root);
 
-  const std::string &annotation() const noexcept override {
+  const std::string &annotation() const override {
     return m_annotation;
   }
 
@@ -65,7 +65,7 @@ private:
       CsvInputBase::write_line(header(T()));
     }
 
-    void push(T data) noexcept override {
+    void push(T data) override {
       CsvInputBase::write_line(to_csv(data));
       StandardInput<T>::push(data);
     }
@@ -81,7 +81,7 @@ public:
   CsvReader();
   CsvReader(std::string annotation, std::string root);
 
-  const std::string &annotation() const noexcept override {
+  const std::string &annotation() const override {
     return m_annotation;
   }
 

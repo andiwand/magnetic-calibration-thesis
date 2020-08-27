@@ -2,7 +2,7 @@
 #define INDOORS_PIPELINE_BUFFER_H
 
 #include <algorithm>
-#include <indoors/pipeline/message.h>
+#include <indoors/pipeline/event.h>
 #include <vector>
 
 namespace indoors::pipeline {
@@ -24,6 +24,8 @@ public:
     clear();
     m_time_begin = m_time_end = time;
   }
+
+  std::vector<T> &vector() { return m_buffer; }
 
   std::size_t size() const { return m_buffer.size - m_buffer_begin; }
 

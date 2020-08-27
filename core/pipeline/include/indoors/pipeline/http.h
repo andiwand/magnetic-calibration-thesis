@@ -5,7 +5,7 @@
 #include <boost/beast/websocket.hpp>
 #include <indoors/pipeline/definitions.h>
 #include <indoors/pipeline/node.h>
-#include <indoors/pipeline/protocol/message.pb.h>
+#include <indoors/pipeline/protocol/event.pb.h>
 
 namespace indoors::pipeline {
 
@@ -21,7 +21,7 @@ public:
 
   WebSocketInput(std::string annotation, Node *node, web_socket &&websocket);
 
-  void push(protocol::Event event) noexcept override;
+  void push(protocol::Event event) override;
 
 private:
   web_socket m_websocket;

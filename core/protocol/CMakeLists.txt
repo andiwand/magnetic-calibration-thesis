@@ -5,7 +5,7 @@
 #target_link_libraries(protocol PUBLIC libprotobuf)
 
 add_library(protocol STATIC
-        src/indoors/pipeline/protocol/message.pb.cc
+        src/indoors/pipeline/protocol/event.pb.cc
         )
 target_include_directories(protocol
         PUBLIC

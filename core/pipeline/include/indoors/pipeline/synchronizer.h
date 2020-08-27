@@ -15,7 +15,7 @@ public:
   explicit Synchronizer(double max_slave_delay);
   Synchronizer(std::string annotation, double max_slave_delay);
 
-  const std::string &annotation() const noexcept override {
+  const std::string &annotation() const override {
     return m_annotation;
   }
 

@@ -1,5 +1,5 @@
 import Plotly from 'plotly.js'
-import './indoors/pipeline/protocol/message_pb'
+import './indoors/pipeline/protocol/event_pb'
 
 var channels = [];
 var channel_to_trace = new Map();

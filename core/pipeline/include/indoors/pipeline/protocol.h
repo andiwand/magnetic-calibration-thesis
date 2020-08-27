@@ -1,9 +1,9 @@
 #ifndef INDOORS_PIPELINE_PROTOCOL_H
 #define INDOORS_PIPELINE_PROTOCOL_H
 
-#include <indoors/pipeline/message.h>
+#include <indoors/pipeline/event.h>
 #include <indoors/pipeline/node.h>
-#include <indoors/pipeline/protocol/message.pb.h>
+#include <indoors/pipeline/protocol/event.pb.h>
 
 namespace indoors::pipeline {
 
@@ -39,10 +39,10 @@ private:
   public:
     explicit EncoderInputBase(std::uint32_t channel_id);
 
-    virtual protocol::Event example() noexcept = 0;
-    protocol::ChannelHello hello() noexcept;
+    virtual protocol::Event example() = 0;
+    protocol::ChannelHello hello();
 
-    void push(protocol::Event event) noexcept;
+    void push(protocol::Event event);
 
   private:
     const std::uint32_t m_channel_id{0};
@@ -56,9 +56,9 @@ private:
         : StandardInput<T>(std::move(annotation), encoder),
           EncoderInputBase(channel_id) {}
 
-    protocol::Event example() noexcept override { return convert(T()); }
+    protocol::Event example() override { return convert(T()); }
 
-    void push(T data) noexcept override {
+    void push(T data) override {
       EncoderInputBase::push(convert(data));
       StandardInput<T>::push(data);
     }
@@ -66,15 +66,14 @@ private:
 
   class EncoderOutput : public StandardOutput<protocol::Event> {
   public:
-    EncoderOutput(std::string annotation, Node *node) noexcept;
-    void plug(Input<protocol::Event> *input) noexcept override;
-    void unplug(Input<protocol::Event> *input) noexcept override;
-    void push(protocol::Event data) noexcept override;
+    EncoderOutput(std::string annotation, Node *node);
+    void plug(Input<protocol::Event> *input) override;
+    void unplug(Input<protocol::Event> *input) override;
   };
 
-  protocol::Event hello() noexcept;
-  protocol::Event bye() noexcept;
-  void push(protocol::Event data) noexcept;
+  protocol::Event hello();
+  protocol::Event bye();
+  void push(protocol::Event data);
 
   std::uint32_t m_next_channel_id{0};
 

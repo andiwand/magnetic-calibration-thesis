@@ -9,7 +9,7 @@ WebSocketInput::WebSocketInput(std::string annotation, Node *node,
     : StandardInput<protocol::Event>(annotation, node), m_websocket{std::move(
                                                               websocket)} {}
 
-void WebSocketInput::push(protocol::Event event) noexcept {
+void WebSocketInput::push(protocol::Event event) {
   if (!m_open)
     return;
   StandardInput<protocol::Event>::push(event);

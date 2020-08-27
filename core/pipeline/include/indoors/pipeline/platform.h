@@ -1,7 +1,7 @@
 #ifndef INDOORS_PIPELINE_PLATFORM_H
 #define INDOORS_PIPELINE_PLATFORM_H
 
-#include <indoors/pipeline/message.h>
+#include <indoors/pipeline/event.h>
 #include <indoors/pipeline/node.h>
 
 namespace indoors::pipeline {

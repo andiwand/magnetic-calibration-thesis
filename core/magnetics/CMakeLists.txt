@@ -2,6 +2,7 @@ add_library(magnetics STATIC
         src/gl_util.cpp
         src/magneto_sphere.cpp
         src/moving_average.cpp
+        src/orientation_filter.cpp
         src/task.cpp
         )
 target_include_directories(magnetics
@@ -14,4 +15,5 @@ target_link_libraries(magnetics
         PUBLIC
         pipeline
         glm
+        madgwick
         )

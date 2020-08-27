@@ -58,7 +58,6 @@ void MovingAverage::Channel::process() noexcept {
     result.data.y /= size;
     result.data.z /= size;
     m_output.push(result);
-    m_output.skip(result.time); // TODO
 
     buffer().clear_until(time - parent->m_window);
   }

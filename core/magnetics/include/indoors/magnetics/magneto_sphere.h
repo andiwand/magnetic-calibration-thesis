@@ -3,7 +3,7 @@
 
 #include <indoors/magnetics/renderer.h>
 #include <indoors/pipeline/node.h>
-#include <indoors/pipeline/message.h>
+#include <indoors/pipeline/event.h>
 #include <vector>
 
 namespace indoors::magnetics {

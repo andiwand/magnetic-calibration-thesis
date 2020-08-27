@@ -23,8 +23,8 @@ public:
   void iterate() override;
 
 private:
-  double m_window;
-  double m_interval;
+  const double m_window;
+  const double m_interval;
 
   class Channel
       : public pipeline::BufferedInput<pipeline::Event<pipeline::Vector3>> {

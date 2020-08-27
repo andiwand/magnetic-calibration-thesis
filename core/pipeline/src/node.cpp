@@ -2,27 +2,27 @@
 
 namespace indoors::pipeline {
 
-StandardNode::StandardNode(std::string annotation) noexcept
+StandardNode::StandardNode(std::string annotation)
     : m_annotation{std::move(annotation)} {}
 
-const std::string &StandardNode::annotation() const noexcept {
+const std::string &StandardNode::annotation() const {
   return m_annotation;
 }
 
-StandardInterface::StandardInterface(std::string annotation, Node *node) noexcept
+StandardInterface::StandardInterface(std::string annotation, Node *node)
     : m_annotation{std::move(annotation)}, m_node{node} {}
 
-const std::string &StandardInterface::annotation() const noexcept {
+const std::string &StandardInterface::annotation() const {
   return m_annotation;
 }
 
-Node *StandardInterface::node() const noexcept { return m_node; }
+Node *StandardInterface::node() const { return m_node; }
 
-bool StandardInterface::open() const noexcept { return m_open; }
+bool StandardInterface::open() const { return m_open; }
 
-double StandardInterface::time() const noexcept { return m_time; }
+double StandardInterface::time() const { return m_time; }
 
-std::size_t StandardInterface::message_count() const noexcept {
+std::size_t StandardInterface::message_count() const {
   return m_message_count;
 }
 

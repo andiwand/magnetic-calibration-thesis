@@ -55,7 +55,7 @@ Output<protocol::Event> *ProtocolEncoder::output() { return &m_output; }
 ProtocolEncoder::EncoderInputBase::EncoderInputBase(std::uint32_t channel_id)
     : m_channel_id{channel_id} {}
 
-protocol::ChannelHello ProtocolEncoder::EncoderInputBase::hello() noexcept {
+protocol::ChannelHello ProtocolEncoder::EncoderInputBase::hello() {
   protocol::ChannelHello hello;
   hello.set_channel(m_channel_id);
   hello.set_annotation(annotation());
@@ -63,33 +63,28 @@ protocol::ChannelHello ProtocolEncoder::EncoderInputBase::hello() noexcept {
   return hello;
 }
 
-void ProtocolEncoder::EncoderInputBase::push(protocol::Event event) noexcept {
+void ProtocolEncoder::EncoderInputBase::push(protocol::Event event) {
   event.set_channel(m_channel_id);
   reinterpret_cast<ProtocolEncoder *>(node())->push(std::move(event));
 }
 
 ProtocolEncoder::EncoderOutput::EncoderOutput(std::string annotation,
-                                              Node *node) noexcept
+                                              Node *node)
     : StandardOutput<protocol::Event>(std::move(annotation), node) {}
 
-void ProtocolEncoder::EncoderOutput::plug(Input<protocol::Event> *input) noexcept {
+void ProtocolEncoder::EncoderOutput::plug(Input<protocol::Event> *input) {
   StandardOutput<protocol::Event>::plug(input);
   auto hello = reinterpret_cast<ProtocolEncoder *>(node())->hello();
   input->push(hello);
 }
 
-void ProtocolEncoder::EncoderOutput::unplug(Input<protocol::Event> *input) noexcept {
+void ProtocolEncoder::EncoderOutput::unplug(Input<protocol::Event> *input) {
   StandardOutput<protocol::Event>::unplug(input);
   auto bye = reinterpret_cast<ProtocolEncoder *>(node())->bye();
   input->push(bye);
 }
 
-void ProtocolEncoder::EncoderOutput::push(protocol::Event event) noexcept {
-  StandardOutput<protocol::Event>::push(event);
-  m_time = event.t();
-}
-
-protocol::Event ProtocolEncoder::hello() noexcept {
+protocol::Event ProtocolEncoder::hello() {
   protocol::Event event;
   event.set_t(0);
   event.mutable_hello()->set_from(annotation());
@@ -99,14 +94,14 @@ protocol::Event ProtocolEncoder::hello() noexcept {
   return event;
 }
 
-protocol::Event ProtocolEncoder::bye() noexcept {
+protocol::Event ProtocolEncoder::bye() {
   protocol::Event event;
   event.set_t(m_output.time());
   event.mutable_bye();
   return event;
 }
 
-void ProtocolEncoder::push(protocol::Event event) noexcept { m_output.push(event); }
+void ProtocolEncoder::push(protocol::Event event) { m_output.push(event); }
 
 Void ProtocolDecoder::convert(const protocol::Void &) { return {}; }
 
