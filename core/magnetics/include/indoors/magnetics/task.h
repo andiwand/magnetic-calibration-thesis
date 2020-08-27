@@ -16,14 +16,26 @@ public:
   virtual const std::string &annotation() = 0;
 
   virtual void start() = 0;
-
   virtual void restart() = 0;
-
   virtual void resume() = 0;
-
   virtual void pause() = 0;
-
   virtual void stop() = 0;
+};
+
+class StandardTask : public Task {
+public:
+  explicit StandardTask(std::string annotation);
+
+  const std::string &annotation() override;
+
+  void start() override;
+  void restart() override;
+  void resume() override;
+  void pause() override;
+  void stop() override;
+
+private:
+  const std::string m_annotation;
 };
 
 } // namespace indoors::magnetics

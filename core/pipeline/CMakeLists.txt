@@ -2,6 +2,7 @@ find_package(Boost)
 
 add_library(pipeline STATIC
         src/csv.cpp
+        src/definitions.cpp
         src/http.cpp
         src/looper.cpp
         src/node.cpp

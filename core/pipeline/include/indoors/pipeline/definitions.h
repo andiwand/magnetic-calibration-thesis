@@ -2,6 +2,7 @@
 #define INDOORS_PIPELINE_DEFINITIONS_H
 
 #include <cstdint>
+#include <string>
 
 namespace indoors::pipeline {
 
@@ -28,6 +29,23 @@ public:
   virtual ~Runable() = default;
 
   virtual void run() = 0;
+};
+
+class Annotated {
+public:
+  virtual ~Annotated() = default;
+
+  virtual const std::string &annotation() const = 0;
+};
+
+class StandardAnnotated : public Annotated {
+public:
+  explicit StandardAnnotated(std::string annotation);
+
+  const std::string &annotation() const override;
+
+private:
+  const std::string m_annotation;
 };
 
 } // namespace indoors::pipeline

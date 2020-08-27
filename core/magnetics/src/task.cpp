@@ -11,21 +11,12 @@
 namespace indoors::magnetics {
 
 namespace {
-class StandardTask : public Task {
+class DefaultTask : public StandardTask {
 public:
-  StandardTask(std::string annotation,
-               std::shared_ptr<pipeline::Platform> platform);
-
-  const std::string &annotation() override;
+  DefaultTask(std::string annotation,
+              std::shared_ptr<pipeline::Platform> platform);
 
   void start() override;
-
-  void restart() override {}
-
-  void resume() override {}
-
-  void pause() override {}
-
   void stop() override;
 
 private:
@@ -45,9 +36,9 @@ private:
   std::atomic<bool> m_stop{false};
 };
 
-StandardTask::StandardTask(std::string annotation,
-                           std::shared_ptr<pipeline::Platform> platform)
-    : m_annotation{std::move(annotation)}, m_platform{std::move(platform)},
+DefaultTask::DefaultTask(std::string annotation,
+                         std::shared_ptr<pipeline::Platform> platform)
+    : StandardTask(std::move(annotation)), m_platform{std::move(platform)},
       m_synchronizer{0.1},
       m_moving_average{0.05, 0.05}, m_ioc{1},
       m_websocket(m_ioc, "0.0.0.0", 8080, m_encoder.output()) {
@@ -64,10 +55,7 @@ StandardTask::StandardTask(std::string annotation,
   m_encoder.create_input(m_madgwick.orientation());
 }
 
-const std::string &StandardTask::annotation() { return m_annotation; }
-} // namespace
-
-void StandardTask::start() {
+void DefaultTask::start() {
   m_io_runner = std::thread([this]() { m_ioc.run(); });
   m_looper = std::thread([this]() {
     while (!m_stop) {
@@ -79,17 +67,32 @@ void StandardTask::start() {
   });
 }
 
-void StandardTask::stop() {
+void DefaultTask::stop() {
   m_ioc.stop();
   m_stop = true;
 
   m_io_runner.join();
   m_looper.join();
 }
+} // namespace
 
 std::shared_ptr<Task>
 Task::create_default(std::shared_ptr<pipeline::Platform> platform) {
-  return std::make_shared<StandardTask>("standard", platform);
+  return std::make_shared<DefaultTask>("standard", platform);
 }
+
+StandardTask::StandardTask(std::string annotation) : m_annotation{std::move(annotation)} {}
+
+const std::string & StandardTask::annotation() { return m_annotation; }
+
+void StandardTask::start() {}
+
+void StandardTask::restart() {}
+
+void StandardTask::resume() {}
+
+void StandardTask::pause() {}
+
+void StandardTask::stop() {}
 
 } // namespace indoors::magnetics
