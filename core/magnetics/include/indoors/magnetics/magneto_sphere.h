@@ -2,8 +2,8 @@
 #define INDOORS_MAGNETICS_MAGNETO_SPHERE_H
 
 #include <indoors/magnetics/renderer.h>
-#include <indoors/pipeline/node.h>
 #include <indoors/pipeline/event.h>
+#include <indoors/pipeline/node.h>
 #include <vector>
 
 namespace indoors::magnetics {
@@ -29,10 +29,12 @@ private:
 
   struct Channel {
     pipeline::Vector3 rgb;
-    std::shared_ptr<pipeline::BufferedInput<pipeline::Event<pipeline::Vector3>>> buffer;
+    std::shared_ptr<pipeline::BufferedInput<pipeline::Event<pipeline::Vector3>>>
+        buffer;
 
     Channel(const pipeline::Vector3 &rgb,
-            std::shared_ptr<pipeline::BufferedInput<pipeline::Event<pipeline::Vector3>>>
+            std::shared_ptr<
+                pipeline::BufferedInput<pipeline::Event<pipeline::Vector3>>>
                 buffer);
   };
 };

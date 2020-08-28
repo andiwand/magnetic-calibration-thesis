@@ -7,7 +7,7 @@ using error_code = boost::system::error_code;
 WebSocketInput::WebSocketInput(std::string annotation, Node *node,
                                web_socket &&websocket)
     : StandardInput<protocol::Event>(annotation, node), m_websocket{std::move(
-                                                              websocket)} {}
+                                                            websocket)} {}
 
 void WebSocketInput::push(protocol::Event event) {
   if (!m_open)
@@ -19,7 +19,7 @@ void WebSocketInput::push(protocol::Event event) {
   // TODO when client disconnects this will throw
   event.SerializeToArray(array, size);
   boost::beast::error_code ec;
-    m_websocket.write(boost::asio::buffer(array, size), ec);
+  m_websocket.write(boost::asio::buffer(array, size), ec);
   if (ec)
     m_open = false;
   delete[] array;
@@ -38,8 +38,7 @@ WebSocket::WebSocket(std::string annotation, io_context &ioc,
   accept();
 }
 
-void WebSocket::iterate() {
-}
+void WebSocket::iterate() {}
 
 void WebSocket::accept() {
   m_acceptor.async_accept([this](const error_code &error, tcp_socket peer) {
@@ -52,7 +51,8 @@ void WebSocket::accept() {
     web_peer.binary(true);
 
     // TODO remove new
-    auto input = new WebSocketInput("websocket input", this, std::move(web_peer));
+    auto input =
+        new WebSocketInput("websocket input", this, std::move(web_peer));
     m_inputs.push_back(std::unique_ptr<WebSocketInput>(input));
     m_output->plug(input);
 

@@ -3,6 +3,4 @@
 
 using namespace indoors::magnetics;
 
-TEST(orientation_filter, hello) {
-  MadgwickImu madgwick;
-}
+TEST(orientation_filter, hello) { MadgwickImu madgwick; }

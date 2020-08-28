@@ -1,8 +1,8 @@
 #ifndef INDOORS_PIPELINE_EVENT_H
 #define INDOORS_PIPELINE_EVENT_H
 
-#include <utility>
 #include <indoors/pipeline/protocol/event.pb.h>
+#include <utility>
 
 namespace indoors::pipeline {
 
@@ -27,22 +27,19 @@ template <typename T> struct DelayedEvent {
       : time{time}, delay{delay}, data{std::forward<Args>(args)...} {}
 };
 
-template<typename T>
-struct EventTraits {
+template <typename T> struct EventTraits {
   static constexpr bool has_time{false};
   static constexpr bool has_delay{false};
 };
 
-template<typename T>
-struct EventTraits<Event<T>> {
+template <typename T> struct EventTraits<Event<T>> {
   static constexpr bool has_time{true};
   static constexpr bool has_delay{false};
 
   static constexpr double time(const Event<T> &event) { return event.time; }
 };
 
-template<typename T>
-struct EventTraits<DelayedEvent<T>> {
+template <typename T> struct EventTraits<DelayedEvent<T>> {
   static constexpr bool has_time{true};
   static constexpr bool has_delay{true};
 
@@ -50,12 +47,13 @@ struct EventTraits<DelayedEvent<T>> {
   static constexpr double delay(const Event<T> &event) { return event.delay; }
 };
 
-template<>
-struct EventTraits<protocol::Event> {
+template <> struct EventTraits<protocol::Event> {
   static constexpr bool has_time{true};
   static constexpr bool has_delay{false};
 
-  static constexpr double time(const protocol::Event &event) { return event.t(); }
+  static constexpr double time(const protocol::Event &event) {
+    return event.t();
+  }
 };
 
 template <typename T> struct Series final {
@@ -95,7 +93,8 @@ struct Quaternion {
   double z{0};
 
   Quaternion() = default;
-  Quaternion(const double w, const double x, const double y, const double z) : w{w}, x{x}, y{y}, z{z} {}
+  Quaternion(const double w, const double x, const double y, const double z)
+      : w{w}, x{x}, y{y}, z{z} {}
 };
 
 } // namespace indoors::pipeline

@@ -62,9 +62,7 @@ ProtocolEncoder::ProtocolEncoder() : ProtocolEncoder("encoder") {}
 ProtocolEncoder::ProtocolEncoder(std::string annotation)
     : StandardNode(std::move(annotation)), m_output{"encoder output", this} {}
 
-ProtocolEncoder::~ProtocolEncoder() {
-  push(bye());
-}
+ProtocolEncoder::~ProtocolEncoder() { push(bye()); }
 
 Output<protocol::Event> *ProtocolEncoder::output() { return &m_output; }
 
@@ -105,7 +103,8 @@ protocol::Event ProtocolEncoder::hello() {
   event.set_t(0);
   event.mutable_hello()->set_from(annotation());
   for (auto &&channel : m_inputs) {
-    event.mutable_hello()->mutable_channels()->Add()->CopyFrom(channel->hello());
+    event.mutable_hello()->mutable_channels()->Add()->CopyFrom(
+        channel->hello());
   }
   return event;
 }
@@ -153,7 +152,8 @@ void ProtocolDecoder::convert(const protocol::Event &from, Event<Vector3> &to) {
   to.data = convert(from.vector3());
 }
 
-void ProtocolDecoder::convert(const protocol::Event &from, Event<Quaternion> &to) {
+void ProtocolDecoder::convert(const protocol::Event &from,
+                              Event<Quaternion> &to) {
   if (!from.has_quaternion())
     throw; // TODO
   to.time = from.t();

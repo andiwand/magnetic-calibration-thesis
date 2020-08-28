@@ -1,5 +1,5 @@
-#include <indoors/magnetics/gl_util.h>
 #include <GLES3/gl3.h>
+#include <indoors/magnetics/gl_util.h>
 #include <iostream>
 
 namespace indoors::magnetics {

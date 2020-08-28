@@ -58,8 +58,7 @@ public:
   }
 
   Series<T> front(const double time_end) const {
-    const auto buffer_being =
-        m_buffer.data() + m_buffer_begin;
+    const auto buffer_being = m_buffer.data() + m_buffer_begin;
     const auto buffer_end =
         m_buffer.data() + (find_next(time_end) - std::begin(m_buffer));
     return {m_time_begin, time_end, buffer_being, buffer_end};
@@ -79,7 +78,8 @@ public:
 
   void clear_front(const Series<T> &series) {
     m_buffer.erase(std::begin(m_buffer),
-                   (std::begin(m_buffer) + m_buffer_begin) + (series.data_end - m_buffer.data()));
+                   (std::begin(m_buffer) + m_buffer_begin) +
+                       (series.data_end - m_buffer.data()));
     m_buffer_begin = 0;
     m_time_begin = series.time_end;
   }
@@ -113,7 +113,8 @@ private:
   auto find_next(const double time) const {
     if ((time < m_time_begin) || (time > m_time_end))
       throw; // TODO
-    return std::find_if(std::begin(m_buffer) + m_buffer_begin, std::end(m_buffer),
+    return std::find_if(std::begin(m_buffer) + m_buffer_begin,
+                        std::end(m_buffer),
                         [time](const auto &i) { return i.time >= time; });
   }
 };

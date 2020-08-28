@@ -16,8 +16,7 @@ public:
   virtual Output<Event<Vector3>> *gyroscope() = 0;
   virtual Output<Event<Vector3>> *magnetometer() = 0;
 
-  virtual Output<Event<Vector3>> *
-  magnetometer_uncalibrated() = 0;
+  virtual Output<Event<Vector3>> *magnetometer_uncalibrated() = 0;
 };
 
 class StandardPlatform : public Platform,
@@ -31,8 +30,7 @@ public:
   Output<Event<Vector3>> *gyroscope() override;
   Output<Event<Vector3>> *magnetometer() override;
 
-  Output<Event<Vector3>> *
-  magnetometer_uncalibrated() override;
+  Output<Event<Vector3>> *magnetometer_uncalibrated() override;
 
   StandardOutput<Event<Clock>> m_clock;
   StandardOutput<Event<Vector3>> m_accelerometer;

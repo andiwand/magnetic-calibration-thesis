@@ -8,9 +8,6 @@ namespace indoors::magnetics {
 
 class Task {
 public:
-  static std::shared_ptr<Task>
-  create_default(std::shared_ptr<pipeline::Platform> platform);
-
   virtual ~Task() = default;
 
   virtual const std::string &annotation() = 0;
@@ -20,6 +17,16 @@ public:
   virtual void resume() = 0;
   virtual void pause() = 0;
   virtual void stop() = 0;
+};
+
+class Tasks final {
+public:
+  static std::shared_ptr<Task>
+  create_default(std::shared_ptr<pipeline::Platform> platform);
+
+  static std::shared_ptr<Task>
+  create_default(std::shared_ptr<pipeline::Platform> platform,
+                 std::string html);
 };
 
 class StandardTask : public Task {

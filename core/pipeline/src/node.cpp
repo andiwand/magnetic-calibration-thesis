@@ -5,9 +5,7 @@ namespace indoors::pipeline {
 StandardNode::StandardNode(std::string annotation)
     : m_annotation{std::move(annotation)} {}
 
-const std::string &StandardNode::annotation() const {
-  return m_annotation;
-}
+const std::string &StandardNode::annotation() const { return m_annotation; }
 
 StandardInterface::StandardInterface(std::string annotation, Node *node)
     : m_annotation{std::move(annotation)}, m_node{node} {}
@@ -22,8 +20,6 @@ bool StandardInterface::open() const { return m_open; }
 
 double StandardInterface::time() const { return m_time; }
 
-std::size_t StandardInterface::message_count() const {
-  return m_message_count;
-}
+std::size_t StandardInterface::message_count() const { return m_message_count; }
 
 } // namespace indoors::pipeline

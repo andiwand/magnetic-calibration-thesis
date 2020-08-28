@@ -155,7 +155,8 @@ public:
 
   void unplug(Input<T> *input) override {
     auto it = std::find(std::begin(m_inputs), std::end(m_inputs), input);
-    if (it == std::end(m_inputs)) return; // TODO throw?
+    if (it == std::end(m_inputs))
+      return; // TODO throw?
     m_inputs.erase(it);
     input->unplugged();
   }

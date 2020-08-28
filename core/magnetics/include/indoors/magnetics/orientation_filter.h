@@ -3,7 +3,6 @@
 
 #include <indoors/pipeline/definitions.h>
 #include <indoors/pipeline/node.h>
-#include <vector>
 
 namespace indoors::magnetics {
 

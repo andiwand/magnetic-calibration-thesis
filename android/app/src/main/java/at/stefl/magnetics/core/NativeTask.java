@@ -7,12 +7,18 @@ public class NativeTask {
     }
 
     private static native long createDefault_(AndroidPlatform platform);
+    private static native long createDefault_(AndroidPlatform platform, String html);
     private static native void destroy(long handle);
 
     private long handle;
 
     public static NativeTask createDefault(AndroidPlatform platform) {
         long handle = createDefault_(platform);
+        return new NativeTask(handle);
+    }
+
+    public static NativeTask createDefault(AndroidPlatform platform, String html) {
+        long handle = createDefault_(platform, html);
         return new NativeTask(handle);
     }
 
@@ -28,13 +34,9 @@ public class NativeTask {
     public native String annotation();
 
     public native void start();
-
     public native void restart();
-
     public native void resume();
-
     public native void pause();
-
     public native void stop();
 
 }

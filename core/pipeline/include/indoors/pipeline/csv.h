@@ -23,9 +23,7 @@ public:
   CsvWriter();
   CsvWriter(std::string annotation, std::string root);
 
-  const std::string &annotation() const override {
-    return m_annotation;
-  }
+  const std::string &annotation() const override { return m_annotation; }
 
   template <typename T>
   std::shared_ptr<Input<T>> create_input(std::string annotation) {
@@ -81,9 +79,7 @@ public:
   CsvReader();
   CsvReader(std::string annotation, std::string root);
 
-  const std::string &annotation() const override {
-    return m_annotation;
-  }
+  const std::string &annotation() const override { return m_annotation; }
 
   template <typename T> Output<T> *create_output(std::string annotation) {
     // TODO use c++ paths?

@@ -10,6 +10,25 @@ using namespace indoors::pipeline;
 using namespace indoors::magnetics;
 
 namespace {
+    std::string jstring2string(JNIEnv *env, jstring jStr) {
+        if (!jStr)
+            return "";
+
+        const jclass stringClass = env->GetObjectClass(jStr);
+        const jmethodID getBytes = env->GetMethodID(stringClass, "getBytes", "(Ljava/lang/String;)[B");
+        const jbyteArray stringJbytes = (jbyteArray) env->CallObjectMethod(jStr, getBytes, env->NewStringUTF("UTF-8"));
+
+        size_t length = (size_t) env->GetArrayLength(stringJbytes);
+        jbyte* pBytes = env->GetByteArrayElements(stringJbytes, NULL);
+
+        std::string ret = std::string((char *)pBytes, length);
+        env->ReleaseByteArrayElements(stringJbytes, pBytes, JNI_ABORT);
+
+        env->DeleteLocalRef(stringJbytes);
+        env->DeleteLocalRef(stringClass);
+        return ret;
+    }
+
     class androidbuf : public std::streambuf {
     public:
         androidbuf(int prio, std::string tag) : prio{prio}, tag{std::move(tag)} { this->setp(buffer, buffer + bufsize - 1); }
@@ -134,10 +153,22 @@ Java_at_stefl_magnetics_core_AndroidPlatform_pushMagnetometerUncalibrated(JNIEnv
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_at_stefl_magnetics_core_NativeTask_createDefault_1(JNIEnv *env, jclass clazz, jobject platform) {
+Java_at_stefl_magnetics_core_NativeTask_createDefault_1__Lat_stefl_magnetics_core_AndroidPlatform_2(
+        JNIEnv *env, jclass clazz, jobject platform) {
     auto &&p = get_platform(env, platform);
 
-    auto tmp = Task::create_default(p);
+    auto tmp = Tasks::create_default(p);
+    auto task = new std::shared_ptr<Task>(std::move(tmp));
+    return reinterpret_cast<jlong>(task);
+}
+
+extern "C"
+JNIEXPORT jlong JNICALL
+Java_at_stefl_magnetics_core_NativeTask_createDefault_1__Lat_stefl_magnetics_core_AndroidPlatform_2Ljava_lang_String_2(
+        JNIEnv *env, jclass clazz, jobject platform, jstring html) {
+    auto &&p = get_platform(env, platform);
+
+    auto tmp = Tasks::create_default(p, jstring2string(env, html));
     auto task = new std::shared_ptr<Task>(std::move(tmp));
     return reinterpret_cast<jlong>(task);
 }
