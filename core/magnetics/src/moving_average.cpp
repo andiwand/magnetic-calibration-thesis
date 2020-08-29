@@ -35,7 +35,7 @@ void MovingAverage::iterate() {
 
 MovingAverage::Channel::Channel(std::string annotation, Node *node)
     : pipeline::BufferedInput<pipeline::Event<pipeline::Vector3>>(
-          std::move(annotation), node),
+          annotation, node),
       m_output{annotation, node} {}
 
 void MovingAverage::Channel::process() noexcept {

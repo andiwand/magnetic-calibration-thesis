@@ -13,6 +13,8 @@ public:
 
   pipeline::Input<pipeline::Event<pipeline::Vector3>> *accelerometer();
   pipeline::Input<pipeline::Event<pipeline::Vector3>> *gyroscope();
+
+  // transforms phone coordinates into world coordinates
   pipeline::Output<pipeline::Event<pipeline::Quaternion>> *orientation();
 
   void iterate() override;

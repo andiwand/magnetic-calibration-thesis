@@ -45,6 +45,7 @@ public class AndroidPlatform {
                             event.values[1] - event.values[4],
                             event.values[2] - event.values[5]);
                     pushMagnetometerUncalibrated(time, event.values[0], event.values[1], event.values[2]);
+                    pushMagnetometerBias(time, event.values[3], event.values[4], event.values[5]);
                     break;
             }
         }
@@ -83,4 +84,6 @@ public class AndroidPlatform {
     public native void pushMagnetometer(double time, double x, double y, double z);
 
     public native void pushMagnetometerUncalibrated(double time, double x, double y, double z);
+
+    public native void pushMagnetometerBias(double time, double x, double y, double z);
 }

@@ -29,12 +29,6 @@ MadgwickImu::orientation() {
 }
 
 void MadgwickImu::iterate() {
-  if (!m_initialized) {
-    // TODO
-    m_initialized = true;
-    return;
-  }
-
   auto &&acc = m_accelerometer.buffer().vector();
   auto &&gyr = m_gyroscope.buffer().vector();
 
@@ -50,6 +44,11 @@ void MadgwickImu::iterate() {
         std::isnan(gyr[i].data.z) || std::isnan(acc[i].data.x) ||
         std::isnan(acc[i].data.y) || std::isnan(acc[i].data.z)) {
       continue;
+    }
+
+    if (!m_initialized) {
+      // TODO
+      m_initialized = true;
     }
 
     MadgwickAHRSupdateIMU(0.05, 0.1, (float)gyr[i].data.x, (float)gyr[i].data.y,

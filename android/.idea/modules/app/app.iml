@@ -35,9 +35,13 @@
     <output-test url="file://$MODULE_DIR$/../../../app/build/intermediates/javac/debugUnitTest/classes" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../../app">
-      <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/googletest-src/googlemock/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/eigen-build/doc/snippets" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/eigen-src/doc/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/eigen-src/unsupported/doc/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../app/src/main/cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/eigen-src/lapack" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/eigen-src/blas" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/protobuf-src/src/google/protobuf/compiler" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/googletest-src/googletest/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/protobuf-src/src/google/protobuf/compiler/cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/protobuf-src/src/google/protobuf/compiler/csharp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/protobuf-src/src/google/protobuf/compiler/java" isTestSource="false" />
@@ -46,22 +50,24 @@
       <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/protobuf-src/src/google/protobuf/compiler/php" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/protobuf-src/src/google/protobuf/compiler/python" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/protobuf-src/src/google/protobuf/compiler/ruby" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/eigen-src/bench/spbench" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/googletest-src/googlemock/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/protobuf-src/src/google/protobuf" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/protobuf-src/src/google/protobuf/io" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/protobuf-src/src/google/protobuf/stubs" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/madgwick-src/MadgwickAHRS" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/madgwick-src/MahonyAHRS" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/../../../app/src/main/cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/protobuf-src/src/google/protobuf/util" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/protobuf-src/src/google/protobuf/util/internal" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/ap_generated_sources/debug/out" isTestSource="false" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/aidl_source_output_dir/debug/out" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/eigen-src/blas/f2c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/googletest-src/googletest/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../app/.cxx/cmake/debug/x86/_deps/eigen-src/doc/special_examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/source/buildConfig/debug" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/ap_generated_sources/debug/out" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/renderscript_source_output_dir/debug/out" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/aidl_source_output_dir/debug/out" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/res/rs/debug" type="java-resource" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/ap_generated_sources/debugAndroidTest/out" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/aidl_source_output_dir/debugAndroidTest/out" isTestSource="true" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/source/buildConfig/androidTest/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/aidl_source_output_dir/debugAndroidTest/out" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/ap_generated_sources/debugAndroidTest/out" isTestSource="true" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/renderscript_source_output_dir/debugAndroidTest/out" isTestSource="true" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/res/rs/androidTest/debug" type="java-test-resource" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/ap_generated_sources/debugUnitTest/out" isTestSource="true" generated="true" />

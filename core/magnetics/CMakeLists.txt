@@ -1,4 +1,5 @@
 add_library(magnetics STATIC
+        src/calibration.cpp
         src/gl_util.cpp
         src/magneto_sphere.cpp
         src/moving_average.cpp
@@ -15,4 +16,5 @@ target_link_libraries(magnetics
         PUBLIC
         pipeline
         glm
+        eigen
         )

@@ -152,6 +152,14 @@ Java_at_stefl_magnetics_core_AndroidPlatform_pushMagnetometerUncalibrated(JNIEnv
 }
 
 extern "C"
+JNIEXPORT void JNICALL
+Java_at_stefl_magnetics_core_AndroidPlatform_pushMagnetometerBias(JNIEnv *env, jobject thiz,
+                                                                  jdouble time, jdouble x,
+                                                                  jdouble y, jdouble z) {
+    get_platform(env, thiz)->m_magnetometer_bias.push({time, x, y, z});
+}
+
+extern "C"
 JNIEXPORT jlong JNICALL
 Java_at_stefl_magnetics_core_NativeTask_createDefault_1__Lat_stefl_magnetics_core_AndroidPlatform_2(
         JNIEnv *env, jclass clazz, jobject platform) {

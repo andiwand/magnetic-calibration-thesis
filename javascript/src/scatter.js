@@ -12,6 +12,12 @@ class Scatter {
                 r: 0,
                 b: 0,
                 t: 0
+            },
+            legend: {
+                yanchor: "top",
+                y: 0.99,
+                xanchor: "left",
+                x: 0.01
             }
         };
         Plotly.newPlot(this._plot, [], layout);

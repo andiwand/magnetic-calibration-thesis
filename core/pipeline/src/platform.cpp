@@ -11,7 +11,7 @@ StandardPlatform::StandardPlatform(std::string annotation)
       m_accelerometer{"accelerometer", this}, m_gyroscope{"gyroscope", this},
       m_magnetometer{"magnetometer", this}, m_magnetometer_uncalibrated{
                                                 "magnetometer uncalibrated",
-                                                this} {}
+                                                this}, m_magnetometer_bias{"magnetometer bias", this} {}
 
 Output<Event<Clock>> *StandardPlatform::clock() { return &m_clock; }
 
@@ -27,6 +27,10 @@ Output<Event<Vector3>> *StandardPlatform::magnetometer() {
 
 Output<Event<Vector3>> *StandardPlatform::magnetometer_uncalibrated() {
   return &m_magnetometer_uncalibrated;
+}
+
+Output<Event<Vector3>> *StandardPlatform::magnetometer_bias() {
+  return &m_magnetometer_bias;
 }
 
 } // namespace indoors::pipeline
