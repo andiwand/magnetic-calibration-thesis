@@ -18,6 +18,7 @@ public:
   pipeline::Output<pipeline::Event<pipeline::Quaternion>> *orientation_output();
   pipeline::Output<pipeline::Event<pipeline::Vector3>> *hard_iron();
   pipeline::Output<pipeline::Event<pipeline::Vector3>> *external();
+  pipeline::Output<pipeline::Event<pipeline::Vector2>> *north_confidence();
 
   void iterate() override;
 
@@ -33,6 +34,7 @@ private:
   pipeline::StandardOutput<pipeline::Event<pipeline::Quaternion>> m_orientation_output;
   pipeline::StandardOutput<pipeline::Event<pipeline::Vector3>> m_hard_iron;
   pipeline::StandardOutput<pipeline::Event<pipeline::Vector3>> m_external;
+  pipeline::StandardOutput<pipeline::Event<pipeline::Vector2>> m_north_confidence;
 };
 
 } // namespace indoors::magnetics

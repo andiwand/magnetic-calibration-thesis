@@ -43,7 +43,7 @@ DefaultTask::DefaultTask(std::shared_ptr<pipeline::Platform> platform,
                          std::optional<std::string> html)
     : StandardTask("default"), m_platform{std::move(platform)}, m_ioc{1},
       m_synchronizer{0.1}, m_moving_average{0.05, 0.05},
-      m_calibration{0, 10000, 0.05},
+      m_calibration{0, 2000, 0.05},
       m_websocket(m_ioc, "0.0.0.0", 8080, m_encoder.output()) {
   // synchronizer
   auto accelerometer =
@@ -80,6 +80,7 @@ DefaultTask::DefaultTask(std::shared_ptr<pipeline::Platform> platform,
   m_encoder.create_input(sampled_magnetometer_bias);
   m_encoder.create_input(m_calibration.hard_iron());
   m_encoder.create_input(m_calibration.external());
+  m_encoder.create_input(m_calibration.north_confidence());
 
   // TODO html
 }

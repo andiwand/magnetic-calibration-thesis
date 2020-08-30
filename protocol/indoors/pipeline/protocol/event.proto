@@ -26,8 +26,9 @@ message Event {
         bool switch = 6;
         double scalar = 7;
         Clock clock = 8;
-        Vector3 vector3 = 9;
-        Quaternion quaternion = 10;
+        Vector2 vector2 = 9;
+        Vector3 vector3 = 10;
+        Quaternion quaternion = 11;
     }
 }
 
@@ -36,6 +37,11 @@ message Void {
 
 message Clock {
     double unix_utc = 1;
+}
+
+message Vector2 {
+    double x = 1;
+    double y = 2;
 }
 
 message Vector3 {

@@ -77,6 +77,14 @@ struct Clock {
   Clock(const double unix_utc) : unix_utc{unix_utc} {}
 };
 
+struct Vector2 {
+  double x{0};
+  double y{0};
+
+  Vector2() = default;
+  Vector2(const double x, const double y) : x{x}, y{y} {}
+};
+
 struct Vector3 {
   double x{0};
   double y{0};

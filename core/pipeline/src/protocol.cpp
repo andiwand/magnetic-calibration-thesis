@@ -12,6 +12,13 @@ protocol::Clock ProtocolEncoder::convert(const Clock &from) {
   return result;
 }
 
+protocol::Vector2 ProtocolEncoder::convert(const Vector2 &from) {
+  protocol::Vector2 result;
+  result.set_x(from.x);
+  result.set_y(from.y);
+  return result;
+}
+
 protocol::Vector3 ProtocolEncoder::convert(const Vector3 &from) {
   protocol::Vector3 result;
   result.set_x(from.x);
@@ -40,6 +47,13 @@ protocol::Event ProtocolEncoder::convert(const Event<Clock> &event) {
   protocol::Event result;
   result.set_t(event.time);
   result.mutable_clock()->CopyFrom(convert(event.data));
+  return result;
+}
+
+protocol::Event ProtocolEncoder::convert(const Event<Vector2> &event) {
+  protocol::Event result;
+  result.set_t(event.time);
+  result.mutable_vector2()->CopyFrom(convert(event.data));
   return result;
 }
 
@@ -124,6 +138,10 @@ Clock ProtocolDecoder::convert(const protocol::Clock &from) {
   return {from.unix_utc()};
 }
 
+Vector2 ProtocolDecoder::convert(const protocol::Vector2 &from) {
+  return {from.x(), from.y()};
+}
+
 Vector3 ProtocolDecoder::convert(const protocol::Vector3 &from) {
   return {from.x(), from.y(), from.z()};
 }
@@ -143,6 +161,13 @@ void ProtocolDecoder::convert(const protocol::Event &from, Event<Clock> &to) {
     throw; // TODO
   to.time = from.t();
   to.data = convert(from.clock());
+}
+
+void ProtocolDecoder::convert(const protocol::Event &from, Event<Vector2> &to) {
+  if (!from.has_vector2())
+    throw; // TODO
+  to.time = from.t();
+  to.data = convert(from.vector2());
 }
 
 void ProtocolDecoder::convert(const protocol::Event &from, Event<Vector3> &to) {

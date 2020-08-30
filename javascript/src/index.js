@@ -1,5 +1,6 @@
 import './indoors/pipeline/protocol/event_pb';
-import {Scatter} from './scatter';
+import {Scatter2d} from './scatter2d';
+import {Scatter3d} from './scatter3d';
 import {Cube} from './cube';
 
 function connect() {
@@ -10,7 +11,8 @@ function connect() {
         return;
     }
 
-    var scatter = null;
+    var north_confidence = null;
+    var scatter3d = null;
     var cube = null;
 
     //var ws = new WebSocket("ws://localhost:8080");
@@ -20,7 +22,8 @@ function connect() {
     ws.onopen = function () {
         console.log("websocket open");
 
-        scatter = new Scatter("scatter");
+        north_confidence = new Scatter2d("north_confidence");
+        scatter3d = new Scatter3d("scatter3d");
         cube = new Cube("cube");
     };
 
@@ -28,7 +31,8 @@ function connect() {
         var data = new Uint8Array(evt.data);
         var event = proto.indoors.pipeline.protocol.Event.deserializeBinary(data);
 
-        scatter.onEvent(event);
+        north_confidence.onEvent(event);
+        scatter3d.onEvent(event);
         cube.onEvent(event);
     };
 

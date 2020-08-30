@@ -26,6 +26,7 @@ public:
   struct Estimate final {
     float north{0};
     float confidence{0};
+    Eigen::Vector2f north_confidence;
     Eigen::Vector3f hard_iron;
     Eigen::Vector3f external;
   };
@@ -73,23 +74,19 @@ public:
     std::normal_distribution<float> noise_dist(0, 2);
 
     for (std::size_t i = 0; i < m_population; ++i) {
-      // TODO drift north and hard_iron?
       m_particles[i].north += north_drift_dist(m_random);
-      m_particles[i].hard_iron += Eigen::Vector3f(noise_dist(m_random), noise_dist(m_random), noise_dist(m_random));
+      m_particles[i].hard_iron += Eigen::Vector3f(hard_iron_drift_dist(m_random), hard_iron_drift_dist(m_random), hard_iron_drift_dist(m_random));
 
       const Eigen::Vector3f earth{0, 20, -44}; // middle europe
       const auto full_orientation =
           Eigen::AngleAxisf(m_particles[i].north, Eigen::Vector3f::UnitZ()) *
           orientation;
       const Eigen::Vector3f prediction =
-          m_particles[i].hard_iron + full_orientation.inverse() * (m_particles[i].external + earth);
+          m_particles[i].hard_iron + full_orientation.conjugate() * (m_particles[i].external + earth);
 
       m_particles[i].log_likelihood += log_normal_pdf(prediction.x(), magnetic_field.x(), 10.0f) +
           log_normal_pdf(prediction.y(), magnetic_field.y(), 10.0f) +
           log_normal_pdf(prediction.z(), magnetic_field.z(), 10.0f);
-      if (i == 0) {
-        std::cout << (prediction - magnetic_field).norm() << std::endl;
-      }
 
       const Eigen::Vector3f noise{noise_dist(m_random), noise_dist(m_random),
                                   noise_dist(m_random)};
@@ -138,29 +135,26 @@ public:
   Estimate estimate() {
     Estimate result;
     result.north = 0;
+    result.north_confidence.setZero();
     result.hard_iron.setZero();
     result.external.setZero();
 
     float weight_sum = 0;
-    float x = 0;
-    float y = 0;
     for (std::size_t i = 0; i < m_population; ++i) {
       weight_sum += m_particles[i].weight;
 
-      x += std::cos(m_particles[i].north) * m_particles[i].weight;
-      y += std::sin(m_particles[i].north) * m_particles[i].weight;
+      result.north_confidence += Eigen::Vector2f(std::cos(m_particles[i].north), std::sin(m_particles[i].north)) * m_particles[i].weight;
 
       result.hard_iron += m_particles[i].hard_iron * m_particles[i].weight;
       result.external += m_particles[i].external * m_particles[i].weight;
     }
 
-    x /= weight_sum;
-    y /= weight_sum;
+    result.north_confidence /= weight_sum;
     result.hard_iron /= weight_sum;
     result.external /= weight_sum;
 
-    result.north = std::atan2(y, x);
-    result.confidence = std::sqrt(x * x + y * y);
+    result.north = std::atan2(result.north_confidence.y(), result.north_confidence.x());
+    result.confidence = result.north_confidence.norm();
 
     return result;
   }
@@ -182,7 +176,8 @@ Calibration::Calibration(const std::uint_fast32_t seed,
       m_magnetometer{"magnetometer", this}, m_orientation{"orientation", this},
       m_orientation_output{"orientation", this},
       m_hard_iron{"hard iron", this},
-      m_external{"external", this} {
+      m_external{"external", this},
+      m_north_confidence{"north confidence", this} {
 }
 
 Calibration::~Calibration() = default;
@@ -207,6 +202,10 @@ pipeline::Output<pipeline::Event<pipeline::Vector3>> * Calibration::hard_iron() 
 
 pipeline::Output<pipeline::Event<pipeline::Vector3>> * Calibration::external() {
   return &m_external;
+}
+
+pipeline::Output<pipeline::Event<pipeline::Vector2>> * Calibration::north_confidence() {
+  return &m_north_confidence;
 }
 
 void Calibration::iterate() {
@@ -235,22 +234,22 @@ void Calibration::iterate() {
       continue;
     }
 
-    // TODO remove; performance
-    if (m_iteration++ % 10 == 0) {
+    // TODO performance
+    if (m_iteration++ % 2 == 0) {
       m_impl->update(orientation, magnetic_field);
       m_impl->weight();
       const auto estimate = m_impl->estimate();
       m_impl->resample();
-
-      std::cout << "estimate north " << estimate.north << " confidence " << estimate.confidence << std::endl;
-      std::cout << "hard iron " << estimate.hard_iron.x() << " " << estimate.hard_iron.y() << " " << estimate.hard_iron.z() << std::endl;
-      std::cout << "external field " << estimate.external.x() << " " << estimate.external.y() << " " << estimate.external.z() << std::endl;
 
       const auto result = Eigen::AngleAxisf(estimate.north, Eigen::Vector3f::UnitZ()) * orientation;
       m_orientation_output.push({mag[i].time, result.w(), result.x(), result.y(), result.z()});
 
       m_hard_iron.push({mag[i].time, estimate.hard_iron.x(), estimate.hard_iron.y(), estimate.hard_iron.z()});
       m_external.push({mag[i].time, estimate.external.x(), estimate.external.y(), estimate.external.z()});
+
+      const auto yaw = orientation.conjugate().toRotationMatrix().eulerAngles(0, 1, 2).z();
+      const auto north_confidence = Eigen::AngleAxisf(yaw, Eigen::Vector3f::UnitZ()) * Eigen::Vector3f(estimate.north_confidence.x(), estimate.north_confidence.y(), 0);
+      m_north_confidence.push({mag[i].time, north_confidence.x(), north_confidence.y()});
     }
   }
 

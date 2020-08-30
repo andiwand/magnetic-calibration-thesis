@@ -11,11 +11,13 @@ class ProtocolEncoder final : public StandardNode {
 public:
   static protocol::Void convert(const Void &from);
   static protocol::Clock convert(const Clock &from);
+  static protocol::Vector2 convert(const Vector2 &from);
   static protocol::Vector3 convert(const Vector3 &from);
   static protocol::Quaternion convert(const Quaternion &from);
 
   static protocol::Event convert(const Event<Void> &from);
   static protocol::Event convert(const Event<Clock> &from);
+  static protocol::Event convert(const Event<Vector2> &from);
   static protocol::Event convert(const Event<Vector3> &from);
   static protocol::Event convert(const Event<Quaternion> &from);
 
@@ -87,11 +89,13 @@ class ProtocolDecoder final : public StandardNode {
 public:
   static Void convert(const protocol::Void &from);
   static Clock convert(const protocol::Clock &from);
+  static Vector2 convert(const protocol::Vector2 &from);
   static Vector3 convert(const protocol::Vector3 &from);
   static Quaternion convert(const protocol::Quaternion &from);
 
   static void convert(const protocol::Event &from, Event<Void> &to);
   static void convert(const protocol::Event &from, Event<Clock> &to);
+  static void convert(const protocol::Event &from, Event<Vector2> &to);
   static void convert(const protocol::Event &from, Event<Vector3> &to);
   static void convert(const protocol::Event &from, Event<Quaternion> &to);
 
