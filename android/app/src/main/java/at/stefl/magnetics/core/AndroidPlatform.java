@@ -47,6 +47,15 @@ public class AndroidPlatform {
                     pushMagnetometerUncalibrated(time, event.values[0], event.values[1], event.values[2]);
                     pushMagnetometerBias(time, event.values[3], event.values[4], event.values[5]);
                     break;
+                case Sensor.TYPE_ROTATION_VECTOR:
+                    double w;
+                    if (event.values.length > 3) {
+                        w = event.values[3];
+                    } else {
+                        w = Math.sqrt(event.values[0] * event.values[0] + event.values[1] * event.values[1] + event.values[2] * event.values[2]);
+                    }
+                    pushOrientation(time, w, event.values[0], event.values[1], event.values[2]);
+                    break;
             }
         }
 
@@ -84,6 +93,7 @@ public class AndroidPlatform {
     public native void pushMagnetometer(double time, double x, double y, double z);
 
     public native void pushMagnetometerUncalibrated(double time, double x, double y, double z);
-
     public native void pushMagnetometerBias(double time, double x, double y, double z);
+
+    public native void pushOrientation(double time, double w, double x, double y, double z);
 }

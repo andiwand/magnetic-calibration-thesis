@@ -6,11 +6,46 @@
 
 namespace indoors::magnetics {
 
-class Compass final : public pipeline::StandardNode,
-                      public pipeline::Loopable {
+class ExtractionCompass final : public pipeline::StandardNode,
+                                public pipeline::Loopable {
 public:
-  Compass(std::uint_fast32_t seed, std::size_t population, float delta_time);
-  ~Compass() override;
+  explicit ExtractionCompass(std::string annotation);
+
+  pipeline::Input<pipeline::Event<pipeline::Quaternion>> *orientation();
+
+  pipeline::Output<pipeline::Event<pipeline::Heading>> *heading();
+
+  void iterate() override;
+
+private:
+  pipeline::BufferedInput<pipeline::Event<pipeline::Quaternion>> m_orientation;
+  pipeline::StandardOutput<pipeline::Event<pipeline::Heading>> m_heading;
+};
+
+class NaiveCompass final : public pipeline::StandardNode,
+                              public pipeline::Loopable {
+public:
+  NaiveCompass();
+
+  pipeline::Input<pipeline::Event<pipeline::Vector3>> *magnetometer_calibrated();
+  pipeline::Input<pipeline::Event<pipeline::Quaternion>> *orientation();
+
+  pipeline::Output<pipeline::Event<pipeline::Heading>> *heading();
+
+  void iterate() override;
+
+private:
+  pipeline::BufferedInput<pipeline::Event<pipeline::Vector3>> m_magnetometer_calibrated;
+  pipeline::BufferedInput<pipeline::Event<pipeline::Quaternion>> m_orientation;
+
+  pipeline::StandardOutput<pipeline::Event<pipeline::Heading>> m_heading;
+};
+
+class ParticleCompass final : public pipeline::StandardNode,
+                              public pipeline::Loopable {
+public:
+  ParticleCompass(std::uint_fast32_t seed, std::size_t population, float delta_time);
+  ~ParticleCompass() override;
 
   pipeline::Input<pipeline::Event<pipeline::Vector3>> *magnetometer_calibrated();
   pipeline::Input<pipeline::Event<pipeline::Quaternion>> *orientation();

@@ -38,6 +38,10 @@ public:
     output->plug(create_input<T>(output->annotation()));
   }
 
+  template <typename T> void create_input(std::string annotation, Output<T> *output) {
+    output->plug(create_input<T>(std::move(annotation)));
+  }
+
   Output<protocol::Event> *output();
 
 private:

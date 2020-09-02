@@ -25,9 +25,68 @@ Scalar log_normal_pdf(const Scalar x, const Scalar m, const Scalar s) noexcept {
   const Scalar a = (x - m) / s;
   return log_inv_sqrt_2pi - std::log(s) - 0.5 * a * a;
 }
+
+float quaternion_to_compass(const Eigen::Quaternionf &q) noexcept {
+  const auto phone_north = q.inverse() * Eigen::Vector3f(0, 1, 0);
+  const auto yaw = std::atan2(phone_north.y(), phone_north.x()) - M_PI_2;
+  const auto compass = clip_2pi(-yaw);
+  return compass;
+}
 }
 
-class Compass::Impl final {
+ExtractionCompass::ExtractionCompass(std::string annotation) : pipeline::StandardNode(std::move(annotation)), m_orientation{"orientation", this}, m_heading{"heading", this} {}
+
+pipeline::Input<pipeline::Event<pipeline::Quaternion>> * ExtractionCompass::orientation() { return &m_orientation; }
+
+pipeline::Output<pipeline::Event<pipeline::Heading>> * ExtractionCompass::heading() { return &m_heading; }
+
+void ExtractionCompass::iterate() {
+  auto &&ori = m_orientation.buffer().vector();
+
+  for (auto &&i : ori) {
+    const Eigen::Quaternionf orientation{i.data.w, i.data.x, i.data.y, i.data.z};
+    const auto compass = quaternion_to_compass(orientation);
+    m_heading.push({i.time, compass, 0.0});
+  }
+
+  m_orientation.buffer().clear();
+}
+
+NaiveCompass::NaiveCompass() : pipeline::StandardNode("naive compass"), m_magnetometer_calibrated{"magnetometer calibrated", this}, m_orientation{"orientation", this}, m_heading{"heading", this} {}
+
+pipeline::Input<pipeline::Event<pipeline::Vector3>> * NaiveCompass::magnetometer_calibrated() { return &m_magnetometer_calibrated; }
+
+pipeline::Input<pipeline::Event<pipeline::Quaternion>> * NaiveCompass::orientation() { return &m_orientation; }
+
+pipeline::Output<pipeline::Event<pipeline::Heading>> * NaiveCompass::heading() { return &m_heading; }
+
+void NaiveCompass::iterate() {
+  auto &&mag = m_magnetometer_calibrated.buffer().vector();
+  auto &&ori = m_orientation.buffer().vector();
+
+  // TODO doesnt work because of nan in magnetic field
+  //assert(mag.size() == ori.size());
+  if (mag.size() != ori.size()) {
+    m_magnetometer_calibrated.buffer().clear();
+    m_orientation.buffer().clear();
+    return;
+  }
+
+  for (std::size_t i = 0; i < mag.size(); ++i) {
+    const Eigen::Quaternionf orientation{ori[i].data.w, ori[i].data.x, ori[i].data.y, ori[i].data.z};
+    const Eigen::Vector3f magnetic_field = orientation * Eigen::Vector3f(mag[i].data.x, mag[i].data.y, mag[i].data.z);
+    const Eigen::Vector3f north{magnetic_field.x(), magnetic_field.y(), 0};
+    const Eigen::Vector3f phone_north = orientation.conjugate() * north;
+    const auto yaw = std::atan2(phone_north.y(), phone_north.x()) - M_PI_2;
+    const auto compass = clip_2pi(-yaw);
+    m_heading.push({mag[i].time, compass, 0.0});
+  }
+
+  m_magnetometer_calibrated.buffer().clear();
+  m_orientation.buffer().clear();
+}
+
+class ParticleCompass::Impl final {
 public:
   struct Particle final {
     float north{0};
@@ -180,9 +239,9 @@ private:
   Estimate m_last_estimate;
 };
 
-Compass::Compass(const std::uint_fast32_t seed,
+ParticleCompass::ParticleCompass(const std::uint_fast32_t seed,
                          const std::size_t population, const float delta_time)
-    : pipeline::StandardNode("Compass"), m_impl{std::make_unique<Impl>(
+    : pipeline::StandardNode("particle compass"), m_impl{std::make_unique<Impl>(
     seed, population, delta_time)},
       m_magnetometer_calibrated{"magnetometer calibrated", this},
       m_orientation{"orientation", this},
@@ -192,39 +251,44 @@ Compass::Compass(const std::uint_fast32_t seed,
       m_external{"external", this} {
 }
 
-Compass::~Compass() = default;
+ParticleCompass::~ParticleCompass() = default;
 
 pipeline::Input<pipeline::Event<pipeline::Vector3>> *
-Compass::magnetometer_calibrated() {
+ParticleCompass::magnetometer_calibrated() {
   return &m_magnetometer_calibrated;
 }
 
 pipeline::Input<pipeline::Event<pipeline::Quaternion>> *
-Compass::orientation() {
+ParticleCompass::orientation() {
   return &m_orientation;
 }
 
-pipeline::Output<pipeline::Event<pipeline::Heading>> * Compass::heading() {
+pipeline::Output<pipeline::Event<pipeline::Heading>> *
+ParticleCompass::heading() {
   return &m_heading;
 }
 
-pipeline::Output<pipeline::Event<pipeline::Quaternion>> * Compass::total_orientation() {
+pipeline::Output<pipeline::Event<pipeline::Quaternion>> *
+ParticleCompass::total_orientation() {
   return &m_total_orientation;
 }
 
-pipeline::Output<pipeline::Event<pipeline::Vector3>> * Compass::external() {
+pipeline::Output<pipeline::Event<pipeline::Vector3>> *
+ParticleCompass::external() {
   return &m_external;
 }
 
-pipeline::Output<pipeline::Event<pipeline::Vector2>> * Compass::north_confidence() {
+pipeline::Output<pipeline::Event<pipeline::Vector2>> *
+ParticleCompass::north_confidence() {
   return &m_north_confidence;
 }
 
-void Compass::iterate() {
+void ParticleCompass::iterate() {
   auto &&mag = m_magnetometer_calibrated.buffer().vector();
   auto &&ori = m_orientation.buffer().vector();
 
-  //assert(mag.size() == ori.size()); // TODO doesnt work because of nan in magnetic field
+  // TODO doesnt work because of nan in magnetic field
+  //assert(mag.size() == ori.size());
   if (mag.size() != ori.size()) {
     m_magnetometer_calibrated.buffer().clear();
     m_orientation.buffer().clear();
@@ -261,10 +325,7 @@ void Compass::iterate() {
     const auto estimate = m_impl->last_estimate();
 
     const auto total_orientation = Eigen::AngleAxisf(estimate.north, Eigen::Vector3f::UnitZ()) * orientation;
-    const auto phone_north = total_orientation.inverse() * Eigen::Vector3f(0, 1, 0);
-    const auto yaw = std::atan2(phone_north.y(), phone_north.x()) - M_PI_2;
-    const auto compass = clip_2pi(-yaw);
-    std::cout << estimate.confidence << std::endl;
+    const auto compass = quaternion_to_compass(total_orientation);
 
     m_heading.push({mag[i].time, compass, estimate.var_north});
 
@@ -272,7 +333,7 @@ void Compass::iterate() {
 
     m_external.push({mag[i].time, estimate.external.x(), estimate.external.y(), estimate.external.z()});
 
-    const auto north_confidence = Eigen::AngleAxisf(yaw, Eigen::Vector3f::UnitZ()) * Eigen::Vector3f(estimate.north_confidence.x(), estimate.north_confidence.y(), 0);
+    const auto north_confidence = Eigen::AngleAxisf(-compass, Eigen::Vector3f::UnitZ()) * Eigen::Vector3f(estimate.north_confidence.x(), estimate.north_confidence.y(), 0);
     m_north_confidence.push({mag[i].time, north_confidence.x(), north_confidence.y()});
   }
 

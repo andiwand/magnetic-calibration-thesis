@@ -4,6 +4,8 @@ class Heading {
     constructor(plot) {
         this._plot = plot;
         this._channel_to_trace = new Map();
+        this._buffer = {r: [], theta: [], width: []};
+        this._buffer_size = 0;
 
         let layout = {
             type: 'barpolar',
@@ -22,6 +24,8 @@ class Heading {
         };
 
         Plotly.newPlot(this._plot, [], layout);
+
+        setInterval(() => this.onUpdate(), 100, this);
     }
 
     onEvent(event) {
@@ -44,10 +48,14 @@ class Heading {
             r: [],
             theta: [],
             width: [],
-            opacity: 0.8,
+            opacity: 0.7,
         }]);
 
         this._channel_to_trace.set(channel.getChannel(), this._channel_to_trace.size);
+
+        for (let coord in this._buffer) {
+            this._buffer[coord].push([]);
+        }
     }
 
     onHeading(event) {
@@ -56,7 +64,25 @@ class Heading {
 
         let north = heading.getNorth() * 180 / Math.PI;
         let width = 2 * Math.sqrt(heading.getVarNorth()) * 180 / Math.PI;
-        Plotly.extendTraces(this._plot, {r: [[1]], theta: [[north]], width: [[width]]}, [trace], 1);
+        width = Math.max(10, width);
+
+        this._buffer.r[trace].push(1 + 0.1 * trace);
+        this._buffer.theta[trace].push(north);
+        this._buffer.width[trace].push(width);
+        ++this._buffer_size;
+    }
+
+    onUpdate() {
+        if (this._buffer_size <= 0) return;
+
+        const traces = Array.from(this._channel_to_trace.values());
+        Plotly.extendTraces(this._plot, this._buffer, traces, 1);
+
+        // clear buffer
+        for (let coord in this._buffer) {
+            this._buffer[coord].forEach((o, i, a) => a[i] = []);
+        }
+        this._buffer_size = 0;
     }
 }
 

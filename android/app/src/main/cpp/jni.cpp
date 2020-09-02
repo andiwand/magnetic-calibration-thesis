@@ -160,6 +160,14 @@ Java_at_stefl_magnetics_core_AndroidPlatform_pushMagnetometerBias(JNIEnv *env, j
 }
 
 extern "C"
+JNIEXPORT void JNICALL
+Java_at_stefl_magnetics_core_AndroidPlatform_pushOrientation(JNIEnv *env, jobject thiz,
+                                                             jdouble time, jdouble w, jdouble x,
+                                                             jdouble y, jdouble z) {
+    get_platform(env, thiz)->m_orientation.push({time, w, x, y, z});
+}
+
+extern "C"
 JNIEXPORT jlong JNICALL
 Java_at_stefl_magnetics_core_NativeTask_createDefault_1__Lat_stefl_magnetics_core_AndroidPlatform_2(
         JNIEnv *env, jclass clazz, jobject platform) {

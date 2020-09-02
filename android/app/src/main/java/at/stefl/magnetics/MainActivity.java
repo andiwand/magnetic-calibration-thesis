@@ -127,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
         collector.addRequest(Sensor.TYPE_ACCELEROMETER, 1000);
         collector.addRequest(Sensor.TYPE_GYROSCOPE, 1000);
         collector.addRequest(Sensor.TYPE_MAGNETIC_FIELD_UNCALIBRATED, 1000);
+        collector.addRequest(Sensor.TYPE_ROTATION_VECTOR, 10000);
 
         androidPlatform = new AndroidPlatform();
         collector.addListener(androidPlatform.getCollectorListener());

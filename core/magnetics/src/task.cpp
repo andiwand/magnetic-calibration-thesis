@@ -30,7 +30,9 @@ private:
   MovingAverage m_moving_average;
   MadgwickImu m_madgwick;
   HardIron m_hard_iron;
-  Compass m_compass;
+  ExtractionCompass m_system_compass;
+  NaiveCompass m_naive_compass;
+  ParticleCompass m_particle_compass;
   pipeline::ProtocolEncoder m_encoder;
   pipeline::WebSocket m_websocket;
 
@@ -46,7 +48,8 @@ DefaultTask::DefaultTask(std::shared_ptr<pipeline::Platform> platform,
     : StandardTask("default"), m_platform{std::move(platform)}, m_ioc{1},
       m_synchronizer{0.1}, m_moving_average{0.05, 0.05},
       m_hard_iron{std::random_device()(), 10000, 0.05},
-      m_compass{std::random_device()(), 1000, 0.05},
+      m_system_compass{"system compass"},
+      m_particle_compass{std::random_device()(), 1000, 0.05},
       m_websocket(m_ioc, "0.0.0.0", 8080, m_encoder.output()) {
   // synchronizer
   auto accelerometer =
@@ -57,6 +60,8 @@ DefaultTask::DefaultTask(std::shared_ptr<pipeline::Platform> platform,
       m_synchronizer.create_channel(m_platform->magnetometer_uncalibrated());
   auto magnetometer_bias =
       m_synchronizer.create_channel(m_platform->magnetometer_bias());
+  auto orientation =
+      m_synchronizer.create_channel(m_platform->orientation());
 
   // moving average
   auto sampled_accelerometer = m_moving_average.create_channel(accelerometer);
@@ -73,9 +78,17 @@ DefaultTask::DefaultTask(std::shared_ptr<pipeline::Platform> platform,
   sampled_magnetometer_uncalibrated->plug(m_hard_iron.magnetometer_uncalibrated());
   m_madgwick.orientation()->plug(m_hard_iron.orientation());
 
-  // compass
-  m_hard_iron.magnetometer_calibrated()->plug(m_compass.magnetometer_calibrated());
-  m_madgwick.orientation()->plug(m_compass.orientation());
+  // system compass
+  orientation->plug(m_system_compass.orientation());
+
+  // naive compass
+  m_hard_iron.magnetometer_calibrated()->plug(m_naive_compass.magnetometer_calibrated());
+  m_madgwick.orientation()->plug(m_naive_compass.orientation());
+
+  // particle compass
+  m_hard_iron.magnetometer_calibrated()->plug(
+      m_particle_compass.magnetometer_calibrated());
+  m_madgwick.orientation()->plug(m_particle_compass.orientation());
 
   // encoder and websocket
   //m_encoder.create_input(sampled_magnetometer);
@@ -87,7 +100,9 @@ DefaultTask::DefaultTask(std::shared_ptr<pipeline::Platform> platform,
   m_encoder.create_input(sampled_magnetometer_bias);
   m_encoder.create_input(m_hard_iron.hard_iron());
   m_encoder.create_input(m_hard_iron.magnetometer_calibrated());
-  m_encoder.create_input(m_compass.heading());
+  m_encoder.create_input("system compass", m_system_compass.heading());
+  m_encoder.create_input("naive compass", m_naive_compass.heading());
+  m_encoder.create_input("particle compass", m_particle_compass.heading());
 
   // TODO html
 }
@@ -100,7 +115,9 @@ void DefaultTask::start() {
       m_moving_average.iterate();
       m_madgwick.iterate();
       m_hard_iron.iterate();
-      m_compass.iterate();
+      m_system_compass.iterate();
+      m_naive_compass.iterate();
+      m_particle_compass.iterate();
       std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
   });

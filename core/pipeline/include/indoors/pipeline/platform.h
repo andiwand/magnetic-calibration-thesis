@@ -17,8 +17,9 @@ public:
   virtual Output<Event<Vector3>> *magnetometer() = 0;
 
   virtual Output<Event<Vector3>> *magnetometer_uncalibrated() = 0;
-
   virtual Output<Event<Vector3>> *magnetometer_bias() = 0;
+
+  virtual Output<Event<Quaternion>> *orientation() = 0;
 };
 
 class StandardPlatform : public Platform,
@@ -33,8 +34,9 @@ public:
   Output<Event<Vector3>> *magnetometer() override;
 
   Output<Event<Vector3>> *magnetometer_uncalibrated() override;
-
   Output<Event<Vector3>> *magnetometer_bias() override;
+
+  Output<Event<Quaternion>> *orientation() override;
 
   StandardOutput<Event<Clock>> m_clock;
   StandardOutput<Event<Vector3>> m_accelerometer;
@@ -42,6 +44,7 @@ public:
   StandardOutput<Event<Vector3>> m_magnetometer;
   StandardOutput<Event<Vector3>> m_magnetometer_uncalibrated;
   StandardOutput<Event<Vector3>> m_magnetometer_bias;
+  StandardOutput<Event<Quaternion>> m_orientation;
 };
 
 // TODO AndroidPlatform for platform specific channels
