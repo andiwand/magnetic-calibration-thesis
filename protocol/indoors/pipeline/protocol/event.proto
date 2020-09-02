@@ -29,6 +29,7 @@ message Event {
         Vector2 vector2 = 9;
         Vector3 vector3 = 10;
         Quaternion quaternion = 11;
+        Heading heading = 12;
     }
 }
 
@@ -55,4 +56,9 @@ message Quaternion {
     double x = 2;
     double y = 3;
     double z = 4;
+}
+
+message Heading {
+    double north = 1;
+    double var_north = 2;
 }

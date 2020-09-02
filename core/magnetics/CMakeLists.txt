@@ -1,6 +1,7 @@
 add_library(magnetics STATIC
-        src/calibration.cpp
+        src/compass.cpp
         src/gl_util.cpp
+        src/hard_iron.cpp
         src/magneto_sphere.cpp
         src/moving_average.cpp
         src/orientation_filter.cpp

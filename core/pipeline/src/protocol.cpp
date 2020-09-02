@@ -36,6 +36,13 @@ protocol::Quaternion ProtocolEncoder::convert(const Quaternion &from) {
   return result;
 }
 
+protocol::Heading ProtocolEncoder::convert(const Heading &from) {
+    protocol::Heading result;
+    result.set_north(from.north);
+    result.set_var_north(from.var_north);
+    return result;
+}
+
 protocol::Event ProtocolEncoder::convert(const Event<Void> &event) {
   protocol::Event result;
   result.set_t(event.time);
@@ -69,6 +76,13 @@ protocol::Event ProtocolEncoder::convert(const Event<Quaternion> &event) {
   result.set_t(event.time);
   result.mutable_quaternion()->CopyFrom(convert(event.data));
   return result;
+}
+
+protocol::Event ProtocolEncoder::convert(const Event<Heading> &event) {
+    protocol::Event result;
+    result.set_t(event.time);
+    result.mutable_heading()->CopyFrom(convert(event.data));
+    return result;
 }
 
 ProtocolEncoder::ProtocolEncoder() : ProtocolEncoder("encoder") {}
@@ -150,6 +164,10 @@ Quaternion ProtocolDecoder::convert(const protocol::Quaternion &from) {
   return {from.w(), from.x(), from.y(), from.z()};
 }
 
+Heading ProtocolDecoder::convert(const protocol::Heading &from) {
+    return {from.north(), from.var_north()};
+}
+
 void ProtocolDecoder::convert(const protocol::Event &from, Event<Void> &to) {
   if (!from.has_void_())
     throw; // TODO
@@ -183,6 +201,14 @@ void ProtocolDecoder::convert(const protocol::Event &from,
     throw; // TODO
   to.time = from.t();
   to.data = convert(from.quaternion());
+}
+
+void ProtocolDecoder::convert(const protocol::Event &from,
+                              Event<Heading> &to) {
+    if (!from.has_heading())
+        throw; // TODO
+    to.time = from.t();
+    to.data = convert(from.heading());
 }
 
 ProtocolDecoder::ProtocolDecoder(std::string annotation)

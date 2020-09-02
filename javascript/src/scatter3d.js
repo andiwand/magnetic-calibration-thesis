@@ -5,6 +5,7 @@ class Scatter3d {
         this._plot = plot;
         this._channel_to_trace = new Map();
         this._buffer = {x: [], y: [], z: []};
+        this._buffer_size = 0;
 
         let layout = {
             margin: {
@@ -25,12 +26,6 @@ class Scatter3d {
         setInterval(() => this.onUpdate(), 100, this);
     }
 
-    _clearBuffer() {
-        for (let coord in this._buffer) {
-            this._buffer[coord].forEach((o, i, a) => a[i] = []);
-        }
-    }
-
     onEvent(event) {
         if (event.hasHello()) {
             var hello = event.getHello();
@@ -43,9 +38,11 @@ class Scatter3d {
     }
 
     onChannel(channel) {
+        if (!channel.getEventexample().hasVector3()) return;
+
         Plotly.addTraces(this._plot, [{
-            type: 'scatter3d',
             name: channel.getAnnotation(),
+            type: 'scatter3d',
             x: [],
             y: [],
             z: [],
@@ -54,7 +51,8 @@ class Scatter3d {
                 size: 3
             }
         }]);
-        this._channel_to_trace.set(this._channel_to_trace.size, channel.getChannel());
+
+        this._channel_to_trace.set(channel.getChannel(), this._channel_to_trace.size);
 
         for (let coord in this._buffer) {
             this._buffer[coord].push([]);
@@ -64,15 +62,24 @@ class Scatter3d {
     onVector3(event) {
         let vector3 = event.getVector3();
         let trace = this._channel_to_trace.get(event.getChannel());
+
         this._buffer.x[trace].push(vector3.getX());
         this._buffer.y[trace].push(vector3.getY());
         this._buffer.z[trace].push(vector3.getZ());
+        ++this._buffer_size;
     }
 
     onUpdate() {
+        if (this._buffer_size <= 0) return;
+
         const traces = Array.from(this._channel_to_trace.values());
         Plotly.extendTraces(this._plot, this._buffer, traces, 1000);
-        this._clearBuffer();
+
+        // clear buffer
+        for (let coord in this._buffer) {
+            this._buffer[coord].forEach((o, i, a) => a[i] = []);
+        }
+        this._buffer_size = 0;
     }
 }
 

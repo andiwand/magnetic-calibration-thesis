@@ -34,11 +34,6 @@ void MadgwickImu::iterate() {
 
   assert(acc.size() == gyr.size());
 
-  auto q0 = (float)m_last_orientation.w;
-  auto q1 = (float)m_last_orientation.x;
-  auto q2 = (float)m_last_orientation.y;
-  auto q3 = (float)m_last_orientation.z;
-
   for (std::size_t i = 0; i < acc.size(); ++i) {
     if (std::isnan(gyr[i].data.x) || std::isnan(gyr[i].data.y) ||
         std::isnan(gyr[i].data.z) || std::isnan(acc[i].data.x) ||
@@ -53,14 +48,10 @@ void MadgwickImu::iterate() {
 
     MadgwickAHRSupdateIMU(0.05, 0.1, (float)gyr[i].data.x, (float)gyr[i].data.y,
                           (float)gyr[i].data.z, (float)acc[i].data.x,
-                          (float)acc[i].data.y, (float)acc[i].data.z, q0, q1,
-                          q2, q3);
-    m_last_orientation.w = q0;
-    m_last_orientation.x = q1;
-    m_last_orientation.y = q2;
-    m_last_orientation.z = q3;
+                          (float)acc[i].data.y, (float)acc[i].data.z, m_q0,
+                          m_q1, m_q2, m_q3);
 
-    m_orientation.push({acc[i].time, m_last_orientation});
+    m_orientation.push({acc[i].time, m_q0, m_q1, m_q2, m_q3});
   }
 
   m_accelerometer.buffer().clear();

@@ -1,4 +1,5 @@
-#include <indoors/magnetics/calibration.h>
+#include <indoors/magnetics/compass.h>
+#include <indoors/magnetics/hard_iron.h>
 #include <indoors/magnetics/moving_average.h>
 #include <indoors/magnetics/orientation_filter.h>
 #include <indoors/magnetics/task.h>
@@ -28,7 +29,8 @@ private:
   pipeline::Synchronizer m_synchronizer;
   MovingAverage m_moving_average;
   MadgwickImu m_madgwick;
-  Calibration m_calibration;
+  HardIron m_hard_iron;
+  Compass m_compass;
   pipeline::ProtocolEncoder m_encoder;
   pipeline::WebSocket m_websocket;
 
@@ -43,7 +45,8 @@ DefaultTask::DefaultTask(std::shared_ptr<pipeline::Platform> platform,
                          std::optional<std::string> html)
     : StandardTask("default"), m_platform{std::move(platform)}, m_ioc{1},
       m_synchronizer{0.1}, m_moving_average{0.05, 0.05},
-      m_calibration{0, 2000, 0.05},
+      m_hard_iron{std::random_device()(), 10000, 0.05},
+      m_compass{std::random_device()(), 1000, 0.05},
       m_websocket(m_ioc, "0.0.0.0", 8080, m_encoder.output()) {
   // synchronizer
   auto accelerometer =
@@ -66,9 +69,13 @@ DefaultTask::DefaultTask(std::shared_ptr<pipeline::Platform> platform,
   sampled_accelerometer->plug(m_madgwick.accelerometer());
   sampled_gyroscope->plug(m_madgwick.gyroscope());
 
-  // calibration
-  sampled_magnetometer_uncalibrated->plug(m_calibration.magnetometer());
-  m_madgwick.orientation()->plug(m_calibration.orientation());
+  // hard iron
+  sampled_magnetometer_uncalibrated->plug(m_hard_iron.magnetometer_uncalibrated());
+  m_madgwick.orientation()->plug(m_hard_iron.orientation());
+
+  // compass
+  m_hard_iron.magnetometer_calibrated()->plug(m_compass.magnetometer_calibrated());
+  m_madgwick.orientation()->plug(m_compass.orientation());
 
   // encoder and websocket
   //m_encoder.create_input(sampled_magnetometer);
@@ -78,9 +85,9 @@ DefaultTask::DefaultTask(std::shared_ptr<pipeline::Platform> platform,
   // TODO remove
   //m_encoder.create_input(m_calibration.orientation_output());
   m_encoder.create_input(sampled_magnetometer_bias);
-  m_encoder.create_input(m_calibration.hard_iron());
-  m_encoder.create_input(m_calibration.external());
-  m_encoder.create_input(m_calibration.north_confidence());
+  m_encoder.create_input(m_hard_iron.hard_iron());
+  m_encoder.create_input(m_hard_iron.magnetometer_calibrated());
+  m_encoder.create_input(m_compass.heading());
 
   // TODO html
 }
@@ -92,7 +99,8 @@ void DefaultTask::start() {
       m_synchronizer.iterate();
       m_moving_average.iterate();
       m_madgwick.iterate();
-      m_calibration.iterate();
+      m_hard_iron.iterate();
+      m_compass.iterate();
       std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
   });

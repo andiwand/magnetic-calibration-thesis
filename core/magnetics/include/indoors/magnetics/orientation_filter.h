@@ -21,7 +21,10 @@ public:
 
 private:
   bool m_initialized{false};
-  pipeline::Quaternion m_last_orientation{1, 0, 0, 0};
+  float m_q0{1};
+  float m_q1{0};
+  float m_q2{0};
+  float m_q3{0};
 
   pipeline::BufferedInput<pipeline::Event<pipeline::Vector3>> m_accelerometer;
   pipeline::BufferedInput<pipeline::Event<pipeline::Vector3>> m_gyroscope;

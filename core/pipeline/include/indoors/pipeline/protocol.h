@@ -14,12 +14,14 @@ public:
   static protocol::Vector2 convert(const Vector2 &from);
   static protocol::Vector3 convert(const Vector3 &from);
   static protocol::Quaternion convert(const Quaternion &from);
+  static protocol::Heading convert(const Heading &from);
 
   static protocol::Event convert(const Event<Void> &from);
   static protocol::Event convert(const Event<Clock> &from);
   static protocol::Event convert(const Event<Vector2> &from);
   static protocol::Event convert(const Event<Vector3> &from);
   static protocol::Event convert(const Event<Quaternion> &from);
+  static protocol::Event convert(const Event<Heading> &from);
 
   ProtocolEncoder();
   explicit ProtocolEncoder(std::string annotation);
@@ -92,12 +94,14 @@ public:
   static Vector2 convert(const protocol::Vector2 &from);
   static Vector3 convert(const protocol::Vector3 &from);
   static Quaternion convert(const protocol::Quaternion &from);
+  static Heading convert(const protocol::Heading &from);
 
   static void convert(const protocol::Event &from, Event<Void> &to);
   static void convert(const protocol::Event &from, Event<Clock> &to);
   static void convert(const protocol::Event &from, Event<Vector2> &to);
   static void convert(const protocol::Event &from, Event<Vector3> &to);
   static void convert(const protocol::Event &from, Event<Quaternion> &to);
+  static void convert(const protocol::Event &from, Event<Heading> &to);
 
   explicit ProtocolDecoder(std::string annotation);
 

@@ -105,6 +105,14 @@ struct Quaternion {
       : w{w}, x{x}, y{y}, z{z} {}
 };
 
+struct Heading {
+  double north{0};
+  double var_north{0};
+
+  Heading() = default;
+  Heading(const double north, const double var_north) : north{north}, var_north{var_north} {}
+};
+
 } // namespace indoors::pipeline
 
 #endif // INDOORS_PIPELINE_EVENT_H
