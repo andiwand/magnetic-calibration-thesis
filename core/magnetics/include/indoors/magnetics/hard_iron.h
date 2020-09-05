@@ -19,6 +19,8 @@ public:
 
   pipeline::Output<pipeline::Event<pipeline::Vector3>> *
   magnetometer_calibrated();
+  pipeline::Output<pipeline::Event<pipeline::Vector3>> *
+  var_magnetometer_calibrated();
   pipeline::Output<pipeline::Event<pipeline::Vector3>> *hard_iron();
 
   void iterate() override;
@@ -38,6 +40,8 @@ private:
 
   pipeline::StandardOutput<pipeline::Event<pipeline::Vector3>>
       m_magnetometer_calibrated;
+  pipeline::StandardOutput<pipeline::Event<pipeline::Vector3>>
+      m_var_magnetometer_calibrated;
   pipeline::StandardOutput<pipeline::Event<pipeline::Vector3>> m_hard_iron;
 };
 

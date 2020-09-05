@@ -70,7 +70,9 @@ public:
 
   void update(const Eigen::Quaternionf &orientation,
               const Eigen::Vector3f &magnetic_field) {
-    std::normal_distribution<float> hard_iron_drift_dist(0, m_delta_time * 0.5);
+    // TODO only update if we rotated significantly (but still drift?)
+
+    std::normal_distribution<float> hard_iron_drift_dist(0, m_delta_time * 1);
 
     for (std::size_t i = 0; i < m_population; ++i) {
       m_particles[i].hard_iron += Eigen::Vector3f(
@@ -143,7 +145,9 @@ public:
     result.external /= weight_sum;
 
     for (std::size_t i = 0; i < m_population; ++i) {
-      result.var_hard_iron += (result.hard_iron - m_particles[i].hard_iron).cwiseAbs2() * m_particles[i].weight;
+      result.var_hard_iron +=
+          (result.hard_iron - m_particles[i].hard_iron).cwiseAbs2() *
+          m_particles[i].weight;
     }
 
     result.var_hard_iron /= weight_sum;
@@ -152,9 +156,7 @@ public:
     return result;
   }
 
-  const Estimate &last_estimate() const {
-    return m_last_estimate;
-  }
+  const Estimate &last_estimate() const { return m_last_estimate; }
 
 private:
   const std::size_t m_population;
@@ -176,6 +178,7 @@ HardIron::HardIron(const std::uint_fast32_t seed, const std::size_t population,
       m_orientation{"orientation", this},
       m_system_calibration{"system calibration", this},
       m_magnetometer_calibrated{"magnetometer calibrated", this},
+      m_var_magnetometer_calibrated{"magnetometer calibrated variance", this},
       m_hard_iron{"hard iron", this} {}
 
 HardIron::~HardIron() = default;
@@ -197,6 +200,11 @@ HardIron::system_calibration() {
 pipeline::Output<pipeline::Event<pipeline::Vector3>> *
 HardIron::magnetometer_calibrated() {
   return &m_magnetometer_calibrated;
+}
+
+pipeline::Output<pipeline::Event<pipeline::Vector3>> *
+HardIron::var_magnetometer_calibrated() {
+  return &m_var_magnetometer_calibrated;
 }
 
 pipeline::Output<pipeline::Event<pipeline::Vector3>> *HardIron::hard_iron() {
@@ -252,9 +260,13 @@ void HardIron::iterate() {
 
     const Eigen::Vector3f magnetometer_calibrated =
         orientation.conjugate() * estimate.external;
+    const Eigen::Vector3f var_magnetometer_calibrated = estimate.var_hard_iron;
     m_magnetometer_calibrated.push({mag[i].time, magnetometer_calibrated.x(),
                                     magnetometer_calibrated.y(),
                                     magnetometer_calibrated.z()});
+    m_var_magnetometer_calibrated.push(
+        {mag[i].time, var_magnetometer_calibrated.x(),
+         var_magnetometer_calibrated.y(), var_magnetometer_calibrated.z()});
 
     m_hard_iron.push({mag[i].time, estimate.hard_iron.x(),
                       estimate.hard_iron.y(), estimate.hard_iron.z()});

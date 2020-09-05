@@ -60,43 +60,47 @@ DefaultTask::DefaultTask(std::shared_ptr<pipeline::Platform> platform,
       m_synchronizer.create_channel(m_platform->magnetometer_uncalibrated());
   auto magnetometer_bias =
       m_synchronizer.create_channel(m_platform->magnetometer_bias());
-  auto orientation =
-      m_synchronizer.create_channel(m_platform->orientation());
+  auto orientation = m_synchronizer.create_channel(m_platform->orientation());
 
   // moving average
   auto sampled_accelerometer = m_moving_average.create_channel(accelerometer);
   auto sampled_gyroscope = m_moving_average.create_channel(gyroscope);
   auto sampled_magnetometer = m_moving_average.create_channel(magnetometer);
-  auto sampled_magnetometer_uncalibrated = m_moving_average.create_channel(magnetometer_uncalibrated);
-  auto sampled_magnetometer_bias = m_moving_average.create_channel(magnetometer_bias);
+  auto sampled_magnetometer_uncalibrated =
+      m_moving_average.create_channel(magnetometer_uncalibrated);
+  auto sampled_magnetometer_bias =
+      m_moving_average.create_channel(magnetometer_bias);
 
   // orientation
   sampled_accelerometer->plug(m_madgwick.accelerometer());
   sampled_gyroscope->plug(m_madgwick.gyroscope());
 
   // hard iron
-  sampled_magnetometer_uncalibrated->plug(m_hard_iron.magnetometer_uncalibrated());
+  sampled_magnetometer_uncalibrated->plug(
+      m_hard_iron.magnetometer_uncalibrated());
   m_madgwick.orientation()->plug(m_hard_iron.orientation());
 
   // system compass
   orientation->plug(m_system_compass.orientation());
 
   // naive compass
-  m_hard_iron.magnetometer_calibrated()->plug(m_naive_compass.magnetometer_calibrated());
+  m_hard_iron.magnetometer_calibrated()->plug(
+      m_naive_compass.magnetometer_calibrated());
   m_madgwick.orientation()->plug(m_naive_compass.orientation());
 
   // particle compass
   m_hard_iron.magnetometer_calibrated()->plug(
       m_particle_compass.magnetometer_calibrated());
+  m_hard_iron.var_magnetometer_calibrated()->plug(
+      m_particle_compass.var_magnetometer_calibrated());
   m_madgwick.orientation()->plug(m_particle_compass.orientation());
 
   // encoder and websocket
-  //m_encoder.create_input(sampled_magnetometer);
-  //m_encoder.create_input(sampled_magnetometer_uncalibrated);
+  // m_encoder.create_input(sampled_magnetometer);
+  // m_encoder.create_input(sampled_magnetometer_uncalibrated);
   m_encoder.create_input(m_madgwick.orientation());
 
-  // TODO remove
-  //m_encoder.create_input(m_calibration.orientation_output());
+  // output
   m_encoder.create_input(sampled_magnetometer_bias);
   m_encoder.create_input(m_hard_iron.hard_iron());
   m_encoder.create_input(m_hard_iron.magnetometer_calibrated());

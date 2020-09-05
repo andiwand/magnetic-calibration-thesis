@@ -62,11 +62,17 @@ class Heading {
         let heading = event.getHeading();
         let trace = this._channel_to_trace.get(event.getChannel());
 
+        let r = 1 + 0.1 * trace;
         let north = heading.getNorth() * 180 / Math.PI;
         let width = 2 * Math.sqrt(heading.getVarNorth()) * 180 / Math.PI;
-        width = Math.max(10, width);
 
-        this._buffer.r[trace].push(1 + 0.1 * trace);
+        if (width < 20) width = 20;
+        else if (width > 180) {
+            r = 0.5 + 0.1 * trace;
+            width = 360;
+        }
+
+        this._buffer.r[trace].push(r);
         this._buffer.theta[trace].push(north);
         this._buffer.width[trace].push(width);
         ++this._buffer_size;
