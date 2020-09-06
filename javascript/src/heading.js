@@ -3,9 +3,6 @@ import * as Plotly from "plotly.js";
 class Heading {
     constructor(plot) {
         this._plot = plot;
-        this._channel_to_trace = new Map();
-        this._buffer = {r: [], theta: [], width: []};
-        this._buffer_size = 0;
 
         let layout = {
             type: 'barpolar',
@@ -24,8 +21,23 @@ class Heading {
         };
 
         Plotly.newPlot(this._plot, [], layout);
+    }
 
-        setInterval(() => this.onUpdate(), 100, this);
+    onOpen() {
+        if (this._channel_to_trace) {
+            const traces = Array.from(this._channel_to_trace.values());
+            Plotly.deleteTraces(this._plot, traces);
+        }
+
+        this._channel_to_trace = new Map();
+        this._buffer = {r: [], theta: [], width: []};
+        this._buffer_size = 0;
+
+        this._thread = setInterval(() => this.onUpdate(), 100, this);
+    }
+
+    onClose() {
+        clearInterval(this._thread);
     }
 
     onEvent(event) {

@@ -182,7 +182,6 @@ public:
         magnetic_field.y(), std::sqrt(var_magnetic_field.y()));
     std::normal_distribution<float> magnetic_field_z_dist(
         magnetic_field.z(), std::sqrt(var_magnetic_field.z()));
-    std::cout << var_magnetic_field.transpose() << std::endl;
 
     for (std::size_t i = 0; i < m_population; ++i) {
       const Eigen::Vector3f mag(magnetic_field_x_dist(m_random),
@@ -205,9 +204,9 @@ public:
 
       const auto naive_heading =
           magnetic_field_to_compass(orientation * mag, 0.1f, 0.01f, 0.01f);
-      m_particles[i].log_likelihood +=
-          log_normal_pdf(m_particles[i].north, (float)naive_heading.north,
-                         (float)naive_heading.var_north);
+      m_particles[i].log_likelihood += log_normal_pdf(
+          angle_distance(m_particles[i].north, (float)naive_heading.north),
+          0.0f, (float)naive_heading.var_north);
     }
   }
 

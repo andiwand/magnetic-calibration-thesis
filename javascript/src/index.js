@@ -5,17 +5,16 @@ import {Position} from './position';
 import {Heading} from './heading';
 import * as Plotly from 'plotly.js';
 
-let scatter3d = null;
-let cube = null;
-let position = null;
-let heading = null;
+let listeners = null;
 
 function createPlots(walls, ground_truth) {
-    scatter3d = new Scatter3d("scatter3d");
-    cube = new Cube("cube");
+    listeners = [];
+
+    listeners.push(new Scatter3d("scatter3d"));
+    listeners.push(new Cube("cube"));
     if (walls && ground_truth)
-        position = new Position("position", walls, ground_truth, 2);
-    heading = new Heading("heading");
+        listeners.push(new Position("position", walls, ground_truth, 2));
+    listeners.push(new Heading("heading"));
 }
 
 function load(web_socket_url, walls_url, ground_truth_url) {
@@ -65,17 +64,15 @@ function connect(url) {
 
     ws.onopen = function () {
         console.log("websocket open");
+
+        listeners.forEach((listener) => listener.onOpen());
     };
 
     ws.onmessage = function (evt) {
         let data = new Uint8Array(evt.data);
         let event = proto.indoors.pipeline.protocol.Event.deserializeBinary(data);
 
-        scatter3d.onEvent(event);
-        cube.onEvent(event);
-        if (position)
-            position.onEvent(event);
-        heading.onEvent(event);
+        listeners.forEach((listener) => listener.onEvent(event));
     };
 
     ws.onclose = function () {
@@ -83,6 +80,8 @@ function connect(url) {
         setTimeout(function () {
             connect(url);
         }, 1000);
+
+        listeners.forEach((listener) => listener.onClose());
     };
 
     ws.onerror = function (err) {

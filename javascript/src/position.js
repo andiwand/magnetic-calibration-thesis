@@ -59,12 +59,18 @@ class Position {
         });
 
         Plotly.newPlot(this._plot, data, layout);
+    }
 
+    onOpen() {
         let time = 0;
-        setInterval(function (that) {
-            that.onUpdate(time);
+        this._thread = setInterval(() => {
+            this.onUpdate(time);
             time += 1;
-        }, 1000, this);
+        }, 1000);
+    }
+
+    onClose() {
+        clearInterval(this._thread);
     }
 
     onEvent(event) {
