@@ -120,7 +120,7 @@ void NaiveCompass::iterate() {
         orientation *
         Eigen::Vector3f(mag[i].data.x, mag[i].data.y, mag[i].data.z);
     const auto heading =
-        magnetic_field_to_compass(magnetic_field, 0.01f, 0.001f, 0.001f);
+        magnetic_field_to_compass(magnetic_field, 0.005f, 0.0005f, 0.0005f);
     const auto total_orientation =
         Eigen::AngleAxisf(heading.north, Eigen::Vector3f::UnitZ()) *
         orientation;
@@ -187,6 +187,7 @@ public:
       const Eigen::Vector3f mag(magnetic_field_x_dist(m_random),
                                 magnetic_field_y_dist(m_random),
                                 magnetic_field_z_dist(m_random));
+
       m_particles[i].log_likelihood +=
           log_normal_pdf(mag.x(), magnetic_field.x(),
                          std::sqrt(var_magnetic_field.x())) +
@@ -203,10 +204,10 @@ public:
       m_particles[i].external = total_orientation * mag - m_earth;
 
       const auto naive_heading =
-          magnetic_field_to_compass(orientation * mag, 0.1f, 0.01f, 0.01f);
+          magnetic_field_to_compass(orientation * mag, 0.3f, 0.01f, 0.01f);
       m_particles[i].log_likelihood += log_normal_pdf(
           angle_distance(m_particles[i].north, (float)naive_heading.north),
-          0.0f, (float)naive_heading.var_north);
+          0.0f, std::sqrt((float)naive_heading.var_north));
     }
   }
 
@@ -382,7 +383,7 @@ void ParticleCompass::iterate() {
       m_initialized = true;
     }
 
-    if (m_iteration % 10 == 0) {
+    if (m_iteration % 40 == 0) {
       m_impl->update(orientation, magnetic_field, var_magnetic_field);
       m_impl->weight();
       m_impl->estimate();
