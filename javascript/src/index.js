@@ -87,7 +87,7 @@ function connect(url) {
     };
 }
 
-load("ws://localhost:8000", null, null);
-//load("ws://192.168.159.234:8000", "data/1174182629_walls.csv", "data/29303_ground_truth.csv");
+//load("ws://localhost:8000", null, null);
+load("ws://192.168.159.234:8000", "data/1174182629_walls.csv", "data/29303_ground_truth.csv");
 //load("ws://192.168.15.134:8000", "data/1174182629_walls.csv", "data/29303_ground_truth.csv");
 //load("ws://10.195.37.100:8000", "data/1174182629_walls.csv", "data/29303_ground_truth.csv");

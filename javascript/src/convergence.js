@@ -17,8 +17,7 @@ class Convergence extends Plot {
 
     onChannel(channel) {
         if (channel.getEventexample().hasQuaternion()) {
-            // TODO
-            return;
+            return (event) => this.onQuaternion(event.getQuaternion(), trace);
         }
 
         if (!channel.getEventexample().hasVector3()) return;
@@ -38,8 +37,10 @@ class Convergence extends Plot {
         const quaternion = new THREE.Quaternion(tmp.getX(), tmp.getY(), tmp.getZ(), tmp.getW());
 
         if (this._last_orientation) {
-            const angle = this._last_orientation.angleTo(quaternion);
-            this._total_rotation += angle;
+            const delta = quaternion.clone().multiply(this._last_orientation.clone().conjugate());
+            const w = Math.min(1, Math.max(-1, delta.w));
+            const angle = 2 * Math.acos(w);
+            this._total_rotation += Math.abs(angle);
         }
         this._last_orientation = quaternion;
     }
@@ -47,9 +48,13 @@ class Convergence extends Plot {
     onVector3(tmp, trace) {
         const vector3 = new THREE.Vector3(tmp.getX(), tmp.getY(), tmp.getZ());
 
+        this._push({x: this._total_rotation, y: vector3.length()}, trace);
+    }
+
+    _update() {
         if (this._total_rotation - this._last_total_rotation > this._total_rotation_step) {
-            this._push({x: this._total_rotation, y: vector3.length()}, trace);
             this._last_total_rotation = this._total_rotation;
+            super._update();
         }
     }
 }

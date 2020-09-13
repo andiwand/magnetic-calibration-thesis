@@ -9,10 +9,11 @@ void MadgwickAHRSupdateIMU(float dt, float beta, float gx, float gy, float gz,
                            float &q2, float &q3);
 }
 
-MadgwickImu::MadgwickImu()
-    : pipeline::StandardNode("madgwick"), m_accelerometer{"accelerometer",
-                                                          this},
-      m_gyroscope{"gyroscope", this}, m_orientation{"orientation", this} {}
+MadgwickImu::MadgwickImu(const float delta_time, const float beta)
+    : pipeline::StandardNode("madgwick"), m_delta_time{delta_time}, m_beta{beta},
+      m_accelerometer{"accelerometer", this},
+      m_gyroscope{"gyroscope", this},
+      m_orientation{"orientation", this} {}
 
 pipeline::Input<pipeline::Event<pipeline::Vector3>> *
 MadgwickImu::accelerometer() {
@@ -46,7 +47,7 @@ void MadgwickImu::iterate() {
       m_initialized = true;
     }
 
-    MadgwickAHRSupdateIMU(0.05, 0.1, (float)gyr[i].data.x, (float)gyr[i].data.y,
+    MadgwickAHRSupdateIMU(m_delta_time, m_beta, (float)gyr[i].data.x, (float)gyr[i].data.y,
                           (float)gyr[i].data.z, (float)acc[i].data.x,
                           (float)acc[i].data.y, (float)acc[i].data.z, m_q0,
                           m_q1, m_q2, m_q3);

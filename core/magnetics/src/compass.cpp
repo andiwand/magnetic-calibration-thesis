@@ -188,14 +188,6 @@ public:
                                 magnetic_field_y_dist(m_random),
                                 magnetic_field_z_dist(m_random));
 
-      m_particles[i].log_likelihood +=
-          log_normal_pdf(mag.x(), magnetic_field.x(),
-                         std::sqrt(var_magnetic_field.x())) +
-          log_normal_pdf(mag.y(), magnetic_field.y(),
-                         std::sqrt(var_magnetic_field.y())) +
-          log_normal_pdf(mag.z(), magnetic_field.z(),
-                         std::sqrt(var_magnetic_field.z()));
-
       m_particles[i].north += north_drift_dist(m_random);
 
       const auto total_orientation =
@@ -226,6 +218,14 @@ public:
       weight_sum += m_particles[i].weight;
       m_weight_wheel[i] = weight_sum;
     }
+  }
+
+  float effective_particles() {
+    float result = 0;
+    for (std::size_t i = 0; i < m_population; ++i) {
+      result += std::pow(m_particles[i].weight / m_weight_wheel[m_population - 1], 2);
+    }
+    return 1.0f / result;
   }
 
   void resample() {
@@ -387,7 +387,10 @@ void ParticleCompass::iterate() {
       m_impl->update(orientation, magnetic_field, var_magnetic_field);
       m_impl->weight();
       m_impl->estimate();
-      m_impl->resample();
+
+      if (m_impl->effective_particles() <= 50) {
+        m_impl->resample();
+      }
     }
     ++m_iteration;
 

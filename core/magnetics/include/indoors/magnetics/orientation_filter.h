@@ -9,7 +9,7 @@ namespace indoors::magnetics {
 class MadgwickImu final : public pipeline::StandardNode,
                           public pipeline::Loopable {
 public:
-  MadgwickImu();
+  MadgwickImu(float delta_time, float beta);
 
   pipeline::Input<pipeline::Event<pipeline::Vector3>> *accelerometer();
   pipeline::Input<pipeline::Event<pipeline::Vector3>> *gyroscope();
@@ -20,6 +20,8 @@ public:
   void iterate() override;
 
 private:
+  const float m_delta_time;
+  const float m_beta;
   bool m_initialized{false};
   float m_q0{1};
   float m_q1{0};

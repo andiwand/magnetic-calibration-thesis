@@ -72,21 +72,23 @@ public:
               const Eigen::Vector3f &magnetic_field) {
     // TODO only update if we rotated significantly (but still drift?)
 
-    std::normal_distribution<float> hard_iron_drift_dist(0, m_delta_time * 1);
+    const float drift_std = m_delta_time * 5.0f;
+    std::normal_distribution<float> drift_dist(0, drift_std);
 
     for (std::size_t i = 0; i < m_population; ++i) {
-      m_particles[i].hard_iron += Eigen::Vector3f(
-          hard_iron_drift_dist(m_random), hard_iron_drift_dist(m_random),
-          hard_iron_drift_dist(m_random));
+      const Eigen::Vector3f drift(drift_dist(m_random), drift_dist(m_random),
+                                  drift_dist(m_random));
+
+      m_particles[i].hard_iron += drift;
 
       const Eigen::Vector3f prediction =
           m_particles[i].hard_iron +
           orientation.conjugate() * m_particles[i].external;
 
       m_particles[i].log_likelihood +=
-          log_normal_pdf(prediction.x(), magnetic_field.x(), 10.0f) +
-          log_normal_pdf(prediction.y(), magnetic_field.y(), 10.0f) +
-          log_normal_pdf(prediction.z(), magnetic_field.z(), 10.0f);
+          log_normal_pdf(prediction.x(), magnetic_field.x(), 5.0f) +
+          log_normal_pdf(prediction.y(), magnetic_field.y(), 5.0f) +
+          log_normal_pdf(prediction.z(), magnetic_field.z(), 5.0f);
 
       m_particles[i].external =
           orientation * (magnetic_field - m_particles[i].hard_iron);
@@ -108,6 +110,14 @@ public:
       weight_sum += m_particles[i].weight;
       m_weight_wheel[i] = weight_sum;
     }
+  }
+
+  float effective_particles() {
+    float result = 0;
+    for (std::size_t i = 0; i < m_population; ++i) {
+      result += std::pow(m_particles[i].weight / m_weight_wheel[m_population - 1], 2);
+    }
+    return 1.0f / result;
   }
 
   void resample() {
@@ -243,14 +253,11 @@ void HardIron::iterate() {
       m_impl->estimate();
       m_initialized = true;
     } else {
-      // TODO performance
-      if (m_iteration % 2 == 0) {
-        m_impl->update(orientation, magnetic_field);
-        m_impl->weight();
-        m_impl->estimate();
-      }
+      m_impl->update(orientation, magnetic_field);
+      m_impl->weight();
+      m_impl->estimate();
 
-      if (m_iteration % 10 == 0) {
+      if (m_impl->effective_particles() <= 100) {
         m_impl->resample();
       }
     }
@@ -258,8 +265,9 @@ void HardIron::iterate() {
 
     const auto estimate = m_impl->last_estimate();
 
-    const Eigen::Vector3f magnetometer_calibrated =
-        orientation.conjugate() * estimate.external;
+    //const Eigen::Vector3f magnetometer_calibrated =
+    //    orientation.conjugate() * estimate.external;
+    const Eigen::Vector3f magnetometer_calibrated = magnetic_field - estimate.hard_iron;
     const Eigen::Vector3f var_magnetometer_calibrated = estimate.var_hard_iron;
     m_magnetometer_calibrated.push({mag[i].time, magnetometer_calibrated.x(),
                                     magnetometer_calibrated.y(),
