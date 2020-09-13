@@ -3,6 +3,7 @@
 #include <indoors/magnetics/moving_average.h>
 #include <indoors/magnetics/orientation_filter.h>
 #include <indoors/magnetics/task.h>
+#include <indoors/magnetics/web_server.h>
 #include <indoors/pipeline/http.h>
 #include <indoors/pipeline/node.h>
 #include <indoors/pipeline/protocol.h>
@@ -25,6 +26,7 @@ private:
   const std::shared_ptr<pipeline::Platform> m_platform;
 
   boost::asio::io_context m_ioc;
+  WebServer m_web_server;
 
   pipeline::Synchronizer m_synchronizer;
   MovingAverage m_moving_average;
@@ -46,11 +48,14 @@ private:
 DefaultTask::DefaultTask(std::shared_ptr<pipeline::Platform> platform,
                          std::optional<std::string> html)
     : StandardTask("default"), m_platform{std::move(platform)}, m_ioc{1},
-      m_synchronizer{0.1}, m_moving_average{0.05, 0.05},
-      m_hard_iron{std::random_device()(), 10000, 0.05},
+      m_web_server{m_ioc, "0.0.0.0", 8000}, m_synchronizer{0.1},
+      m_moving_average{0.05, 0.05}, m_hard_iron{std::random_device()(), 10000,
+                                                0.05},
       m_system_compass{"system compass"},
       m_particle_compass{std::random_device()(), 1000, 0.05},
-      m_websocket(m_ioc, "0.0.0.0", 8080, m_encoder.output()) {
+      m_websocket(m_encoder.output()) {
+  m_web_server.set_web_socket_handler(&m_websocket);
+
   // synchronizer
   auto accelerometer =
       m_synchronizer.create_channel(m_platform->accelerometer());
@@ -113,6 +118,7 @@ DefaultTask::DefaultTask(std::shared_ptr<pipeline::Platform> platform,
 
 void DefaultTask::start() {
   m_io_runner = std::thread([this]() { m_ioc.run(); });
+
   m_looper = std::thread([this]() {
     while (!m_stop) {
       m_synchronizer.iterate();

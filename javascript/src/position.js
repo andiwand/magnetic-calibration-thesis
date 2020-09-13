@@ -73,16 +73,9 @@ class Position {
         clearInterval(this._thread);
     }
 
-    onEvent(event) {
-        if (event.hasHello()) {
-            let hello = event.getHello();
-        } else if (event.hasVector2()) {
-            this.onVector2(event);
-        }
-    }
-
-    onVector2(event) {
+    onChannel(channel) {
         // TODO
+        return null;
     }
 
     onUpdate(time) {

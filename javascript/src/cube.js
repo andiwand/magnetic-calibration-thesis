@@ -41,22 +41,18 @@ class Cube {
 
     onClose() {}
 
-    onEvent(event) {
-        if (event.hasHello()) {
-            var hello = event.getHello();
-            // TODO
-        } else if (event.hasQuaternion()) {
-            this.onQuaternion(event);
-        }
+    onChannel(channel) {
+        if (channel.getEventexample().hasQuaternion())
+            return (event) => this.onQuaternion(event);
+        return null;
     }
 
     onQuaternion(event) {
-        let tmp = event.getQuaternion();
-        let camera = document.getElementById(this._plot)._fullLayout.scene._scene.camera;
-        let distance = new THREE.Vector3().fromArray(camera.eye).length();
+        const tmp = event.getQuaternion();
+        const camera = document.getElementById(this._plot)._fullLayout.scene._scene.camera;
+        const distance = new THREE.Vector3().fromArray(camera.eye).length();
 
-        // TODO should be normalized already
-        let quaternion = new THREE.Quaternion(tmp.getX(), tmp.getY(), tmp.getZ(), tmp.getW());
+        const quaternion = new THREE.Quaternion(tmp.getX(), tmp.getY(), tmp.getZ(), tmp.getW());
         camera.eye = new THREE.Vector3(0, 0, distance).applyQuaternion(quaternion).toArray();
         camera.up = new THREE.Vector3(0, 1, 0).applyQuaternion(quaternion).toArray();
     }

@@ -1,20 +1,20 @@
 import './indoors/pipeline/protocol/event_pb';
+import {Distributor} from './distributor';
 import {Scatter3d} from './scatter3d';
 import {Cube} from './cube';
-import {Position} from './position';
 import {Heading} from './heading';
+import {Convergence} from './convergence';
 import * as Plotly from 'plotly.js';
 
-let listeners = null;
+let distributor = new Distributor();
 
 function createPlots(walls, ground_truth) {
-    listeners = [];
-
-    listeners.push(new Scatter3d("scatter3d"));
-    listeners.push(new Cube("cube"));
-    if (walls && ground_truth)
-        listeners.push(new Position("position", walls, ground_truth, 2));
-    listeners.push(new Heading("heading"));
+    distributor.addClient(new Scatter3d("scatter3d"));
+    distributor.addClient(new Cube("cube"));
+    //if (walls && ground_truth)
+    //    distributor.addClient(new Position("position", walls, ground_truth, 2));
+    distributor.addClient(new Heading("heading"));
+    distributor.addClient(new Convergence("convergence"));
 }
 
 function load(web_socket_url, walls_url, ground_truth_url) {
@@ -64,15 +64,13 @@ function connect(url) {
 
     ws.onopen = function () {
         console.log("websocket open");
-
-        listeners.forEach((listener) => listener.onOpen());
+        distributor.onOpen();
     };
 
     ws.onmessage = function (evt) {
         let data = new Uint8Array(evt.data);
         let event = proto.indoors.pipeline.protocol.Event.deserializeBinary(data);
-
-        listeners.forEach((listener) => listener.onEvent(event));
+        distributor.onEvent(event);
     };
 
     ws.onclose = function () {
@@ -80,8 +78,7 @@ function connect(url) {
         setTimeout(function () {
             connect(url);
         }, 1000);
-
-        listeners.forEach((listener) => listener.onClose());
+        distributor.onClose();
     };
 
     ws.onerror = function (err) {
@@ -90,7 +87,7 @@ function connect(url) {
     };
 }
 
-//load("ws://localhost:8080", null, null);
-load("ws://192.168.159.234:8080", "data/1174182629_walls.csv", "data/29303_ground_truth.csv");
-//load("ws://192.168.15.134:8080", "data/1174182629_walls.csv", "data/29303_ground_truth.csv");
-//load("ws://10.195.37.100:8080", "data/1174182629_walls.csv", "data/29303_ground_truth.csv");
+load("ws://localhost:8000", null, null);
+//load("ws://192.168.159.234:8000", "data/1174182629_walls.csv", "data/29303_ground_truth.csv");
+//load("ws://192.168.15.134:8000", "data/1174182629_walls.csv", "data/29303_ground_truth.csv");
+//load("ws://10.195.37.100:8000", "data/1174182629_walls.csv", "data/29303_ground_truth.csv");

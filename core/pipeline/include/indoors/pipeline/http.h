@@ -9,6 +9,16 @@
 
 namespace indoors::pipeline {
 
+class WebSocketHandler {
+public:
+  using tcp_socket = boost::asio::ip::tcp::socket;
+  using web_socket = boost::beast::websocket::stream<tcp_socket>;
+
+  virtual ~WebSocketHandler() = default;
+
+  virtual void handle(web_socket &&socket) = 0;
+};
+
 class HttpServerEvents : public StandardNode {
 public:
 private:
@@ -27,27 +37,15 @@ private:
   web_socket m_websocket;
 };
 
-class WebSocket : public StandardNode, public Loopable {
+class WebSocket : public StandardNode, public WebSocketHandler {
 public:
-  using io_context = boost::asio::io_context;
+  explicit WebSocket(Output<protocol::Event> *output);
+  WebSocket(std::string annotation, Output<protocol::Event> *output);
 
-  WebSocket(io_context &ioc, const std::string &address, std::uint16_t port,
-            Output<protocol::Event> *output);
-  WebSocket(std::string annotation, io_context &ioc, const std::string &address,
-            std::uint16_t port, Output<protocol::Event> *output);
-
-  void iterate() override;
+  void handle(web_socket &&socket) override;
 
 private:
-  using acceptor = boost::asio::ip::tcp::acceptor;
-  using tcp_socket = boost::asio::ip::tcp::socket;
-  using web_socket = boost::beast::websocket::stream<tcp_socket>;
-
-  void accept();
-
   Output<protocol::Event> *m_output;
-  io_context &m_ioc;
-  acceptor m_acceptor;
   std::vector<std::unique_ptr<WebSocketInput>> m_inputs;
 };
 
