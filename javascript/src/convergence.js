@@ -17,7 +17,7 @@ class Convergence extends Plot {
 
     onChannel(channel) {
         if (channel.getEventexample().hasQuaternion()) {
-            return (event) => this.onQuaternion(event.getQuaternion(), trace);
+            return (event) => this.onQuaternion(event.getQuaternion());
         }
 
         if (!channel.getEventexample().hasVector3()) return;

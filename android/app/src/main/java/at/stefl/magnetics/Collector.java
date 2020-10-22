@@ -5,6 +5,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.SystemClock;
+import android.util.Log;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -97,7 +98,12 @@ public class Collector {
         request.sensor = sensorManager.getDefaultSensor(sensorType);
         request.samplePeriodUs = samplePeriodUs;
         request.maxReportLatencyUs = maxReportLatencyUs;
-        sensorRequests.add(request);
+
+        if (request.sensor != null) {
+            sensorRequests.add(request);
+        } else {
+            Log.e("magnetics-collector", "sensor " + sensorType + " not available");
+        }
     }
 
     public void addListener(CollectorListener listener) {
@@ -115,7 +121,7 @@ public class Collector {
         clockThread.start();
 
         for (SensorRequest request : sensorRequests) {
-            sensorManager.registerListener(sensorEventListener, request.sensor, request.samplePeriodUs, request.maxReportLatencyUs);
+            final boolean result = sensorManager.registerListener(sensorEventListener, request.sensor, request.samplePeriodUs, request.maxReportLatencyUs);
         }
     }
 

@@ -8,13 +8,13 @@ import * as Plotly from 'plotly.js';
 
 let distributor = new Distributor();
 
-function createPlots(walls, ground_truth) {
-    distributor.addClient(new Scatter3d("scatter3d"));
+function create_plots(walls, ground_truth) {
+    //distributor.addClient(new Scatter3d("scatter3d"));
     distributor.addClient(new Cube("cube"));
     //if (walls && ground_truth)
     //    distributor.addClient(new Position("position", walls, ground_truth, 2));
-    distributor.addClient(new Heading("heading"));
-    distributor.addClient(new Convergence("convergence"));
+    //distributor.addClient(new Heading("heading"));
+    //distributor.addClient(new Convergence("convergence"));
 }
 
 function load(web_socket_url, walls_url, ground_truth_url) {
@@ -29,7 +29,7 @@ function load(web_socket_url, walls_url, ground_truth_url) {
 
         console.log("loaded");
 
-        createPlots(walls, ground_truth);
+        create_plots(walls, ground_truth);
 
         connect(web_socket_url);
     }
@@ -87,7 +87,9 @@ function connect(url) {
     };
 }
 
-//load("ws://localhost:8000", null, null);
-load("ws://192.168.159.234:8000", "data/1174182629_walls.csv", "data/29303_ground_truth.csv");
+load("ws://localhost:8000", null, null);
+//load("ws://192.168.159.234:8000", "data/1174182629_walls.csv", "data/29303_ground_truth.csv"); // pixel 3
+//load("ws://192.168.159.111:8000", "data/1174182629_walls.csv", "data/29303_ground_truth.csv"); // s11
+//load("ws://192.168.159.130:8000", "data/1174182629_walls.csv", "data/29303_ground_truth.csv"); // nexus 5x
 //load("ws://192.168.15.134:8000", "data/1174182629_walls.csv", "data/29303_ground_truth.csv");
 //load("ws://10.195.37.100:8000", "data/1174182629_walls.csv", "data/29303_ground_truth.csv");

@@ -41,19 +41,21 @@ public:
     Eigen::Vector3f var_hard_iron = Eigen::Vector3f::Zero();
   };
 
-  Impl(const std::uint_fast32_t seed, const std::size_t population,
-       const float delta_time)
-      : m_population{population}, m_delta_time{delta_time}, m_random{seed},
+  Impl(const std::uint_fast32_t seed, const std::size_t population)
+      : m_population{population}, m_random{seed},
         m_particles{new Particle[population]}, m_weight_wheel{
                                                    new float[population]} {}
 
   ~Impl() { delete[] m_particles; }
 
+  std::size_t population() const { return m_population; }
+
   Particle *particles() const { return m_particles; }
 
   void init(const Eigen::Quaternionf &orientation,
             const Eigen::Vector3f &magnetic_field) {
-    std::normal_distribution<float> hard_iron_dist(0, 30);
+    // TODO parameter
+    std::normal_distribution<float> hard_iron_dist(0, 100);
 
     for (std::size_t i = 0; i < m_population; ++i) {
       m_particles[i].hard_iron = {hard_iron_dist(m_random),
@@ -68,11 +70,10 @@ public:
     }
   }
 
-  void update(const Eigen::Quaternionf &orientation,
+  void update(const float delta_time, const Eigen::Quaternionf &orientation,
               const Eigen::Vector3f &magnetic_field) {
-    // TODO only update if we rotated significantly (but still drift?)
-
-    const float drift_std = m_delta_time * 5.0f;
+    // TODO parameter
+    const float drift_std = delta_time * 1.0f;
     std::normal_distribution<float> drift_dist(0, drift_std);
 
     for (std::size_t i = 0; i < m_population; ++i) {
@@ -115,7 +116,8 @@ public:
   float effective_particles() {
     float result = 0;
     for (std::size_t i = 0; i < m_population; ++i) {
-      result += std::pow(m_particles[i].weight / m_weight_wheel[m_population - 1], 2);
+      result +=
+          std::pow(m_particles[i].weight / m_weight_wheel[m_population - 1], 2);
     }
     return 1.0f / result;
   }
@@ -170,7 +172,6 @@ public:
 
 private:
   const std::size_t m_population;
-  const float m_delta_time;
 
   std::default_random_engine m_random;
 
@@ -181,11 +182,13 @@ private:
 };
 
 HardIron::HardIron(const std::uint_fast32_t seed, const std::size_t population,
-                   const float delta_time)
+                   const float min_rotation)
     : pipeline::StandardNode("HardIron"), m_impl{std::make_unique<Impl>(
-                                              seed, population, delta_time)},
+                                              seed, population)},
+      m_min_rotation{min_rotation},
       m_magnetometer_uncalibrated{"magnetometer uncalibrated", this},
-      m_orientation{"orientation", this},
+      m_orientation{"orientation", this}, m_total_rotation{"total rotation",
+                                                           this},
       m_system_calibration{"system calibration", this},
       m_magnetometer_calibrated{"magnetometer calibrated", this},
       m_var_magnetometer_calibrated{"magnetometer calibrated variance", this},
@@ -202,6 +205,11 @@ pipeline::Input<pipeline::Event<pipeline::Quaternion>> *
 HardIron::orientation() {
   return &m_orientation;
 }
+
+pipeline::Input<pipeline::Event<double>> *HardIron::total_rotation() {
+  return &m_total_rotation;
+}
+
 pipeline::Input<pipeline::Event<pipeline::Vector3>> *
 HardIron::system_calibration() {
   return &m_system_calibration;
@@ -224,15 +232,17 @@ pipeline::Output<pipeline::Event<pipeline::Vector3>> *HardIron::hard_iron() {
 void HardIron::iterate() {
   auto &&mag = m_magnetometer_uncalibrated.buffer().vector();
   auto &&ori = m_orientation.buffer().vector();
+  auto &&rot = m_total_rotation.buffer().vector();
   auto &&sys = m_system_calibration.buffer().vector();
   // TODO deduplicate system calibration
   // TODO use system calibration
 
   // TODO assert doesnt work because of nan in magnetic field
   // assert(mag.size() == ori.size());
-  if (mag.size() != ori.size()) {
+  if ((mag.size() != ori.size()) || (mag.size() != rot.size())) {
     m_magnetometer_uncalibrated.buffer().clear();
     m_orientation.buffer().clear();
+    m_total_rotation.buffer().clear();
     m_system_calibration.buffer().clear();
     return;
   }
@@ -248,30 +258,37 @@ void HardIron::iterate() {
     const Eigen::Quaternionf orientation{ori[i].data.w, ori[i].data.x,
                                          ori[i].data.y, ori[i].data.z};
 
-    if (!m_initialized) {
-      m_impl->init(orientation, magnetic_field);
-      m_impl->estimate();
-      m_initialized = true;
-    } else {
-      m_impl->update(orientation, magnetic_field);
-      m_impl->weight();
-      m_impl->estimate();
+    if (!m_initialized || rot[i].data - m_last_total_rotation >= m_min_rotation) {
+      if (!m_initialized) {
+        m_impl->init(orientation, magnetic_field);
+        m_impl->estimate();
+        m_initialized = true;
+      } else {
+        const double delta_time = ori.data()->time - m_last_update;
+        m_impl->update((float)delta_time, orientation, magnetic_field);
+        m_impl->weight();
+        m_impl->estimate();
 
-      if (m_impl->effective_particles() <= 100) {
-        m_impl->resample();
+        // TODO parameter
+        if (m_impl->effective_particles() <= m_impl->population() * 1e-2) {
+          m_impl->resample();
+        }
       }
+
+      m_last_total_rotation = rot[i].data;
+      m_last_update = ori.data()->time;
     }
-    ++m_iteration;
 
     const auto estimate = m_impl->last_estimate();
 
-    //const Eigen::Vector3f magnetometer_calibrated =
-    //    orientation.conjugate() * estimate.external;
-    const Eigen::Vector3f magnetometer_calibrated = magnetic_field - estimate.hard_iron;
+    const Eigen::Vector3f magnetometer_calibrated =
+        magnetic_field - estimate.hard_iron;
     const Eigen::Vector3f var_magnetometer_calibrated = estimate.var_hard_iron;
+
     m_magnetometer_calibrated.push({mag[i].time, magnetometer_calibrated.x(),
                                     magnetometer_calibrated.y(),
                                     magnetometer_calibrated.z()});
+
     m_var_magnetometer_calibrated.push(
         {mag[i].time, var_magnetometer_calibrated.x(),
          var_magnetometer_calibrated.y(), var_magnetometer_calibrated.z()});
@@ -282,6 +299,7 @@ void HardIron::iterate() {
 
   m_magnetometer_uncalibrated.buffer().clear();
   m_orientation.buffer().clear();
+  m_total_rotation.buffer().clear();
   m_system_calibration.buffer().clear();
 }
 

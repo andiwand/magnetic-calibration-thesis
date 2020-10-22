@@ -150,13 +150,14 @@ public:
     Eigen::Vector3f external = Eigen::Vector3f::Zero();
   };
 
-  Impl(const std::uint_fast32_t seed, const std::size_t population,
-       const float delta_time)
-      : m_population{population}, m_delta_time{delta_time}, m_random{seed},
+  Impl(const std::uint_fast32_t seed, const std::size_t population)
+      : m_population{population}, m_random{seed},
         m_particles{new Particle[population]}, m_weight_wheel{
                                                    new float[population]} {}
 
   ~Impl() { delete[] m_particles; }
+
+  std::size_t population() const { return m_population; }
 
   Particle *particles() const { return m_particles; }
 
@@ -170,12 +171,13 @@ public:
     }
   }
 
-  void update(const Eigen::Quaternionf &orientation,
+  void update(const float delta_time, const Eigen::Quaternionf &orientation,
               const Eigen::Vector3f &magnetic_field,
               const Eigen::Vector3f &var_magnetic_field) {
-    // TODO only update if we moved
+    // TODO parameter
+    const float drift_std = delta_time * 0.01f;
 
-    std::normal_distribution<float> north_drift_dist(0, m_delta_time * 0.5f);
+    std::normal_distribution<float> north_drift_dist(0, drift_std);
     std::normal_distribution<float> magnetic_field_x_dist(
         magnetic_field.x(), std::sqrt(var_magnetic_field.x()));
     std::normal_distribution<float> magnetic_field_y_dist(
@@ -196,7 +198,7 @@ public:
       m_particles[i].external = total_orientation * mag - m_earth;
 
       const auto naive_heading =
-          magnetic_field_to_compass(orientation * mag, 0.3f, 0.01f, 0.01f);
+          magnetic_field_to_compass(orientation * mag, 0.1f, 0.01f, 0.01f);
       m_particles[i].log_likelihood += log_normal_pdf(
           angle_distance(m_particles[i].north, (float)naive_heading.north),
           0.0f, std::sqrt((float)naive_heading.var_north));
@@ -223,7 +225,8 @@ public:
   float effective_particles() {
     float result = 0;
     for (std::size_t i = 0; i < m_population; ++i) {
-      result += std::pow(m_particles[i].weight / m_weight_wheel[m_population - 1], 2);
+      result +=
+          std::pow(m_particles[i].weight / m_weight_wheel[m_population - 1], 2);
     }
     return 1.0f / result;
   }
@@ -290,7 +293,6 @@ private:
   const Eigen::Vector3f m_earth{0, 20, -44}; // middle europe
 
   const std::size_t m_population;
-  const float m_delta_time;
 
   std::default_random_engine m_random;
 
@@ -302,13 +304,14 @@ private:
 
 ParticleCompass::ParticleCompass(const std::uint_fast32_t seed,
                                  const std::size_t population,
-                                 const float delta_time)
+                                 const float min_rotation)
     : pipeline::StandardNode("particle compass"), m_impl{std::make_unique<Impl>(
-                                                      seed, population,
-                                                      delta_time)},
+                                                      seed, population)},
+      m_min_rotation{min_rotation},
       m_magnetometer_calibrated{"magnetometer calibrated", this},
       m_var_magnetometer_calibrated{"magnetometer calibrated variance", this},
       m_orientation{"orientation", this}, m_heading{"heading", this},
+      m_total_rotation{"total rotation", this},
       m_total_orientation{"total orientation", this},
       m_north_confidence{"north confidence", this}, m_external{"external",
                                                                this} {}
@@ -328,6 +331,10 @@ ParticleCompass::var_magnetometer_calibrated() {
 pipeline::Input<pipeline::Event<pipeline::Quaternion>> *
 ParticleCompass::orientation() {
   return &m_orientation;
+}
+
+pipeline::Input<pipeline::Event<double>> *ParticleCompass::total_rotation() {
+  return &m_total_rotation;
 }
 
 pipeline::Output<pipeline::Event<pipeline::Heading>> *
@@ -354,6 +361,7 @@ void ParticleCompass::iterate() {
   auto &&mag = m_magnetometer_calibrated.buffer().vector();
   auto &&var_mag = m_var_magnetometer_calibrated.buffer().vector();
   auto &&ori = m_orientation.buffer().vector();
+  auto &&rot = m_total_rotation.buffer().vector();
 
   // TODO doesnt work because of nan in magnetic field
   // assert(mag.size() == ori.size());
@@ -361,6 +369,7 @@ void ParticleCompass::iterate() {
     m_magnetometer_calibrated.buffer().clear();
     m_var_magnetometer_calibrated.buffer().clear();
     m_orientation.buffer().clear();
+    m_total_rotation.buffer().clear();
     return;
   }
 
@@ -373,26 +382,31 @@ void ParticleCompass::iterate() {
     const Eigen::Vector3f magnetic_field{mag[i].data.x, mag[i].data.y,
                                          mag[i].data.z};
     const Eigen::Vector3f var_magnetic_field{
-        var_mag[i].data.x, var_mag[i].data.y, var_mag[i].data.z};
+            var_mag[i].data.x, var_mag[i].data.y, var_mag[i].data.z};
     const Eigen::Quaternionf orientation{ori[i].data.w, ori[i].data.x,
                                          ori[i].data.y, ori[i].data.z};
 
-    if (!m_initialized) {
-      m_impl->init();
-      m_impl->estimate();
-      m_initialized = true;
-    }
+    // TODO we should only update when we moved
+    if (!m_initialized || rot[i].data - m_last_total_rotation >= m_min_rotation) {
+      if (!m_initialized) {
+        m_impl->init();
+        m_impl->estimate();
+        m_initialized = true;
+      } else {
+        const double delta_time = ori.data()->time - m_last_update;
+        m_impl->update((float)delta_time, orientation, magnetic_field,
+                       var_magnetic_field);
+        m_impl->weight();
+        m_impl->estimate();
 
-    if (m_iteration % 40 == 0) {
-      m_impl->update(orientation, magnetic_field, var_magnetic_field);
-      m_impl->weight();
-      m_impl->estimate();
-
-      if (m_impl->effective_particles() <= 50) {
-        m_impl->resample();
+        // TODO parameter
+        if (m_impl->effective_particles() <= m_impl->population() * 0.05) {
+          m_impl->resample();
+        }
       }
+
+      m_last_total_rotation = rot[i].data;
     }
-    ++m_iteration;
 
     const auto estimate = m_impl->last_estimate();
 
@@ -421,6 +435,7 @@ void ParticleCompass::iterate() {
   m_magnetometer_calibrated.buffer().clear();
   m_var_magnetometer_calibrated.buffer().clear();
   m_orientation.buffer().clear();
+  m_total_rotation.buffer().clear();
 }
 
 } // namespace indoors::magnetics

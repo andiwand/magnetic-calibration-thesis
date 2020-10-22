@@ -47,7 +47,7 @@ class ParticleCompass final : public pipeline::StandardNode,
                               public pipeline::Loopable {
 public:
   ParticleCompass(std::uint_fast32_t seed, std::size_t population,
-                  float delta_time);
+                  float min_rotation);
   ~ParticleCompass() override;
 
   pipeline::Input<pipeline::Event<pipeline::Vector3>> *
@@ -55,6 +55,7 @@ public:
   pipeline::Input<pipeline::Event<pipeline::Vector3>> *
   var_magnetometer_calibrated();
   pipeline::Input<pipeline::Event<pipeline::Quaternion>> *orientation();
+  pipeline::Input<pipeline::Event<double>> *total_rotation();
 
   pipeline::Output<pipeline::Event<pipeline::Heading>> *heading();
   pipeline::Output<pipeline::Event<pipeline::Quaternion>> *total_orientation();
@@ -66,15 +67,19 @@ public:
 private:
   class Impl;
 
+  const float m_min_rotation;
+
   bool m_initialized{false};
+  double m_last_update{0};
+  float m_last_total_rotation{0};
   std::unique_ptr<Impl> m_impl;
-  int m_iteration{0};
 
   pipeline::BufferedInput<pipeline::Event<pipeline::Vector3>>
       m_magnetometer_calibrated;
   pipeline::BufferedInput<pipeline::Event<pipeline::Vector3>>
       m_var_magnetometer_calibrated;
   pipeline::BufferedInput<pipeline::Event<pipeline::Quaternion>> m_orientation;
+  pipeline::BufferedInput<pipeline::Event<double>> m_total_rotation;
 
   pipeline::StandardOutput<pipeline::Event<pipeline::Heading>> m_heading;
   pipeline::StandardOutput<pipeline::Event<pipeline::Quaternion>>

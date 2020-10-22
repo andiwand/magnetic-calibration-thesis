@@ -37,10 +37,10 @@ protocol::Quaternion ProtocolEncoder::convert(const Quaternion &from) {
 }
 
 protocol::Heading ProtocolEncoder::convert(const Heading &from) {
-    protocol::Heading result;
-    result.set_north(from.north);
-    result.set_var_north(from.var_north);
-    return result;
+  protocol::Heading result;
+  result.set_north(from.north);
+  result.set_var_north(from.var_north);
+  return result;
 }
 
 protocol::Event ProtocolEncoder::convert(const Event<Void> &event) {
@@ -54,6 +54,13 @@ protocol::Event ProtocolEncoder::convert(const Event<Clock> &event) {
   protocol::Event result;
   result.set_t(event.time);
   result.mutable_clock()->CopyFrom(convert(event.data));
+  return result;
+}
+
+protocol::Event ProtocolEncoder::convert(const Event<double> &event) {
+  protocol::Event result;
+  result.set_t(event.time);
+  result.set_scalar(event.data);
   return result;
 }
 
@@ -79,10 +86,10 @@ protocol::Event ProtocolEncoder::convert(const Event<Quaternion> &event) {
 }
 
 protocol::Event ProtocolEncoder::convert(const Event<Heading> &event) {
-    protocol::Event result;
-    result.set_t(event.time);
-    result.mutable_heading()->CopyFrom(convert(event.data));
-    return result;
+  protocol::Event result;
+  result.set_t(event.time);
+  result.mutable_heading()->CopyFrom(convert(event.data));
+  return result;
 }
 
 ProtocolEncoder::ProtocolEncoder() : ProtocolEncoder("encoder") {}
@@ -165,50 +172,49 @@ Quaternion ProtocolDecoder::convert(const protocol::Quaternion &from) {
 }
 
 Heading ProtocolDecoder::convert(const protocol::Heading &from) {
-    return {from.north(), from.var_north()};
+  return {from.north(), from.var_north()};
 }
 
 void ProtocolDecoder::convert(const protocol::Event &from, Event<Void> &to) {
-  if (!from.has_void_())
-    throw; // TODO
+  assert(from.has_void_());
   to.time = from.t();
 }
 
 void ProtocolDecoder::convert(const protocol::Event &from, Event<Clock> &to) {
-  if (!from.has_clock())
-    throw; // TODO
+  assert(from.has_clock());
   to.time = from.t();
   to.data = convert(from.clock());
 }
 
+void ProtocolDecoder::convert(const protocol::Event &from, Event<double> &to) {
+  assert(from.__case() == protocol::Event::Case::kScalar);
+  to.time = from.t();
+  to.data = to.data;
+}
+
 void ProtocolDecoder::convert(const protocol::Event &from, Event<Vector2> &to) {
-  if (!from.has_vector2())
-    throw; // TODO
+  assert(from.has_vector2());
   to.time = from.t();
   to.data = convert(from.vector2());
 }
 
 void ProtocolDecoder::convert(const protocol::Event &from, Event<Vector3> &to) {
-  if (!from.has_vector3())
-    throw; // TODO
+  assert(from.has_vector3());
   to.time = from.t();
   to.data = convert(from.vector3());
 }
 
 void ProtocolDecoder::convert(const protocol::Event &from,
                               Event<Quaternion> &to) {
-  if (!from.has_quaternion())
-    throw; // TODO
+  assert(from.has_quaternion());
   to.time = from.t();
   to.data = convert(from.quaternion());
 }
 
-void ProtocolDecoder::convert(const protocol::Event &from,
-                              Event<Heading> &to) {
-    if (!from.has_heading())
-        throw; // TODO
-    to.time = from.t();
-    to.data = convert(from.heading());
+void ProtocolDecoder::convert(const protocol::Event &from, Event<Heading> &to) {
+  assert(from.has_heading());
+  to.time = from.t();
+  to.data = convert(from.heading());
 }
 
 ProtocolDecoder::ProtocolDecoder(std::string annotation)

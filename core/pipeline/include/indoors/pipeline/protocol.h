@@ -18,6 +18,7 @@ public:
 
   static protocol::Event convert(const Event<Void> &from);
   static protocol::Event convert(const Event<Clock> &from);
+  static protocol::Event convert(const Event<double> &from);
   static protocol::Event convert(const Event<Vector2> &from);
   static protocol::Event convert(const Event<Vector3> &from);
   static protocol::Event convert(const Event<Quaternion> &from);
@@ -102,6 +103,7 @@ public:
 
   static void convert(const protocol::Event &from, Event<Void> &to);
   static void convert(const protocol::Event &from, Event<Clock> &to);
+  static void convert(const protocol::Event &from, Event<double> &to);
   static void convert(const protocol::Event &from, Event<Vector2> &to);
   static void convert(const protocol::Event &from, Event<Vector3> &to);
   static void convert(const protocol::Event &from, Event<Quaternion> &to);

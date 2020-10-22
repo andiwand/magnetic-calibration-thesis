@@ -6,6 +6,7 @@ add_library(magnetics STATIC
         src/moving_average.cpp
         src/orientation_filter.cpp
         src/task.cpp
+        src/total_rotation.cpp
         src/web_server.cpp
         )
 target_include_directories(magnetics

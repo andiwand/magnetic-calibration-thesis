@@ -9,12 +9,13 @@ namespace indoors::magnetics {
 class HardIron final : public pipeline::StandardNode,
                        public pipeline::Loopable {
 public:
-  HardIron(std::uint_fast32_t seed, std::size_t population, float delta_time);
+  HardIron(std::uint_fast32_t seed, std::size_t population, float min_rotation);
   ~HardIron() override;
 
   pipeline::Input<pipeline::Event<pipeline::Vector3>> *
   magnetometer_uncalibrated();
   pipeline::Input<pipeline::Event<pipeline::Quaternion>> *orientation();
+  pipeline::Input<pipeline::Event<double>> *total_rotation();
   pipeline::Input<pipeline::Event<pipeline::Vector3>> *system_calibration();
 
   pipeline::Output<pipeline::Event<pipeline::Vector3>> *
@@ -28,13 +29,17 @@ public:
 private:
   class Impl;
 
-  bool m_initialized{false};
+  const float m_min_rotation;
+
   std::unique_ptr<Impl> m_impl;
-  int m_iteration{0};
+  double m_last_update{0};
+  float m_last_total_rotation{0};
+  bool m_initialized{false};
 
   pipeline::BufferedInput<pipeline::Event<pipeline::Vector3>>
       m_magnetometer_uncalibrated;
   pipeline::BufferedInput<pipeline::Event<pipeline::Quaternion>> m_orientation;
+  pipeline::BufferedInput<pipeline::Event<double>> m_total_rotation;
   pipeline::BufferedInput<pipeline::Event<pipeline::Vector3>>
       m_system_calibration;
 
