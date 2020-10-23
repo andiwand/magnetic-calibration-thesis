@@ -9,6 +9,8 @@ public interface CollectorListener {
 
     void onStop(double time);
 
+    void onTickEvent(double time);
+
     void onClockEvent(double time, double linuxUtc);
 
     void onSensorEvent(double time, SensorEvent event);

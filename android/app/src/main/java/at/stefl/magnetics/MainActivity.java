@@ -5,6 +5,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.Button;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -34,11 +36,12 @@ import at.stefl.magnetics.core.AndroidPlatform;
 import at.stefl.magnetics.core.NativeTask;
 
 public class MainActivity extends AppCompatActivity {
-    private static String TAG = "magnetics";
+    private static final String TAG = "magnetics";
+
+    private boolean started = false;
 
     private Collector collector;
-    private AndroidPlatform androidPlatform;
-    private List<NativeTask> nativeTasks = new LinkedList<>();
+    private final List<NativeTask> nativeTasks = new LinkedList<>();
 
     private File internalDirectory;
     private File htmlDirectory;
@@ -129,21 +132,18 @@ public class MainActivity extends AppCompatActivity {
         collector.addRequest(Sensor.TYPE_MAGNETIC_FIELD_UNCALIBRATED, 1000);
         collector.addRequest(Sensor.TYPE_ROTATION_VECTOR, 10000);
 
-        androidPlatform = new AndroidPlatform();
+        AndroidPlatform androidPlatform = new AndroidPlatform();
         collector.addListener(androidPlatform.getCollectorListener());
 
         nativeTasks.add(NativeTask.createDefault(androidPlatform));
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onStart() {
         super.onStart();
-        for (NativeTask task : nativeTasks) {
-            task.start();
-        }
-        collector.start();
 
-        WebView webView = (WebView) findViewById(R.id.webview);
+        WebView webView = findViewById(R.id.webview);
 
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
@@ -189,14 +189,45 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        collector.stop();
-        for (NativeTask task : nativeTasks) {
-            task.stop();
+        if (started) {
+            stop();
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    private void start() {
+        for (NativeTask task : nativeTasks) {
+            task.start();
+        }
+        collector.start();
+    }
+
+    private void stop() {
+        collector.stop();
+        for (NativeTask task : nativeTasks) {
+            task.stop();
+        }
+    }
+
+    public void onStartStop(View view) {
+        if (!started) {
+            start();
+            ((Button) findViewById(R.id.start_stop)).setText("Stop");
+            findViewById(R.id.tick).setEnabled(true);
+            started = true;
+        } else {
+            stop();
+            ((Button) findViewById(R.id.start_stop)).setText("Start");
+            findViewById(R.id.tick).setEnabled(false);
+            started = false;
+        }
+    }
+
+    public void onTick(View view) {
+        collector.tick();
     }
 }

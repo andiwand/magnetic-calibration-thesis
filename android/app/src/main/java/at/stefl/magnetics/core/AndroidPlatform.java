@@ -23,11 +23,20 @@ public class AndroidPlatform {
         }
 
         @Override
+        public void onStop(double time) {
+            pushStop(time);
+        }
+
+        @Override
+        public void onTickEvent(double time) {
+            pushTick(time);
+        }
+
+        @Override
         public void onClockEvent(double time, double unixUtc) {
             pushClock(time, unixUtc);
         }
 
-        int i = 0;
         @Override
         public void onSensorEvent(double time, SensorEvent event) {
             switch (event.sensor.getType()) {
@@ -63,11 +72,6 @@ public class AndroidPlatform {
         public void onSensorAccuracy(double time, Sensor sensor, int accuracy) {
             // TODO
         }
-
-        @Override
-        public void onStop(double time) {
-            pushStop(time);
-        }
     };
 
     public AndroidPlatform() {
@@ -85,6 +89,8 @@ public class AndroidPlatform {
 
     public native void pushStart(double time);
     public native void pushStop(double time);
+
+    public native void pushTick(double time);
 
     public native void pushClock(double time, double linuxUtc);
 

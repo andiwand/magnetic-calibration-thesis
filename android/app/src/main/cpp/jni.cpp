@@ -104,13 +104,19 @@ Java_at_stefl_magnetics_core_AndroidPlatform_destroy(JNIEnv *env, jclass clazz, 
 extern "C"
 JNIEXPORT void JNICALL
 Java_at_stefl_magnetics_core_AndroidPlatform_pushStart(JNIEnv *env, jobject thiz, jdouble time) {
-    // TODO: implement pushStart()
+    // TODO
 }
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_at_stefl_magnetics_core_AndroidPlatform_pushStop(JNIEnv *env, jobject thiz, jdouble time) {
-    // TODO: implement pushStop()
+    // TODO
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_at_stefl_magnetics_core_AndroidPlatform_pushTick(JNIEnv *env, jobject thiz, jdouble time) {
+    get_platform(env, thiz)->m_tick.push({time});
 }
 
 extern "C"

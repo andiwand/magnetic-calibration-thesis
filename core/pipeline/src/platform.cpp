@@ -7,11 +7,13 @@ Platform::Platform(std::string annotation)
 
 StandardPlatform::StandardPlatform(std::string annotation)
     : Platform(std::move(annotation)),
-      std::enable_shared_from_this<StandardPlatform>(), m_clock{"clock", this},
+      std::enable_shared_from_this<StandardPlatform>(), m_tick{"tick", this}, m_clock{"clock", this},
       m_accelerometer{"accelerometer", this}, m_gyroscope{"gyroscope", this},
       m_magnetometer{"magnetometer", this}, m_magnetometer_uncalibrated{
                                                 "magnetometer uncalibrated",
                                                 this}, m_magnetometer_bias{"magnetometer bias", this}, m_orientation{"orientation", this} {}
+
+Output<Event<Void>> * StandardPlatform::tick() { return &m_tick; }
 
 Output<Event<Clock>> *StandardPlatform::clock() { return &m_clock; }
 

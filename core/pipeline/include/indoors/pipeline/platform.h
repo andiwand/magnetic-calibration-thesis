@@ -10,6 +10,8 @@ class Platform : public StandardNode {
 public:
   explicit Platform(std::string annotation);
 
+  virtual Output<Event<Void>> *tick() = 0;
+
   virtual Output<Event<Clock>> *clock() = 0;
 
   virtual Output<Event<Vector3>> *accelerometer() = 0;
@@ -27,6 +29,8 @@ class StandardPlatform : public Platform,
 public:
   explicit StandardPlatform(std::string annotation);
 
+  Output<Event<Void>> *tick() override;
+
   Output<Event<Clock>> *clock() override;
 
   Output<Event<Vector3>> *accelerometer() override;
@@ -38,6 +42,7 @@ public:
 
   Output<Event<Quaternion>> *orientation() override;
 
+  StandardOutput<Event<Void>> m_tick;
   StandardOutput<Event<Clock>> m_clock;
   StandardOutput<Event<Vector3>> m_accelerometer;
   StandardOutput<Event<Vector3>> m_gyroscope;

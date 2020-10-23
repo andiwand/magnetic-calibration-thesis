@@ -138,6 +138,14 @@ public class Collector {
         }
     }
 
+    public void tick() {
+        double time = getTime();
+
+        for (CollectorListener listener : listeners) {
+            listener.onTickEvent(time);
+        }
+    }
+
     private double getTime() {
         return (SystemClock.elapsedRealtimeNanos() - startTime) * 1e-9;
     }
