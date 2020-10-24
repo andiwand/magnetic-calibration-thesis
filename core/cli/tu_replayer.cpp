@@ -1,4 +1,4 @@
-#include <indoors/magnetics/task.h>
+#include <indoors/magnetics/filter_task.h>
 #include <indoors/pipeline/platform.h>
 #include <nlohmann/json.hpp>
 #include <iostream>
@@ -19,8 +19,8 @@ int main(int argc, char** argv) {
   }
 
   auto replay_platform = std::make_shared<StandardPlatform>("tu replayed");
-  auto default_task = Tasks::create_default(replay_platform);
-  default_task->start();
+  FilterTask filter_task(replay_platform);
+  filter_task.start();
 
   const double interval = 0.1;
   double last_time = 0;
@@ -54,5 +54,5 @@ int main(int argc, char** argv) {
     }
   }
 
-  default_task->stop();
+  filter_task.stop();
 }

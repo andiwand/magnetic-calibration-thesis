@@ -2,6 +2,7 @@
 #include <memory>
 #include <indoors/pipeline/platform.h>
 #include <indoors/magnetics/task.h>
+#include <indoors/magnetics/filter_task.h>
 #include <streambuf>
 #include <android/log.h>
 #include <iostream>
@@ -175,22 +176,11 @@ Java_at_stefl_magnetics_core_AndroidPlatform_pushOrientation(JNIEnv *env, jobjec
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_at_stefl_magnetics_core_NativeTask_createDefault_1__Lat_stefl_magnetics_core_AndroidPlatform_2(
-        JNIEnv *env, jclass clazz, jobject platform) {
+Java_at_stefl_magnetics_core_NativeTask_createFilter_1(JNIEnv *env, jclass clazz,
+                                                       jobject platform) {
     auto &&p = get_platform(env, platform);
 
-    auto tmp = Tasks::create_default(p);
-    auto task = new std::shared_ptr<Task>(std::move(tmp));
-    return reinterpret_cast<jlong>(task);
-}
-
-extern "C"
-JNIEXPORT jlong JNICALL
-Java_at_stefl_magnetics_core_NativeTask_createDefault_1__Lat_stefl_magnetics_core_AndroidPlatform_2Ljava_lang_String_2(
-        JNIEnv *env, jclass clazz, jobject platform, jstring html) {
-    auto &&p = get_platform(env, platform);
-
-    auto tmp = Tasks::create_default(p, jstring2string(env, html));
+    auto tmp = std::make_shared<FilterTask>(p);
     auto task = new std::shared_ptr<Task>(std::move(tmp));
     return reinterpret_cast<jlong>(task);
 }
@@ -214,24 +204,6 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_at_stefl_magnetics_core_NativeTask_start(JNIEnv *env, jobject thiz) {
     get_task(env, thiz)->start();
-}
-
-extern "C"
-JNIEXPORT void JNICALL
-Java_at_stefl_magnetics_core_NativeTask_restart(JNIEnv *env, jobject thiz) {
-    get_task(env, thiz)->restart();
-}
-
-extern "C"
-JNIEXPORT void JNICALL
-Java_at_stefl_magnetics_core_NativeTask_resume(JNIEnv *env, jobject thiz) {
-    get_task(env, thiz)->resume();
-}
-
-extern "C"
-JNIEXPORT void JNICALL
-Java_at_stefl_magnetics_core_NativeTask_pause(JNIEnv *env, jobject thiz) {
-    get_task(env, thiz)->pause();
 }
 
 extern "C"

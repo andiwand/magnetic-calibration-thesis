@@ -1,10 +1,12 @@
 add_library(magnetics STATIC
         src/compass.cpp
-        src/gl_util.cpp
+        src/filter_task.cpp
         src/hard_iron.cpp
-        src/magneto_sphere.cpp
+        src/live_demo_task.cpp
         src/moving_average.cpp
         src/orientation_filter.cpp
+        src/player_task.cpp
+        src/recorder_task.cpp
         src/task.cpp
         src/total_rotation.cpp
         src/web_server.cpp

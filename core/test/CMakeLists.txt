@@ -7,7 +7,6 @@ add_executable(magnetics-test
         http_test.cpp
         magneto_sphere_test.cpp
         moving_average_test.cpp
-        opengl_test.cpp
         orientation_filter_test.cpp
         synchronizer_test.cpp
         )
