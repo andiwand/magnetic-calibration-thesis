@@ -1,6 +1,5 @@
 include(boost.cmake)
 include(eigen.cmake)
-include(glm.cmake)
 include(googletest.cmake)
 include(protobuf.cmake)
 include(json.cmake)

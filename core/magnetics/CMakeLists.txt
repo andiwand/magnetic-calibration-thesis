@@ -20,6 +20,5 @@ target_include_directories(magnetics
 target_link_libraries(magnetics
         PUBLIC
         pipeline
-        glm
         eigen
         )
