@@ -19,12 +19,7 @@ public:
   virtual void handle(web_socket &&socket) = 0;
 };
 
-class HttpServerEvents : public StandardNode {
-public:
-private:
-};
-
-class WebSocketInput : public StandardInput<protocol::Event> {
+class WebSocketInput final : public StandardInput<protocol::Event> {
 public:
   using tcp_socket = boost::asio::ip::tcp::socket;
   using web_socket = boost::beast::websocket::stream<tcp_socket>;
@@ -37,7 +32,7 @@ private:
   web_socket m_websocket;
 };
 
-class WebSocket : public StandardNode, public WebSocketHandler {
+class WebSocket final : public StandardNode, public WebSocketHandler {
 public:
   explicit WebSocket(Output<protocol::Event> *output);
   WebSocket(std::string annotation, Output<protocol::Event> *output);

@@ -1,12 +1,13 @@
 #include <indoors/magnetics/recorder_task.h>
 #include <indoors/pipeline/protocol.h>
+#include <indoors/pipeline/file.h>
 #include <thread>
 
 namespace indoors::magnetics {
 
 class RecorderTask::Impl {
 public:
-  Impl(std::shared_ptr<pipeline::Platform> platform, std::string path) {
+  Impl(std::shared_ptr<pipeline::Platform> platform, std::string path) : m_file{path} {
     m_encoder.create_input(platform->tick());
 
     m_encoder.create_input(platform->clock());
@@ -19,11 +20,15 @@ public:
     m_encoder.create_input(platform->magnetometer_bias());
 
     m_encoder.create_input(platform->orientation());
+
+    m_encoder.output()->plug(m_file.input());
   }
 
   void start() {
     m_looper = std::thread([this]() {
       while (!m_stop) {
+        // TODO
+        m_file.iterate();
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
       }
     });
@@ -36,9 +41,8 @@ public:
   }
 
 private:
-  const std::shared_ptr<pipeline::Platform> m_platform;
-
   pipeline::ProtocolEncoder m_encoder;
+  pipeline::FileWriter m_file;
 
   std::thread m_looper;
 

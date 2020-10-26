@@ -1,5 +1,5 @@
-#ifndef INDOORS_PIPELINE_BUFFER_H
-#define INDOORS_PIPELINE_BUFFER_H
+#ifndef INDOORS_PIPELINE_SERIES_BUFFER_H
+#define INDOORS_PIPELINE_SERIES_BUFFER_H
 
 #include <algorithm>
 #include <indoors/pipeline/event.h>
@@ -9,14 +9,14 @@ namespace indoors::pipeline {
 
 // TODO performance: store timestamps in its own vector
 // TODO memory: auto rotate
-template <typename T> class Buffer {
+template <typename T> class SeriesBuffer {
 public:
-  Buffer() = default;
-  explicit Buffer(const std::size_t initial_capacity)
+  SeriesBuffer() = default;
+  explicit SeriesBuffer(const std::size_t initial_capacity)
       : m_initial_capacity{initial_capacity}, m_buffer{create_buffer()} {}
-  explicit Buffer(const double time)
+  explicit SeriesBuffer(const double time)
       : m_buffer{create_buffer()}, m_time_begin{time}, m_time_end{time} {}
-  Buffer(const std::size_t initial_capacity, const double time)
+  SeriesBuffer(const std::size_t initial_capacity, const double time)
       : m_initial_capacity{initial_capacity}, m_buffer{create_buffer()},
         m_time_begin{time}, m_time_end{time} {}
 
@@ -121,4 +121,4 @@ private:
 
 } // namespace indoors::pipeline
 
-#endif // INDOORS_PIPELINE_BUFFER_H
+#endif // INDOORS_PIPELINE_SERIES_BUFFER_H

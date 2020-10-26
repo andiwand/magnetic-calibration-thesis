@@ -1,7 +1,7 @@
 #ifndef INDOORS_PIPELINE_NODE_H
 #define INDOORS_PIPELINE_NODE_H
 
-#include <indoors/pipeline/buffer.h>
+#include <indoors/pipeline/series_buffer.h>
 #include <memory>
 #include <string>
 #include <vector>
@@ -193,13 +193,35 @@ template <typename T> class BufferedInput : public StandardInput<T> {
 public:
   BufferedInput(std::string annotation, Node *node)
       : StandardInput<T>(std::move(annotation), node) {}
-  BufferedInput(std::string annotation, Node *node,
-                const std::size_t initial_capacity)
+
+  std::vector<T> swap() {
+    std::vector<T> result;
+    std::swap(m_buffer, result);
+    return result;
+  }
+
+  void push(T data) override {
+    m_buffer.push_back(data);
+    StandardInput<T>::push(data);
+  }
+
+  void skip(const double time) override { StandardInput<T>::skip(time); }
+
+private:
+  std::vector<T> m_buffer;
+};
+
+template <typename T> class BufferedSeriesInput : public StandardInput<T> {
+public:
+  BufferedSeriesInput(std::string annotation, Node *node)
+      : StandardInput<T>(std::move(annotation), node) {}
+  BufferedSeriesInput(std::string annotation, Node *node,
+                      const std::size_t initial_capacity)
       : StandardInput<T>(std::move(annotation), node), m_buffer{
                                                            initial_capacity} {}
 
-  Buffer<T> &buffer() { return m_buffer; }
-  const Buffer<T> &buffer() const { return m_buffer; }
+  SeriesBuffer<T> &buffer() { return m_buffer; }
+  const SeriesBuffer<T> &buffer() const { return m_buffer; }
 
   std::vector<T> swap() { return m_buffer.swap(); }
 
@@ -216,7 +238,7 @@ public:
   }
 
 private:
-  Buffer<T> m_buffer;
+  SeriesBuffer<T> m_buffer;
 };
 
 } // namespace indoors::pipeline

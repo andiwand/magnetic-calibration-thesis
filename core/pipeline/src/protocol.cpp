@@ -4,22 +4,22 @@
 
 namespace indoors::pipeline {
 
-protocol::Void ProtocolEncoder::convert(const Void &) { return {}; }
+protocol::Void ProtocolEncoder::encode(const Void &) { return {}; }
 
-protocol::Clock ProtocolEncoder::convert(const Clock &from) {
+protocol::Clock ProtocolEncoder::encode(const Clock &from) {
   protocol::Clock result;
   result.set_unix_utc(from.unix_utc);
   return result;
 }
 
-protocol::Vector2 ProtocolEncoder::convert(const Vector2 &from) {
+protocol::Vector2 ProtocolEncoder::encode(const Vector2 &from) {
   protocol::Vector2 result;
   result.set_x(from.x);
   result.set_y(from.y);
   return result;
 }
 
-protocol::Vector3 ProtocolEncoder::convert(const Vector3 &from) {
+protocol::Vector3 ProtocolEncoder::encode(const Vector3 &from) {
   protocol::Vector3 result;
   result.set_x(from.x);
   result.set_y(from.y);
@@ -27,7 +27,7 @@ protocol::Vector3 ProtocolEncoder::convert(const Vector3 &from) {
   return result;
 }
 
-protocol::Quaternion ProtocolEncoder::convert(const Quaternion &from) {
+protocol::Quaternion ProtocolEncoder::encode(const Quaternion &from) {
   protocol::Quaternion result;
   result.set_w(from.w);
   result.set_x(from.x);
@@ -36,59 +36,59 @@ protocol::Quaternion ProtocolEncoder::convert(const Quaternion &from) {
   return result;
 }
 
-protocol::Heading ProtocolEncoder::convert(const Heading &from) {
+protocol::Heading ProtocolEncoder::encode(const Heading &from) {
   protocol::Heading result;
   result.set_north(from.north);
   result.set_var_north(from.var_north);
   return result;
 }
 
-protocol::Event ProtocolEncoder::convert(const Event<Void> &event) {
+protocol::Event ProtocolEncoder::encode(const Event<Void> &event) {
   protocol::Event result;
   result.set_t(event.time);
-  result.mutable_void_()->CopyFrom(convert(event.data));
+  result.mutable_void_()->CopyFrom(encode(event.data));
   return result;
 }
 
-protocol::Event ProtocolEncoder::convert(const Event<Clock> &event) {
+protocol::Event ProtocolEncoder::encode(const Event<Clock> &event) {
   protocol::Event result;
   result.set_t(event.time);
-  result.mutable_clock()->CopyFrom(convert(event.data));
+  result.mutable_clock()->CopyFrom(encode(event.data));
   return result;
 }
 
-protocol::Event ProtocolEncoder::convert(const Event<double> &event) {
+protocol::Event ProtocolEncoder::encode(const Event<double> &event) {
   protocol::Event result;
   result.set_t(event.time);
   result.set_scalar(event.data);
   return result;
 }
 
-protocol::Event ProtocolEncoder::convert(const Event<Vector2> &event) {
+protocol::Event ProtocolEncoder::encode(const Event<Vector2> &event) {
   protocol::Event result;
   result.set_t(event.time);
-  result.mutable_vector2()->CopyFrom(convert(event.data));
+  result.mutable_vector2()->CopyFrom(encode(event.data));
   return result;
 }
 
-protocol::Event ProtocolEncoder::convert(const Event<Vector3> &event) {
+protocol::Event ProtocolEncoder::encode(const Event<Vector3> &event) {
   protocol::Event result;
   result.set_t(event.time);
-  result.mutable_vector3()->CopyFrom(convert(event.data));
+  result.mutable_vector3()->CopyFrom(encode(event.data));
   return result;
 }
 
-protocol::Event ProtocolEncoder::convert(const Event<Quaternion> &event) {
+protocol::Event ProtocolEncoder::encode(const Event<Quaternion> &event) {
   protocol::Event result;
   result.set_t(event.time);
-  result.mutable_quaternion()->CopyFrom(convert(event.data));
+  result.mutable_quaternion()->CopyFrom(encode(event.data));
   return result;
 }
 
-protocol::Event ProtocolEncoder::convert(const Event<Heading> &event) {
+protocol::Event ProtocolEncoder::encode(const Event<Heading> &event) {
   protocol::Event result;
   result.set_t(event.time);
-  result.mutable_heading()->CopyFrom(convert(event.data));
+  result.mutable_heading()->CopyFrom(encode(event.data));
   return result;
 }
 
@@ -153,71 +153,110 @@ protocol::Event ProtocolEncoder::bye() {
 
 void ProtocolEncoder::push(protocol::Event event) { m_output.push(event); }
 
-Void ProtocolDecoder::convert(const protocol::Void &) { return {}; }
+Void ProtocolDecoder::decode(const protocol::Void &) { return {}; }
 
-Clock ProtocolDecoder::convert(const protocol::Clock &from) {
+Clock ProtocolDecoder::decode(const protocol::Clock &from) {
   return {from.unix_utc()};
 }
 
-Vector2 ProtocolDecoder::convert(const protocol::Vector2 &from) {
+Vector2 ProtocolDecoder::decode(const protocol::Vector2 &from) {
   return {from.x(), from.y()};
 }
 
-Vector3 ProtocolDecoder::convert(const protocol::Vector3 &from) {
+Vector3 ProtocolDecoder::decode(const protocol::Vector3 &from) {
   return {from.x(), from.y(), from.z()};
 }
 
-Quaternion ProtocolDecoder::convert(const protocol::Quaternion &from) {
+Quaternion ProtocolDecoder::decode(const protocol::Quaternion &from) {
   return {from.w(), from.x(), from.y(), from.z()};
 }
 
-Heading ProtocolDecoder::convert(const protocol::Heading &from) {
+Heading ProtocolDecoder::decode(const protocol::Heading &from) {
   return {from.north(), from.var_north()};
 }
 
-void ProtocolDecoder::convert(const protocol::Event &from, Event<Void> &to) {
+void ProtocolDecoder::decode(const protocol::Event &from, Event<Void> &to) {
   assert(from.has_void_());
   to.time = from.t();
 }
 
-void ProtocolDecoder::convert(const protocol::Event &from, Event<Clock> &to) {
+void ProtocolDecoder::decode(const protocol::Event &from, Event<Clock> &to) {
   assert(from.has_clock());
   to.time = from.t();
-  to.data = convert(from.clock());
+  to.data = decode(from.clock());
 }
 
-void ProtocolDecoder::convert(const protocol::Event &from, Event<double> &to) {
+void ProtocolDecoder::decode(const protocol::Event &from, Event<double> &to) {
   assert(from.__case() == protocol::Event::Case::kScalar);
   to.time = from.t();
   to.data = to.data;
 }
 
-void ProtocolDecoder::convert(const protocol::Event &from, Event<Vector2> &to) {
+void ProtocolDecoder::decode(const protocol::Event &from, Event<Vector2> &to) {
   assert(from.has_vector2());
   to.time = from.t();
-  to.data = convert(from.vector2());
+  to.data = decode(from.vector2());
 }
 
-void ProtocolDecoder::convert(const protocol::Event &from, Event<Vector3> &to) {
+void ProtocolDecoder::decode(const protocol::Event &from, Event<Vector3> &to) {
   assert(from.has_vector3());
   to.time = from.t();
-  to.data = convert(from.vector3());
+  to.data = decode(from.vector3());
 }
 
-void ProtocolDecoder::convert(const protocol::Event &from,
-                              Event<Quaternion> &to) {
+void ProtocolDecoder::decode(const protocol::Event &from,
+                             Event<Quaternion> &to) {
   assert(from.has_quaternion());
   to.time = from.t();
-  to.data = convert(from.quaternion());
+  to.data = decode(from.quaternion());
 }
 
-void ProtocolDecoder::convert(const protocol::Event &from, Event<Heading> &to) {
+void ProtocolDecoder::decode(const protocol::Event &from, Event<Heading> &to) {
   assert(from.has_heading());
   to.time = from.t();
-  to.data = convert(from.heading());
+  to.data = decode(from.heading());
 }
 
+ProtocolDecoder::ProtocolDecoder() : ProtocolDecoder("decoder") {}
+
 ProtocolDecoder::ProtocolDecoder(std::string annotation)
-    : StandardNode(std::move(annotation)) {}
+    : StandardNode(std::move(annotation)), m_input{"decoder input", this} {}
+
+Input<protocol::Event> *ProtocolDecoder::input() { return &m_input; }
+
+void ProtocolDecoder::iterate() {
+  auto &&events = m_input.swap();
+
+  for (auto &&event : events) {
+    if (!m_initialized) {
+      assert(event.has_hello());
+      auto &&hello = *event.mutable_hello();
+      for (auto &&output : m_outputs) {
+        auto example = output->example();
+
+        auto &&channels = *hello.mutable_channels();
+        for (auto channel_it = channels.begin(); channel_it != channels.end();
+             ++channel_it) {
+          if (channel_it->eventexample().__case() == example.__case()) {
+            m_mapping[channel_it->channel()] = output.get();
+            channels.erase(channel_it);
+          }
+        }
+      }
+      m_initialized = true;
+      continue;
+    }
+    assert(!event.has_hello());
+
+    if (event.has_bye()) {
+      // TODO
+      return;
+    }
+
+    auto &&mapping = m_mapping.find(event.channel());
+    if (mapping != m_mapping.end())
+      mapping->second->push(event);
+  }
+}
 
 } // namespace indoors::pipeline

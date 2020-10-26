@@ -36,11 +36,11 @@ private:
   float m_last_total_rotation{0};
   bool m_initialized{false};
 
-  pipeline::BufferedInput<pipeline::Event<pipeline::Vector3>>
+  pipeline::BufferedSeriesInput<pipeline::Event<pipeline::Vector3>>
       m_magnetometer_uncalibrated;
-  pipeline::BufferedInput<pipeline::Event<pipeline::Quaternion>> m_orientation;
-  pipeline::BufferedInput<pipeline::Event<double>> m_total_rotation;
-  pipeline::BufferedInput<pipeline::Event<pipeline::Vector3>>
+  pipeline::BufferedSeriesInput<pipeline::Event<pipeline::Quaternion>> m_orientation;
+  pipeline::BufferedSeriesInput<pipeline::Event<double>> m_total_rotation;
+  pipeline::BufferedSeriesInput<pipeline::Event<pipeline::Vector3>>
       m_system_calibration;
 
   pipeline::StandardOutput<pipeline::Event<pipeline::Vector3>>

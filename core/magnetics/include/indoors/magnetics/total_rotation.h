@@ -23,7 +23,7 @@ private:
   double m_last_total_rotation{0};
   bool m_initialized{false};
 
-  pipeline::BufferedInput<pipeline::Event<pipeline::Quaternion>> m_orientation;
+  pipeline::BufferedSeriesInput<pipeline::Event<pipeline::Quaternion>> m_orientation;
   pipeline::StandardOutput<pipeline::Event<double>> m_delta_rotation;
   pipeline::StandardOutput<pipeline::Event<double>> m_total_rotation;
 };

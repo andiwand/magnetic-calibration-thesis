@@ -28,8 +28,8 @@ private:
   float m_q2{0};
   float m_q3{0};
 
-  pipeline::BufferedInput<pipeline::Event<pipeline::Vector3>> m_accelerometer;
-  pipeline::BufferedInput<pipeline::Event<pipeline::Vector3>> m_gyroscope;
+  pipeline::BufferedSeriesInput<pipeline::Event<pipeline::Vector3>> m_accelerometer;
+  pipeline::BufferedSeriesInput<pipeline::Event<pipeline::Vector3>> m_gyroscope;
   pipeline::StandardOutput<pipeline::Event<pipeline::Quaternion>> m_orientation;
 };
 

@@ -10,7 +10,7 @@ TEST(moving_average, hello) {
   MovingAverage moving_average(2, 1);
   auto channel = moving_average.create_channel("a");
 
-  BufferedInput<Event<Vector3>> buffer("", nullptr);
+  BufferedSeriesInput<Event<Vector3>> buffer("", nullptr);
   channel.second->plug(&buffer);
 
   channel.first->push({0.0, 1.0, 0.0, 1.0});

@@ -8,7 +8,7 @@ TEST(synchronizer, hello) {
   auto channel_a = synchronizer.create_channel<Event<Void>>("a");
   auto channel_b = synchronizer.create_channel<Event<Void>>("b");
 
-  BufferedInput<Event<Void>> buffer("", nullptr);
+  BufferedSeriesInput<Event<Void>> buffer("", nullptr);
   channel_a.second->plug(&buffer);
 
   channel_a.first->push({0.0});

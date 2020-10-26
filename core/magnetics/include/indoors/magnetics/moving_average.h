@@ -27,7 +27,7 @@ private:
   const double m_interval;
 
   class Channel
-      : public pipeline::BufferedInput<pipeline::Event<pipeline::Vector3>> {
+      : public pipeline::BufferedSeriesInput<pipeline::Event<pipeline::Vector3>> {
   public:
     Channel(std::string annotation, Node *node);
 

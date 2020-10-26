@@ -39,30 +39,31 @@ private:
   };
 
   template <typename T>
-  class ChannelImpl : public Channel, public BufferedInput<T> {
+  class ChannelImpl : public Channel, public BufferedSeriesInput<T> {
   public:
     ChannelImpl(std::string annotation, Node *node)
-        : BufferedInput<T>(annotation, node), m_output{annotation, node} {}
+        : BufferedSeriesInput<T>(annotation, node), m_output{annotation, node} {
+    }
 
     void push(T data) override {
       std::lock_guard<std::mutex> lk(
           reinterpret_cast<Synchronizer *>(node())->m_mutex);
-      BufferedInput<T>::push(data);
+      BufferedSeriesInput<T>::push(data);
     }
 
     void skip(const double time) override {
       std::lock_guard<std::mutex> lk(
           reinterpret_cast<Synchronizer *>(node())->m_mutex);
-      BufferedInput<T>::skip(time);
+      BufferedSeriesInput<T>::skip(time);
     }
 
     void flush_until(const double time) override {
-      BufferedInput<T>::skip(time);
-      auto series = BufferedInput<T>::buffer().pop_until(time);
+      BufferedSeriesInput<T>::skip(time);
+      auto series = BufferedSeriesInput<T>::buffer().pop_until(time);
       for (auto &&event : series) {
         m_output.push(event);
       }
-      BufferedInput<T>::buffer().rotate();
+      BufferedSeriesInput<T>::buffer().rotate();
 
       if (m_output.time() < time) {
         m_output.skip(time);
