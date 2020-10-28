@@ -28,7 +28,7 @@ public:
     m_looper = std::thread([this]() {
       while (!m_stop) {
         // TODO
-        m_file.iterate();
+        m_file.flush();
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
       }
     });
@@ -38,11 +38,13 @@ public:
     m_stop = true;
 
     m_looper.join();
+
+    m_file.flush();
   }
 
 private:
-  pipeline::ProtocolEncoder m_encoder;
   pipeline::FileWriter m_file;
+  pipeline::ProtocolEncoder m_encoder;
 
   std::thread m_looper;
 

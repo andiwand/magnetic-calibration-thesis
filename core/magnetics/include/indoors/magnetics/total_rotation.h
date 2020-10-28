@@ -1,13 +1,11 @@
 #ifndef INDOORS_MAGNETICS_TOTAL_ROTATION_H
 #define INDOORS_MAGNETICS_TOTAL_ROTATION_H
 
-#include <indoors/pipeline/definitions.h>
 #include <indoors/pipeline/node.h>
 
 namespace indoors::magnetics {
 
-class TotalRotation final : public pipeline::StandardNode,
-                            public pipeline::Loopable {
+class TotalRotation final : public pipeline::StandardNode {
 public:
   TotalRotation();
 
@@ -16,7 +14,7 @@ public:
   pipeline::Output<pipeline::Event<double>> *delta_rotation();
   pipeline::Output<pipeline::Event<double>> *total_rotation();
 
-  void iterate() override;
+  void flush() override;
 
 private:
   pipeline::Quaternion m_last_orientation;

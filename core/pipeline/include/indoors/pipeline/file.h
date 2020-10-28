@@ -10,13 +10,13 @@
 
 namespace indoors::pipeline {
 
-class FileWriter final : public StandardNode, public Loopable {
+class FileWriter final : public StandardNode {
 public:
   explicit FileWriter(const std::string &path);
 
   Input<protocol::Event> *input();
 
-  void iterate() override;
+  void flush() override;
 
 private:
   std::ofstream m_file;
@@ -29,6 +29,7 @@ public:
 
   Output<protocol::Event> *output();
 
+  void flush() override;
   void flush_until(double time) override;
 
 private:

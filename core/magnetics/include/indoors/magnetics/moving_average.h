@@ -1,15 +1,13 @@
 #ifndef INDOORS_MAGNETICS_MOVING_AVERAGE_H
 #define INDOORS_MAGNETICS_MOVING_AVERAGE_H
 
-#include <indoors/pipeline/definitions.h>
 #include <indoors/pipeline/node.h>
 #include <vector>
 
 namespace indoors::magnetics {
 
 // TODO times output?
-class MovingAverage final : public pipeline::StandardNode,
-                            public pipeline::Loopable {
+class MovingAverage final : public pipeline::StandardNode {
 public:
   MovingAverage(double window, double interval);
   MovingAverage(std::string annotation, double window, double interval);
@@ -20,7 +18,7 @@ public:
   pipeline::Output<pipeline::Event<pipeline::Vector3>> *
   create_channel(pipeline::Output<pipeline::Event<pipeline::Vector3>> *output);
 
-  void iterate() override;
+  void flush() override;
 
 private:
   const double m_window;

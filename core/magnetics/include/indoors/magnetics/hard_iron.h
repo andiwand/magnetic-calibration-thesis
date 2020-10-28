@@ -1,13 +1,11 @@
 #ifndef INDOORS_MAGNETICS_HARD_IRON_H
 #define INDOORS_MAGNETICS_HARD_IRON_H
 
-#include <indoors/pipeline/definitions.h>
 #include <indoors/pipeline/node.h>
 
 namespace indoors::magnetics {
 
-class HardIron final : public pipeline::StandardNode,
-                       public pipeline::Loopable {
+class HardIron final : public pipeline::StandardNode {
 public:
   HardIron(std::uint_fast32_t seed, std::size_t population, float min_rotation);
   ~HardIron() override;
@@ -24,7 +22,7 @@ public:
   var_magnetometer_calibrated();
   pipeline::Output<pipeline::Event<pipeline::Vector3>> *hard_iron();
 
-  void iterate() override;
+  void flush() override;
 
 private:
   class Impl;

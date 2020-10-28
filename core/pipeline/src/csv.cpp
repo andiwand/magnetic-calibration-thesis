@@ -12,7 +12,7 @@ std::string CsvWriter::to_csv(const Event<Void> &event) {
 CsvWriter::CsvWriter() : CsvWriter("csv_writer", "") {}
 
 CsvWriter::CsvWriter(std::string annotation, std::string root)
-    : m_annotation{std::move(annotation)}, m_root{std::move(root)} {}
+    : StandardNode(std::move(annotation)), m_root{std::move(root)} {}
 
 CsvWriter::CsvInputBase::CsvInputBase(std::unique_ptr<std::ostream> output)
     : m_output{std::move(output)} {}
@@ -30,7 +30,7 @@ void CsvReader::from_csv(const std::string &line, Event<Void> &event) {
 CsvReader::CsvReader() : CsvReader("csv_reader", "") {}
 
 CsvReader::CsvReader(std::string annotation, std::string root)
-    : m_annotation{std::move(annotation)}, m_root{std::move(root)} {}
+    : StandardNode(std::move(annotation)), m_root{std::move(root)} {}
 
 CsvReader::CsvOutputBase::CsvOutputBase(std::unique_ptr<std::istream> input)
     : m_input{std::move(input)} {}

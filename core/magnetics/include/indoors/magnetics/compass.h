@@ -6,8 +6,7 @@
 
 namespace indoors::magnetics {
 
-class ExtractionCompass final : public pipeline::StandardNode,
-                                public pipeline::Loopable {
+class ExtractionCompass final : public pipeline::StandardNode {
 public:
   explicit ExtractionCompass(std::string annotation);
 
@@ -15,15 +14,14 @@ public:
 
   pipeline::Output<pipeline::Event<pipeline::Heading>> *heading();
 
-  void iterate() override;
+  void flush() override;
 
 private:
   pipeline::BufferedSeriesInput<pipeline::Event<pipeline::Quaternion>> m_orientation;
   pipeline::StandardOutput<pipeline::Event<pipeline::Heading>> m_heading;
 };
 
-class NaiveCompass final : public pipeline::StandardNode,
-                           public pipeline::Loopable {
+class NaiveCompass final : public pipeline::StandardNode {
 public:
   NaiveCompass();
 
@@ -33,7 +31,7 @@ public:
 
   pipeline::Output<pipeline::Event<pipeline::Heading>> *heading();
 
-  void iterate() override;
+  void flush() override;
 
 private:
   pipeline::BufferedSeriesInput<pipeline::Event<pipeline::Vector3>>
@@ -43,8 +41,7 @@ private:
   pipeline::StandardOutput<pipeline::Event<pipeline::Heading>> m_heading;
 };
 
-class ParticleCompass final : public pipeline::StandardNode,
-                              public pipeline::Loopable {
+class ParticleCompass final : public pipeline::StandardNode {
 public:
   ParticleCompass(std::uint_fast32_t seed, std::size_t population,
                   float min_rotation);
@@ -62,7 +59,7 @@ public:
   pipeline::Output<pipeline::Event<pipeline::Vector2>> *north_confidence();
   pipeline::Output<pipeline::Event<pipeline::Vector3>> *external();
 
-  void iterate() override;
+  void flush() override;
 
 private:
   class Impl;

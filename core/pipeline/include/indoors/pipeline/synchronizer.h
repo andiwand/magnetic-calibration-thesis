@@ -8,7 +8,7 @@
 
 namespace indoors::pipeline {
 
-class Synchronizer final : public StandardNode, public Loopable {
+class Synchronizer final : public StandardNode {
 public:
   explicit Synchronizer(double max_slave_delay);
   Synchronizer(std::string annotation, double max_slave_delay);
@@ -27,7 +27,7 @@ public:
     return channel.second;
   }
 
-  void iterate() override;
+  void flush() override;
 
 private:
   const double m_max_slave_delay{0};

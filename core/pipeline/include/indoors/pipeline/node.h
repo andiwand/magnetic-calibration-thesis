@@ -15,6 +15,10 @@ public:
   virtual ~Node() = default;
 
   virtual const std::string &annotation() const = 0;
+
+  // TODO list inputs/outputs
+
+  virtual void flush() = 0;
 };
 
 class Interface {
@@ -67,6 +71,8 @@ public:
   explicit StandardNode(std::string annotation);
 
   const std::string &annotation() const override;
+
+  void flush() override {}
 
 private:
   const std::string m_annotation;

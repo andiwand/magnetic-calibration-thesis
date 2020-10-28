@@ -13,7 +13,7 @@
 
 namespace indoors::pipeline {
 
-class CsvWriter final : public Node,
+class CsvWriter final : public StandardNode,
                         public std::enable_shared_from_this<CsvWriter> {
 public:
   static std::string header(Event<Void>);
@@ -22,8 +22,6 @@ public:
 
   CsvWriter();
   CsvWriter(std::string annotation, std::string root);
-
-  const std::string &annotation() const override { return m_annotation; }
 
   template <typename T>
   std::shared_ptr<Input<T>> create_input(std::string annotation) {
@@ -42,7 +40,6 @@ public:
   }
 
 private:
-  const std::string m_annotation;
   const std::string m_root;
 
   class CsvInputBase {
@@ -70,7 +67,7 @@ private:
   };
 };
 
-class CsvReader final : public Node,
+class CsvReader final : public StandardNode,
                         public Flushable,
                         public std::enable_shared_from_this<CsvReader> {
 public:
@@ -78,8 +75,6 @@ public:
 
   CsvReader();
   CsvReader(std::string annotation, std::string root);
-
-  const std::string &annotation() const override { return m_annotation; }
 
   template <typename T> Output<T> *create_output(std::string annotation) {
     // TODO use c++ paths?
@@ -101,7 +96,6 @@ public:
 private:
   class CsvOutputBase;
 
-  const std::string m_annotation;
   const std::string m_root;
   const std::vector<CsvOutputBase *> m_outputs;
 

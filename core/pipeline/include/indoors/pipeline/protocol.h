@@ -1,7 +1,6 @@
 #ifndef INDOORS_PIPELINE_PROTOCOL_H
 #define INDOORS_PIPELINE_PROTOCOL_H
 
-#include <indoors/pipeline/definitions.h>
 #include <indoors/pipeline/event.h>
 #include <indoors/pipeline/node.h>
 #include <indoors/pipeline/protocol/event.pb.h>
@@ -27,14 +26,13 @@ public:
 
   ProtocolEncoder();
   explicit ProtocolEncoder(std::string annotation);
-  ~ProtocolEncoder() override;
 
   template <typename T> Input<T> *create_input(std::string annotation) {
     const auto channel_id = m_next_channel_id++;
-    // TODO new
-    auto input = new EncoderInput<T>(this, std::move(annotation), channel_id);
-    m_inputs.push_back(std::unique_ptr<EncoderInput<T>>(input));
-    return input;
+    auto input = std::make_unique<EncoderInput<T>>(this, std::move(annotation), channel_id);
+    auto result = input.get();
+    m_inputs.push_back(std::move(input));
+    return result;
   }
 
   template <typename T> void create_input(Output<T> *output) {
@@ -47,6 +45,9 @@ public:
   }
 
   Output<protocol::Event> *output();
+
+  void hello(double time);
+  void bye(double time);
 
 private:
   class EncoderInputBase : virtual public Interface {
@@ -63,7 +64,7 @@ private:
   };
 
   template <typename T>
-  class EncoderInput : public StandardInput<T>, public EncoderInputBase {
+  class EncoderInput final : public StandardInput<T>, public EncoderInputBase {
   public:
     EncoderInput(ProtocolEncoder *encoder, std::string annotation,
                  std::uint32_t channel_id)
@@ -78,24 +79,25 @@ private:
     }
   };
 
-  class EncoderOutput : public StandardOutput<protocol::Event> {
+  class IntermediateOutput final : public StandardOutput<protocol::Event> {
   public:
-    EncoderOutput(std::string annotation, Node *node);
+    IntermediateOutput(std::string annotation, ProtocolEncoder *encoder);
     void plug(Input<protocol::Event> *input) override;
     void unplug(Input<protocol::Event> *input) override;
   };
 
-  protocol::Event hello();
-  protocol::Event bye();
-  void push(protocol::Event data);
+  protocol::Event hello_(double time);
+  static protocol::Event bye_(double time);
 
+  bool m_opened{false};
+  bool m_closed{false};
   std::uint32_t m_next_channel_id{0};
 
   std::vector<std::unique_ptr<EncoderInputBase>> m_inputs;
-  EncoderOutput m_output;
+  IntermediateOutput m_output;
 };
 
-class ProtocolDecoder final : public StandardNode, public Loopable {
+class ProtocolDecoder final : public StandardNode {
 public:
   static Void decode(const protocol::Void &from);
   static Clock decode(const protocol::Clock &from);
@@ -116,10 +118,10 @@ public:
   explicit ProtocolDecoder(std::string annotation);
 
   template <typename T> Output<T> *create_output(std::string annotation) {
-    // TODO new
-    auto output = new DecoderOutput<T>(this, std::move(annotation));
-    m_outputs.push_back(std::unique_ptr<DecoderOutput<T>>(output));
-    return output;
+    auto output = std::make_unique<DecoderOutput<T>>(this, std::move(annotation));
+    auto result = output.get();
+    m_outputs.push_back(std::move(output));
+    return result;
   }
 
   template <typename T> void create_output(Input<T> *input) {
@@ -133,37 +135,54 @@ public:
 
   Input<protocol::Event> *input();
 
-  void iterate() override;
+  protocol::Event hello();
+  protocol::Event bye();
 
 private:
-  class DecoderOutputBase;
-
-  BufferedInput<protocol::Event> m_input;
-  std::vector<std::unique_ptr<DecoderOutputBase>> m_outputs;
-  std::unordered_map<std::uint32_t, DecoderOutputBase *> m_mapping;
-  bool m_initialized{false};
+  class DecoderInput final : public StandardInput<protocol::Event> {
+  public:
+    DecoderInput(std::string annotation, ProtocolDecoder *decoder);
+    void push(protocol::Event event) override;
+  };
 
   class DecoderOutputBase {
   public:
     virtual ~DecoderOutputBase() = default;
     virtual protocol::Event example() = 0;
     virtual void push(protocol::Event event) = 0;
+    virtual void skip(double time) = 0;
   };
 
   template <typename T>
-  class DecoderOutput : public StandardOutput<T>, public DecoderOutputBase {
+  class DecoderOutput final : public StandardOutput<T>, public DecoderOutputBase {
   public:
     DecoderOutput(ProtocolDecoder *decoder, std::string annotation)
         : StandardOutput<T>(std::move(annotation), decoder) {}
 
-    protocol::Event example() override { return encode(T()); }
+    protocol::Event example() override { return ProtocolEncoder::encode(T()); }
 
     void push(protocol::Event event) override {
       T decoded;
       decode(event, decoded);
       StandardOutput<T>::push(decoded);
     }
+
+    void skip(const double time) override {
+      StandardOutput<T>::skip(time);
+    }
   };
+
+  void hello_(protocol::Event &&event);
+  void bye_(protocol::Event &&event);
+
+  DecoderInput m_input;
+  std::vector<std::unique_ptr<DecoderOutputBase>> m_outputs;
+  std::unordered_map<std::uint32_t, DecoderOutputBase *> m_mapping;
+
+  protocol::Event m_hello;
+  protocol::Event m_bye;
+  bool m_opened{false};
+  bool m_closed{false};
 };
 
 } // namespace indoors::pipeline

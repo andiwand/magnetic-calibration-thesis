@@ -18,7 +18,7 @@ TEST(moving_average, hello) {
   channel.first->push({2.0, 3.0, 0.0, 5.0});
   channel.first->skip(3.1);
 
-  moving_average.iterate();
+  moving_average.flush();
 
   auto data = buffer.swap();
   ASSERT_EQ(2, data.size());

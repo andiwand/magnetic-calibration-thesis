@@ -10,6 +10,8 @@ public:
   explicit PlayerTask(std::string path);
   ~PlayerTask() override;
 
+  std::shared_ptr<pipeline::Platform> platform();
+
   void start() override;
   void stop() override;
 

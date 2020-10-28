@@ -2,7 +2,8 @@
 #include <memory>
 #include <indoors/pipeline/platform.h>
 #include <indoors/magnetics/task.h>
-#include <indoors/magnetics/filter_task.h>
+#include <indoors/magnetics/live_demo_task.h>
+#include <indoors/magnetics/recorder_task.h>
 #include <streambuf>
 #include <android/log.h>
 #include <iostream>
@@ -73,8 +74,8 @@ namespace {
         return *platform;
     }
 
-    std::shared_ptr<StandardPlatform> &get_platform(JNIEnv *env, jobject thiz) {
-        return handle_to_shared_ptr<StandardPlatform>(env, thiz);
+    std::shared_ptr<ForwardPlatform> &get_platform(JNIEnv *env, jobject thiz) {
+        return handle_to_shared_ptr<ForwardPlatform>(env, thiz);
     }
 
     std::shared_ptr<Task> &get_task(JNIEnv *env, jobject thiz) {
@@ -89,15 +90,15 @@ Java_at_stefl_magnetics_core_AndroidPlatform_create(JNIEnv *env, jclass clazz) {
     std::cout.rdbuf(new androidbuf(ANDROID_LOG_INFO, "cout"));
     std::cerr.rdbuf(new androidbuf(ANDROID_LOG_ERROR, "cerr"));
 
-    auto tmp = std::make_shared<StandardPlatform>("android");
-    auto platform = new std::shared_ptr<StandardPlatform>(std::move(tmp));
+    auto tmp = std::make_shared<ForwardPlatform>("android");
+    auto platform = new std::shared_ptr<ForwardPlatform>(std::move(tmp));
     return reinterpret_cast<jlong>(platform);
 }
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_at_stefl_magnetics_core_AndroidPlatform_destroy(JNIEnv *env, jclass clazz, jlong handle) {
-    auto platform = reinterpret_cast<std::shared_ptr<StandardPlatform> *>(handle);
+    auto platform = reinterpret_cast<std::shared_ptr<ForwardPlatform> *>(handle);
     platform->reset();
     delete platform;
 }
@@ -176,18 +177,29 @@ Java_at_stefl_magnetics_core_AndroidPlatform_pushOrientation(JNIEnv *env, jobjec
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_at_stefl_magnetics_core_NativeTask_createFilter_1(JNIEnv *env, jclass clazz,
+Java_at_stefl_magnetics_core_NativeTask_createLiveDemo_1(JNIEnv *env, jclass clazz,
                                                        jobject platform) {
     auto &&p = get_platform(env, platform);
 
-    auto tmp = std::make_shared<FilterTask>(p);
+    auto tmp = std::make_shared<LiveDemoTask>(p);
+    auto task = new std::shared_ptr<Task>(std::move(tmp));
+    return reinterpret_cast<jlong>(task);
+}
+
+extern "C"
+JNIEXPORT jlong JNICALL
+Java_at_stefl_magnetics_core_NativeTask_createRecorder_1(JNIEnv *env, jclass clazz,
+                                                       jobject platform, jstring path) {
+    auto &&p = get_platform(env, platform);
+
+    auto tmp = std::make_shared<RecorderTask>(p, jstring2string(env, path));
     auto task = new std::shared_ptr<Task>(std::move(tmp));
     return reinterpret_cast<jlong>(task);
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_at_stefl_magnetics_core_NativeTask_destroy(JNIEnv *env, jclass clazz, jlong handle) {
+Java_at_stefl_magnetics_core_NativeTask_destroy_1(JNIEnv *env, jclass clazz, jlong handle) {
     auto task = reinterpret_cast<std::shared_ptr<Task> *>(handle);
     task->reset();
     delete task;

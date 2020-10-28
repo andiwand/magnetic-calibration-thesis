@@ -22,7 +22,7 @@ pipeline::Output<pipeline::Event<double>> *TotalRotation::total_rotation() {
   return &m_total_rotation;
 }
 
-void TotalRotation::iterate() {
+void TotalRotation::flush() {
   auto &&ori = m_orientation.buffer().vector();
 
   for (auto &&o : ori) {

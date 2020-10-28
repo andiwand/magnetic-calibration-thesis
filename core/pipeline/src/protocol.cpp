@@ -97,9 +97,25 @@ ProtocolEncoder::ProtocolEncoder() : ProtocolEncoder("encoder") {}
 ProtocolEncoder::ProtocolEncoder(std::string annotation)
     : StandardNode(std::move(annotation)), m_output{"encoder output", this} {}
 
-ProtocolEncoder::~ProtocolEncoder() { push(bye()); }
-
 Output<protocol::Event> *ProtocolEncoder::output() { return &m_output; }
+
+void ProtocolEncoder::hello(const double time) {
+  assert(!m_opened);
+
+  m_output.push(hello_(time));
+
+  m_opened = true;
+  m_closed = false;
+}
+
+void ProtocolEncoder::bye(const double time) {
+  assert(!m_closed);
+
+  m_output.push(bye_(time));
+
+  m_opened = false;
+  m_closed = true;
+}
 
 ProtocolEncoder::EncoderInputBase::EncoderInputBase(std::uint32_t channel_id)
     : m_channel_id{channel_id} {}
@@ -113,29 +129,40 @@ protocol::ChannelHello ProtocolEncoder::EncoderInputBase::hello() {
 }
 
 void ProtocolEncoder::EncoderInputBase::push(protocol::Event event) {
+  auto encoder = reinterpret_cast<ProtocolEncoder *>(node());
+  assert(encoder->m_opened);
+
   event.set_channel(m_channel_id);
-  reinterpret_cast<ProtocolEncoder *>(node())->push(std::move(event));
+  encoder->m_output.push(event);
 }
 
-ProtocolEncoder::EncoderOutput::EncoderOutput(std::string annotation,
-                                              Node *node)
-    : StandardOutput<protocol::Event>(std::move(annotation), node) {}
+ProtocolEncoder::IntermediateOutput::IntermediateOutput(std::string annotation,
+                                                        ProtocolEncoder *encoder)
+    : StandardOutput<protocol::Event>(std::move(annotation), encoder) {}
 
-void ProtocolEncoder::EncoderOutput::plug(Input<protocol::Event> *input) {
+void ProtocolEncoder::IntermediateOutput::plug(Input<protocol::Event> *input) {
   StandardOutput<protocol::Event>::plug(input);
-  auto hello = reinterpret_cast<ProtocolEncoder *>(node())->hello();
-  input->push(hello);
+
+  auto encoder = reinterpret_cast<ProtocolEncoder *>(node());
+  if (encoder->m_opened) {
+    auto event = encoder->hello_(encoder->m_output.time());
+    input->push(event);
+  }
 }
 
-void ProtocolEncoder::EncoderOutput::unplug(Input<protocol::Event> *input) {
+void ProtocolEncoder::IntermediateOutput::unplug(Input<protocol::Event> *input) {
   StandardOutput<protocol::Event>::unplug(input);
-  auto bye = reinterpret_cast<ProtocolEncoder *>(node())->bye();
-  input->push(bye);
+
+  auto encoder = reinterpret_cast<ProtocolEncoder *>(node());
+  if (!encoder->m_closed) {
+    auto event = bye_(encoder->m_output.time());
+    input->push(event);
+  }
 }
 
-protocol::Event ProtocolEncoder::hello() {
+protocol::Event ProtocolEncoder::hello_(const double time) {
   protocol::Event event;
-  event.set_t(0);
+  event.set_t(time);
   event.mutable_hello()->set_from(annotation());
   for (auto &&channel : m_inputs) {
     event.mutable_hello()->mutable_channels()->Add()->CopyFrom(
@@ -144,14 +171,12 @@ protocol::Event ProtocolEncoder::hello() {
   return event;
 }
 
-protocol::Event ProtocolEncoder::bye() {
+protocol::Event ProtocolEncoder::bye_(const double time) {
   protocol::Event event;
-  event.set_t(m_output.time());
+  event.set_t(time);
   event.mutable_bye();
   return event;
 }
-
-void ProtocolEncoder::push(protocol::Event event) { m_output.push(event); }
 
 Void ProtocolDecoder::decode(const protocol::Void &) { return {}; }
 
@@ -224,39 +249,70 @@ ProtocolDecoder::ProtocolDecoder(std::string annotation)
 
 Input<protocol::Event> *ProtocolDecoder::input() { return &m_input; }
 
-void ProtocolDecoder::iterate() {
-  auto &&events = m_input.swap();
+protocol::Event ProtocolDecoder::hello() { return m_hello; }
 
-  for (auto &&event : events) {
-    if (!m_initialized) {
-      assert(event.has_hello());
-      auto &&hello = *event.mutable_hello();
-      for (auto &&output : m_outputs) {
-        auto example = output->example();
+protocol::Event ProtocolDecoder::bye() { return m_bye; }
 
-        auto &&channels = *hello.mutable_channels();
-        for (auto channel_it = channels.begin(); channel_it != channels.end();
-             ++channel_it) {
-          if (channel_it->eventexample().__case() == example.__case()) {
-            m_mapping[channel_it->channel()] = output.get();
-            channels.erase(channel_it);
-          }
-        }
-      }
-      m_initialized = true;
-      continue;
-    }
-    assert(!event.has_hello());
+ProtocolDecoder::DecoderInput::DecoderInput(std::string annotation, ProtocolDecoder *decoder) : StandardInput<protocol::Event>(std::move(annotation), decoder) {}
 
-    if (event.has_bye()) {
-      // TODO
-      return;
-    }
+void ProtocolDecoder::DecoderInput::push(protocol::Event event) {
+  auto decoder = reinterpret_cast<ProtocolDecoder *>(node());
 
-    auto &&mapping = m_mapping.find(event.channel());
-    if (mapping != m_mapping.end())
-      mapping->second->push(event);
+  std::cout << event.__case() << std::endl;
+
+  if (!decoder->m_opened) {
+    decoder->hello_(std::move(event));
+    return;
   }
+
+  assert(!event.has_hello());
+
+  if (event.has_bye()) {
+    decoder->bye_(std::move(event));
+    return;
+  }
+
+  auto &&mapping = decoder->m_mapping.find(event.channel());
+  if (mapping != decoder->m_mapping.end())
+    mapping->second->push(event);
+}
+
+void ProtocolDecoder::hello_(protocol::Event &&event) {
+  assert(event.has_hello());
+
+  m_hello = event;
+  auto &&hello = *event.mutable_hello();
+
+  for (auto &&output : m_outputs) {
+    auto example = output->example();
+
+    auto &&channels = *hello.mutable_channels();
+    for (auto channel_it = channels.begin(); channel_it != channels.end();
+         ++channel_it) {
+      if (channel_it->eventexample().__case() == example.__case()) {
+        m_mapping[channel_it->channel()] = output.get();
+        channels.erase(channel_it);
+        break;
+      }
+    }
+  }
+
+  m_opened = true;
+  m_closed = false;
+}
+
+void ProtocolDecoder::bye_(protocol::Event &&event) {
+  assert(event.has_bye());
+
+  m_bye = event;
+  auto &&bye = *event.mutable_bye();
+
+  for (auto &&output : m_outputs) {
+    output->skip(event.t());
+  }
+
+  m_opened = false;
+  m_closed = true;
 }
 
 } // namespace indoors::pipeline

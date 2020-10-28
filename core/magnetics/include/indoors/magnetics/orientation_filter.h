@@ -1,13 +1,11 @@
 #ifndef INDOORS_MAGNETICS_ORIENTATION_FILTER_H
 #define INDOORS_MAGNETICS_ORIENTATION_FILTER_H
 
-#include <indoors/pipeline/definitions.h>
 #include <indoors/pipeline/node.h>
 
 namespace indoors::magnetics {
 
-class MadgwickImu final : public pipeline::StandardNode,
-                          public pipeline::Loopable {
+class MadgwickImu final : public pipeline::StandardNode {
 public:
   MadgwickImu(float delta_time, float beta);
 
@@ -17,7 +15,7 @@ public:
   // transforms phone coordinates into world coordinates
   pipeline::Output<pipeline::Event<pipeline::Quaternion>> *orientation();
 
-  void iterate() override;
+  void flush() override;
 
 private:
   const float m_delta_time;

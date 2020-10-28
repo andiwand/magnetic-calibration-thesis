@@ -27,7 +27,7 @@ MovingAverage::create_channel(
   return channel.second;
 }
 
-void MovingAverage::iterate() {
+void MovingAverage::flush() {
   for (auto &&channel : m_channels) {
     channel->process();
   }

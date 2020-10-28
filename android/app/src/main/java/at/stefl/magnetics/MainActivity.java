@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
         AndroidPlatform androidPlatform = new AndroidPlatform();
         collector.addListener(androidPlatform.getCollectorListener());
 
-        nativeTasks.add(NativeTask.createDefault(androidPlatform));
+        nativeTasks.add(NativeTask.createLiveDemo(androidPlatform));
     }
 
     @SuppressLint("SetJavaScriptEnabled")

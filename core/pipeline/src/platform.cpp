@@ -2,41 +2,87 @@
 
 namespace indoors::pipeline {
 
-Platform::Platform(std::string annotation)
-    : StandardNode(std::move(annotation)) {}
-
 StandardPlatform::StandardPlatform(std::string annotation)
-    : Platform(std::move(annotation)),
-      std::enable_shared_from_this<StandardPlatform>(), m_tick{"tick", this}, m_clock{"clock", this},
-      m_accelerometer{"accelerometer", this}, m_gyroscope{"gyroscope", this},
-      m_magnetometer{"magnetometer", this}, m_magnetometer_uncalibrated{
-                                                "magnetometer uncalibrated",
-                                                this}, m_magnetometer_bias{"magnetometer bias", this}, m_orientation{"orientation", this} {}
+    : m_annotation{std::move(annotation)} {}
 
-Output<Event<Void>> * StandardPlatform::tick() { return &m_tick; }
+const std::string &StandardPlatform::annotation() const { return m_annotation; }
 
-Output<Event<Clock>> *StandardPlatform::clock() { return &m_clock; }
+ForwardPlatform::ForwardPlatform(std::string annotation)
+    : StandardPlatform(std::move(annotation)),
+      std::enable_shared_from_this<ForwardPlatform>(), m_tick{"tick", nullptr},
+      m_clock{"clock", nullptr}, m_accelerometer{"accelerometer", nullptr},
+      m_gyroscope{"gyroscope", nullptr}, m_magnetometer{"magnetometer",
+                                                        nullptr},
+      m_magnetometer_uncalibrated{"magnetometer uncalibrated", nullptr},
+      m_magnetometer_bias{"magnetometer bias", nullptr}, m_orientation{
+                                                             "orientation",
+                                                             nullptr} {}
 
-Output<Event<Vector3>> *StandardPlatform::accelerometer() {
+Output<Event<Void>> *ForwardPlatform::tick() { return &m_tick; }
+
+Output<Event<Clock>> *ForwardPlatform::clock() { return &m_clock; }
+
+Output<Event<Vector3>> *ForwardPlatform::accelerometer() {
   return &m_accelerometer;
 }
 
-Output<Event<Vector3>> *StandardPlatform::gyroscope() { return &m_gyroscope; }
+Output<Event<Vector3>> *ForwardPlatform::gyroscope() { return &m_gyroscope; }
 
-Output<Event<Vector3>> *StandardPlatform::magnetometer() {
+Output<Event<Vector3>> *ForwardPlatform::magnetometer() {
   return &m_magnetometer;
 }
 
-Output<Event<Vector3>> *StandardPlatform::magnetometer_uncalibrated() {
+Output<Event<Vector3>> *ForwardPlatform::magnetometer_uncalibrated() {
   return &m_magnetometer_uncalibrated;
 }
 
-Output<Event<Vector3>> *StandardPlatform::magnetometer_bias() {
+Output<Event<Vector3>> *ForwardPlatform::magnetometer_bias() {
   return &m_magnetometer_bias;
 }
 
-Output<Event<Quaternion>> * StandardPlatform::orientation() {
+Output<Event<Quaternion>> *ForwardPlatform::orientation() {
   return &m_orientation;
+}
+
+ComposedPlatform::ComposedPlatform(std::string annotation) : StandardPlatform(std::move(annotation)) {}
+
+ComposedPlatform::ComposedPlatform(
+    std::string annotation, Output<Event<Void>> *tick,
+    Output<Event<Clock>> *clock, Output<Event<Vector3>> *accelerometer,
+    Output<Event<Vector3>> *gyroscope, Output<Event<Vector3>> *magnetometer,
+    Output<Event<Vector3>> *magnetometer_uncalibrated,
+    Output<Event<Vector3>> *magnetometer_bias,
+    Output<Event<Quaternion>> *orientation)
+    : StandardPlatform(std::move(annotation)), m_tick{tick}, m_clock{clock},
+      m_accelerometer{accelerometer}, m_gyroscope{gyroscope},
+      m_magnetometer{magnetometer},
+      m_magnetometer_uncalibrated{magnetometer_uncalibrated},
+      m_magnetometer_bias{magnetometer_bias}, m_orientation{orientation} {}
+
+Output<Event<Void>> *ComposedPlatform::tick() { return m_tick; }
+
+Output<Event<Clock>> *ComposedPlatform::clock() { return m_clock; }
+
+Output<Event<Vector3>> *ComposedPlatform::accelerometer() {
+  return m_accelerometer;
+}
+
+Output<Event<Vector3>> *ComposedPlatform::gyroscope() { return m_gyroscope; }
+
+Output<Event<Vector3>> *ComposedPlatform::magnetometer() {
+  return m_magnetometer;
+}
+
+Output<Event<Vector3>> *ComposedPlatform::magnetometer_uncalibrated() {
+  return m_magnetometer_uncalibrated;
+}
+
+Output<Event<Vector3>> *ComposedPlatform::magnetometer_bias() {
+  return m_magnetometer_bias;
+}
+
+Output<Event<Quaternion>> *ComposedPlatform::orientation() {
+  return m_orientation;
 }
 
 } // namespace indoors::pipeline

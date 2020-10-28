@@ -69,7 +69,7 @@ ExtractionCompass::heading() {
   return &m_heading;
 }
 
-void ExtractionCompass::iterate() {
+void ExtractionCompass::flush() {
   auto &&ori = m_orientation.buffer().vector();
 
   for (auto &&i : ori) {
@@ -101,7 +101,7 @@ pipeline::Output<pipeline::Event<pipeline::Heading>> *NaiveCompass::heading() {
   return &m_heading;
 }
 
-void NaiveCompass::iterate() {
+void NaiveCompass::flush() {
   auto &&mag = m_magnetometer_calibrated.buffer().vector();
   auto &&ori = m_orientation.buffer().vector();
 
@@ -357,7 +357,7 @@ ParticleCompass::north_confidence() {
   return &m_north_confidence;
 }
 
-void ParticleCompass::iterate() {
+void ParticleCompass::flush() {
   auto &&mag = m_magnetometer_calibrated.buffer().vector();
   auto &&var_mag = m_var_magnetometer_calibrated.buffer().vector();
   auto &&ori = m_orientation.buffer().vector();

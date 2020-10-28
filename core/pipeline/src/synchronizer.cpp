@@ -8,7 +8,7 @@ Synchronizer::Synchronizer(const double max_slave_delay)
 Synchronizer::Synchronizer(std::string annotation, const double max_slave_delay)
     : StandardNode(std::move(annotation)), m_max_slave_delay{max_slave_delay} {}
 
-void Synchronizer::iterate() {
+void Synchronizer::flush() {
   std::lock_guard<std::mutex> lk(m_mutex);
 
   if (m_channels.empty())

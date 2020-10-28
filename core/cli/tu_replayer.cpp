@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
     input >> sensor_data;
   }
 
-  auto replay_platform = std::make_shared<StandardPlatform>("tu replayed");
+  auto replay_platform = std::make_shared<ForwardPlatform>("tu replayed");
   FilterTask filter_task(replay_platform);
   filter_task.start();
 

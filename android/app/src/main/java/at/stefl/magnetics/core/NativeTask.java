@@ -6,13 +6,19 @@ public class NativeTask {
         System.loadLibrary("magnetics-jni");
     }
 
-    private static native long createFilter_(AndroidPlatform platform);
-    private static native void destroy(long handle);
+    private static native long createRecorder_(AndroidPlatform platform, String path);
+    private static native long createLiveDemo_(AndroidPlatform platform);
+    private static native void destroy_(long handle);
 
     private final long handle;
 
-    public static NativeTask createFilter(AndroidPlatform platform) {
-        long handle = createFilter_(platform);
+    public static NativeTask createRecorder(AndroidPlatform platform, String path) {
+        long handle = createRecorder_(platform, path);
+        return new NativeTask(handle);
+    }
+
+    public static NativeTask createLiveDemo(AndroidPlatform platform) {
+        long handle = createLiveDemo_(platform);
         return new NativeTask(handle);
     }
 
@@ -22,12 +28,13 @@ public class NativeTask {
 
     @Override
     protected void finalize() {
-        destroy(handle);
+        destroy_(handle);
     }
 
     public native String annotation();
 
     public native void start();
+
     public native void stop();
 
 }

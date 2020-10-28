@@ -9,7 +9,7 @@ FileWriter::FileWriter(const std::string &path)
 
 Input<protocol::Event> *FileWriter::input() { return &m_input; }
 
-void FileWriter::iterate() {
+void FileWriter::flush() {
   auto &&events = m_input.swap();
 
   for (auto &&event : events) {
@@ -24,6 +24,10 @@ FileReader::FileReader(const std::string &path)
       m_coded{m_zero_copy.get()}, m_output{"file reader output", this} {}
 
 Output<protocol::Event> *FileReader::output() { return &m_output; }
+
+void FileReader::flush() {
+  flush_until(std::numeric_limits<double>::max());
+}
 
 void FileReader::flush_until(const double time) {
   while (!m_exhausted) {

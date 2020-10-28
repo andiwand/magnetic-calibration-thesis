@@ -229,7 +229,7 @@ pipeline::Output<pipeline::Event<pipeline::Vector3>> *HardIron::hard_iron() {
   return &m_hard_iron;
 }
 
-void HardIron::iterate() {
+void HardIron::flush() {
   auto &&mag = m_magnetometer_uncalibrated.buffer().vector();
   auto &&ori = m_orientation.buffer().vector();
   auto &&rot = m_total_rotation.buffer().vector();

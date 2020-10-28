@@ -29,7 +29,7 @@ MadgwickImu::orientation() {
   return &m_orientation;
 }
 
-void MadgwickImu::iterate() {
+void MadgwickImu::flush() {
   auto &&acc = m_accelerometer.buffer().vector();
   auto &&gyr = m_gyroscope.buffer().vector();
 

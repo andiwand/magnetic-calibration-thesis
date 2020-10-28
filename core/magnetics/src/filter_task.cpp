@@ -76,14 +76,14 @@ public:
   void start() {
     m_looper = std::thread([this]() {
       while (!m_stop) {
-        m_synchronizer.iterate();
-        m_moving_average.iterate();
-        m_madgwick.iterate();
-        m_total_rotation.iterate();
-        m_hard_iron.iterate();
-        m_system_compass.iterate();
-        m_naive_compass.iterate();
-        m_particle_compass.iterate();
+        m_synchronizer.flush();
+        m_moving_average.flush();
+        m_madgwick.flush();
+        m_total_rotation.flush();
+        m_hard_iron.flush();
+        m_system_compass.flush();
+        m_naive_compass.flush();
+        m_particle_compass.flush();
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
       }
     });
