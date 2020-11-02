@@ -1,9 +1,5 @@
 package at.stefl.magnetics;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -16,19 +12,21 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
-import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
 
-import java.io.BufferedReader;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,14 +35,23 @@ import at.stefl.magnetics.core.NativeTask;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "magnetics";
-
-    private boolean started = false;
-
-    private Collector collector;
     private final List<NativeTask> nativeTasks = new LinkedList<>();
-
+    private boolean started = false;
+    private Collector collector;
+    private AndroidPlatform androidPlatform;
     private File internalDirectory;
+    private File recordingDirectory;
     private File htmlDirectory;
+
+    private static String streamToString(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = inputStream.read(buffer)) != -1) {
+            result.write(buffer, 0, length);
+        }
+        return result.toString("UTF-8");
+    }
 
     private void copyAsset(AssetManager assetManager, String source, File destination) throws IOException {
         InputStream in = assetManager.open(source);
@@ -65,22 +72,17 @@ public class MainActivity extends AppCompatActivity {
             throw new IOException("could not create directory " + internalDirectory);
         }
 
+        recordingDirectory = new File(internalDirectory, "recording");
+        if (!recordingDirectory.isDirectory() && !recordingDirectory.mkdirs()) {
+            throw new IOException("could not create directory " + recordingDirectory);
+        }
+
         htmlDirectory = new File(internalDirectory, "html");
         if (!htmlDirectory.isDirectory() && !htmlDirectory.mkdirs()) {
-            throw new IOException("could not create directory " + internalDirectory);
+            throw new IOException("could not create directory " + htmlDirectory);
         }
         copyAsset(assetManager, "html/index.html", new File(htmlDirectory, "index.html"));
         copyAsset(assetManager, "html/bundle.js", new File(htmlDirectory, "bundle.js"));
-    }
-
-    private static String streamToString(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream result = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        int length;
-        while ((length = inputStream.read(buffer)) != -1) {
-            result.write(buffer, 0, length);
-        }
-        return result.toString("UTF-8");
     }
 
     @Override
@@ -132,10 +134,8 @@ public class MainActivity extends AppCompatActivity {
         collector.addRequest(Sensor.TYPE_MAGNETIC_FIELD_UNCALIBRATED, 1000);
         collector.addRequest(Sensor.TYPE_ROTATION_VECTOR, 10000);
 
-        AndroidPlatform androidPlatform = new AndroidPlatform();
+        androidPlatform = new AndroidPlatform();
         collector.addListener(androidPlatform.getCollectorListener());
-
-        nativeTasks.add(NativeTask.createLiveDemo(androidPlatform));
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -172,21 +172,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
     protected void onStop() {
         super.onStop();
         if (started) {
@@ -203,27 +188,56 @@ public class MainActivity extends AppCompatActivity {
         for (NativeTask task : nativeTasks) {
             task.start();
         }
+
         collector.start();
+
+        started = true;
     }
 
     private void stop() {
-        collector.stop();
+        try {
+            collector.stop();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         for (NativeTask task : nativeTasks) {
             task.stop();
         }
+
+        started = false;
     }
 
-    public void onStartStop(View view) {
+    public void onDemoStartStop(View view) {
         if (!started) {
+            nativeTasks.add(NativeTask.createLiveDemo(androidPlatform));
+            ((Button) findViewById(R.id.demo_start_stop)).setText("Stop Demo");
+            findViewById(R.id.rec_start_stop).setEnabled(false);
             start();
-            ((Button) findViewById(R.id.start_stop)).setText("Stop");
-            findViewById(R.id.tick).setEnabled(true);
-            started = true;
         } else {
             stop();
-            ((Button) findViewById(R.id.start_stop)).setText("Start");
+            ((Button) findViewById(R.id.demo_start_stop)).setText("Start Demo");
+            findViewById(R.id.rec_start_stop).setEnabled(true);
+            nativeTasks.clear();
+        }
+    }
+
+    public void onRecStartStop(View view) {
+        if (!started) {
+            @SuppressLint("SimpleDateFormat") String fileName = new SimpleDateFormat("yyyy-MM-dd_HH-mm'.rec'").format(new Date());
+            File file = new File(recordingDirectory, fileName);
+
+            nativeTasks.add(NativeTask.createRecorder(androidPlatform, file.getPath()));
+            ((Button) findViewById(R.id.rec_start_stop)).setText("Stop Rec");
+            findViewById(R.id.demo_start_stop).setEnabled(false);
+            findViewById(R.id.tick).setEnabled(true);
+            start();
+        } else {
+            stop();
+            ((Button) findViewById(R.id.rec_start_stop)).setText("Start Rec");
+            findViewById(R.id.demo_start_stop).setEnabled(true);
             findViewById(R.id.tick).setEnabled(false);
-            started = false;
+            nativeTasks.clear();
         }
     }
 

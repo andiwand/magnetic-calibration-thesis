@@ -9,6 +9,8 @@ namespace {
 class PlayerPlatform : public pipeline::ComposedPlatform {
 public:
   explicit PlayerPlatform(pipeline::ProtocolDecoder *m_decoder) : pipeline::ComposedPlatform("player") {
+    m_start = m_decoder->start();
+    m_stop = m_decoder->stop();
     m_tick = m_decoder->create_output<pipeline::Event<pipeline::Void>>("tick");
     m_clock = m_decoder->create_output<pipeline::Event<pipeline::Clock>>("clock");
     m_accelerometer = m_decoder->create_output<pipeline::Event<pipeline::Vector3>>("accelerometer");
@@ -30,7 +32,7 @@ public:
   void start() {
     m_looper = std::thread([this]() {
       while (!m_stop) {
-        m_file.flush(); // TODO that will flush the whole file
+        //m_file.flush(); // TODO that will flush the whole file
         m_decoder.flush();
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
       }
@@ -41,6 +43,9 @@ public:
     m_stop = true;
 
     m_looper.join();
+
+    m_file.flush();
+    m_decoder.flush();
   }
 
   pipeline::FileReader m_file;

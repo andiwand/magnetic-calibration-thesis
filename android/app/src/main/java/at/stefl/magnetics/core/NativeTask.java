@@ -4,13 +4,22 @@ public class NativeTask {
 
     static {
         System.loadLibrary("magnetics-jni");
+        redirectStdio();
+    }
+
+    private final long handle;
+
+    private NativeTask(long handle) {
+        this.handle = handle;
     }
 
     private static native long createRecorder_(AndroidPlatform platform, String path);
+
     private static native long createLiveDemo_(AndroidPlatform platform);
+
     private static native void destroy_(long handle);
 
-    private final long handle;
+    private static native void redirectStdio();
 
     public static NativeTask createRecorder(AndroidPlatform platform, String path) {
         long handle = createRecorder_(platform, path);
@@ -20,10 +29,6 @@ public class NativeTask {
     public static NativeTask createLiveDemo(AndroidPlatform platform) {
         long handle = createLiveDemo_(platform);
         return new NativeTask(handle);
-    }
-
-    private NativeTask(long handle) {
-        this.handle = handle;
     }
 
     @Override

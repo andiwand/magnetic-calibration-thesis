@@ -86,10 +86,6 @@ namespace {
 extern "C"
 JNIEXPORT jlong JNICALL
 Java_at_stefl_magnetics_core_AndroidPlatform_create(JNIEnv *env, jclass clazz) {
-    // TODO
-    std::cout.rdbuf(new androidbuf(ANDROID_LOG_INFO, "cout"));
-    std::cerr.rdbuf(new androidbuf(ANDROID_LOG_ERROR, "cerr"));
-
     auto tmp = std::make_shared<ForwardPlatform>("android");
     auto platform = new std::shared_ptr<ForwardPlatform>(std::move(tmp));
     return reinterpret_cast<jlong>(platform);
@@ -106,13 +102,13 @@ Java_at_stefl_magnetics_core_AndroidPlatform_destroy(JNIEnv *env, jclass clazz, 
 extern "C"
 JNIEXPORT void JNICALL
 Java_at_stefl_magnetics_core_AndroidPlatform_pushStart(JNIEnv *env, jobject thiz, jdouble time) {
-    // TODO
+    get_platform(env, thiz)->m_start.push({time});
 }
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_at_stefl_magnetics_core_AndroidPlatform_pushStop(JNIEnv *env, jobject thiz, jdouble time) {
-    // TODO
+    get_platform(env, thiz)->m_stop.push({time});
 }
 
 extern "C"
@@ -173,6 +169,13 @@ Java_at_stefl_magnetics_core_AndroidPlatform_pushOrientation(JNIEnv *env, jobjec
                                                              jdouble time, jdouble w, jdouble x,
                                                              jdouble y, jdouble z) {
     get_platform(env, thiz)->m_orientation.push({time, w, x, y, z});
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_at_stefl_magnetics_core_NativeTask_redirectStdio(JNIEnv *env, jclass clazz) {
+    std::cout.rdbuf(new androidbuf(ANDROID_LOG_INFO, "cout"));
+    std::cerr.rdbuf(new androidbuf(ANDROID_LOG_ERROR, "cerr"));
 }
 
 extern "C"

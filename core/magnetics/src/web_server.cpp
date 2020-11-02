@@ -39,7 +39,8 @@ void WebServer::accept() {
         if (boost::beast::websocket::is_upgrade(req)) {
           boost::beast::websocket::stream<tcp_socket> ws(stream.release_socket());
           ws.accept(req);
-          m_web_socket_handler->handle(std::move(ws));
+          if (m_web_socket_handler)
+            m_web_socket_handler->handle(std::move(ws));
         } else {
           // TODO handle http
         }

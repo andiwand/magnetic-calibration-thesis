@@ -12,6 +12,9 @@ public:
 
   virtual const std::string &annotation() const = 0;
 
+  virtual Output<Event<Void>> *start() = 0;
+  virtual Output<Event<Void>> *stop() = 0;
+
   virtual Output<Event<Void>> *tick() = 0;
 
   virtual Output<Event<Clock>> *clock() = 0;
@@ -41,6 +44,9 @@ class ForwardPlatform : public StandardPlatform,
 public:
   explicit ForwardPlatform(std::string annotation);
 
+  Output<Event<Void>> *start() override;
+  Output<Event<Void>> *stop() override;
+
   Output<Event<Void>> *tick() override;
 
   Output<Event<Clock>> *clock() override;
@@ -54,6 +60,8 @@ public:
 
   Output<Event<Quaternion>> *orientation() override;
 
+  StandardOutput<Event<Void>> m_start;
+  StandardOutput<Event<Void>> m_stop;
   StandardOutput<Event<Void>> m_tick;
   StandardOutput<Event<Clock>> m_clock;
   StandardOutput<Event<Vector3>> m_accelerometer;
@@ -68,15 +76,18 @@ class ComposedPlatform : public StandardPlatform,
                          public std::enable_shared_from_this<ComposedPlatform> {
 public:
   explicit ComposedPlatform(std::string annotation);
-  ComposedPlatform(std::string annotation,
-                        Output<Event<Void>> *tick,
-                        Output<Event<Clock>> *clock,
-                        Output<Event<Vector3>> *accelerometer,
-                        Output<Event<Vector3>> *gyroscope,
-                        Output<Event<Vector3>> *magnetometer,
-                        Output<Event<Vector3>> *magnetometer_uncalibrated,
-                        Output<Event<Vector3>> *magnetometer_bias,
-                        Output<Event<Quaternion>> *m_orientation);
+  ComposedPlatform(std::string annotation, Output<Event<Void>> *start,
+                   Output<Event<Void>> *stop, Output<Event<Void>> *tick,
+                   Output<Event<Clock>> *clock,
+                   Output<Event<Vector3>> *accelerometer,
+                   Output<Event<Vector3>> *gyroscope,
+                   Output<Event<Vector3>> *magnetometer,
+                   Output<Event<Vector3>> *magnetometer_uncalibrated,
+                   Output<Event<Vector3>> *magnetometer_bias,
+                   Output<Event<Quaternion>> *m_orientation);
+
+  Output<Event<Void>> *start() override;
+  Output<Event<Void>> *stop() override;
 
   Output<Event<Void>> *tick() override;
 
@@ -92,14 +103,16 @@ public:
   Output<Event<Quaternion>> *orientation() override;
 
 protected:
-  Output<Event<Void>> *m_tick;
-  Output<Event<Clock>> *m_clock;
-  Output<Event<Vector3>> *m_accelerometer;
-  Output<Event<Vector3>> *m_gyroscope;
-  Output<Event<Vector3>> *m_magnetometer;
-  Output<Event<Vector3>> *m_magnetometer_uncalibrated;
-  Output<Event<Vector3>> *m_magnetometer_bias;
-  Output<Event<Quaternion>> *m_orientation;
+  Output<Event<Void>> *m_start{nullptr};
+  Output<Event<Void>> *m_stop{nullptr};
+  Output<Event<Void>> *m_tick{nullptr};
+  Output<Event<Clock>> *m_clock{nullptr};
+  Output<Event<Vector3>> *m_accelerometer{nullptr};
+  Output<Event<Vector3>> *m_gyroscope{nullptr};
+  Output<Event<Vector3>> *m_magnetometer{nullptr};
+  Output<Event<Vector3>> *m_magnetometer_uncalibrated{nullptr};
+  Output<Event<Vector3>> *m_magnetometer_bias{nullptr};
+  Output<Event<Quaternion>> *m_orientation{nullptr};
 };
 
 } // namespace indoors::pipeline

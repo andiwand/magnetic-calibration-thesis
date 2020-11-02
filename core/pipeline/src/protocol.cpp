@@ -95,7 +95,12 @@ protocol::Event ProtocolEncoder::encode(const Event<Heading> &event) {
 ProtocolEncoder::ProtocolEncoder() : ProtocolEncoder("encoder") {}
 
 ProtocolEncoder::ProtocolEncoder(std::string annotation)
-    : StandardNode(std::move(annotation)), m_output{"encoder output", this} {}
+    : StandardNode(std::move(annotation)), m_start{"encoder start", this},
+      m_stop{"encoder stop", this}, m_output{"encoder output", this} {}
+
+Input<Event<Void>> * ProtocolEncoder::start() { return &m_start; }
+
+Input<Event<Void>> * ProtocolEncoder::stop() { return &m_stop; }
 
 Output<protocol::Event> *ProtocolEncoder::output() { return &m_output; }
 
@@ -117,6 +122,24 @@ void ProtocolEncoder::bye(const double time) {
   m_closed = true;
 }
 
+ProtocolEncoder::StartInput::StartInput(std::string annotation,
+                                        ProtocolEncoder *encoder)
+    : StandardInput<Event<Void>>(std::move(annotation), encoder) {}
+
+void ProtocolEncoder::StartInput::push(Event<Void> event) {
+  auto encoder = reinterpret_cast<ProtocolEncoder *>(node());
+  encoder->hello(event.time);
+}
+
+ProtocolEncoder::StopInput::StopInput(std::string annotation,
+                                      ProtocolEncoder *encoder)
+    : StandardInput<Event<Void>>(std::move(annotation), encoder) {}
+
+void ProtocolEncoder::StopInput::push(Event<Void> event) {
+  auto encoder = reinterpret_cast<ProtocolEncoder *>(node());
+  encoder->bye(event.time);
+}
+
 ProtocolEncoder::EncoderInputBase::EncoderInputBase(std::uint32_t channel_id)
     : m_channel_id{channel_id} {}
 
@@ -136,8 +159,8 @@ void ProtocolEncoder::EncoderInputBase::push(protocol::Event event) {
   encoder->m_output.push(event);
 }
 
-ProtocolEncoder::IntermediateOutput::IntermediateOutput(std::string annotation,
-                                                        ProtocolEncoder *encoder)
+ProtocolEncoder::IntermediateOutput::IntermediateOutput(
+    std::string annotation, ProtocolEncoder *encoder)
     : StandardOutput<protocol::Event>(std::move(annotation), encoder) {}
 
 void ProtocolEncoder::IntermediateOutput::plug(Input<protocol::Event> *input) {
@@ -150,7 +173,8 @@ void ProtocolEncoder::IntermediateOutput::plug(Input<protocol::Event> *input) {
   }
 }
 
-void ProtocolEncoder::IntermediateOutput::unplug(Input<protocol::Event> *input) {
+void ProtocolEncoder::IntermediateOutput::unplug(
+    Input<protocol::Event> *input) {
   StandardOutput<protocol::Event>::unplug(input);
 
   auto encoder = reinterpret_cast<ProtocolEncoder *>(node());
@@ -245,20 +269,25 @@ void ProtocolDecoder::decode(const protocol::Event &from, Event<Heading> &to) {
 ProtocolDecoder::ProtocolDecoder() : ProtocolDecoder("decoder") {}
 
 ProtocolDecoder::ProtocolDecoder(std::string annotation)
-    : StandardNode(std::move(annotation)), m_input{"decoder input", this} {}
+    : StandardNode(std::move(annotation)), m_input{"decoder input", this},
+      m_start{"decoder start", this}, m_stop{"decoder stop", this} {}
 
 Input<protocol::Event> *ProtocolDecoder::input() { return &m_input; }
+
+Output<Event<Void>> *ProtocolDecoder::start() { return &m_start; }
+
+Output<Event<Void>> *ProtocolDecoder::stop() { return &m_stop; }
 
 protocol::Event ProtocolDecoder::hello() { return m_hello; }
 
 protocol::Event ProtocolDecoder::bye() { return m_bye; }
 
-ProtocolDecoder::DecoderInput::DecoderInput(std::string annotation, ProtocolDecoder *decoder) : StandardInput<protocol::Event>(std::move(annotation), decoder) {}
+ProtocolDecoder::DecoderInput::DecoderInput(std::string annotation,
+                                            ProtocolDecoder *decoder)
+    : StandardInput<protocol::Event>(std::move(annotation), decoder) {}
 
 void ProtocolDecoder::DecoderInput::push(protocol::Event event) {
   auto decoder = reinterpret_cast<ProtocolDecoder *>(node());
-
-  std::cout << event.__case() << std::endl;
 
   if (!decoder->m_opened) {
     decoder->hello_(std::move(event));
@@ -280,13 +309,13 @@ void ProtocolDecoder::DecoderInput::push(protocol::Event event) {
 void ProtocolDecoder::hello_(protocol::Event &&event) {
   assert(event.has_hello());
 
+  m_start.push({event.t()});
   m_hello = event;
-  auto &&hello = *event.mutable_hello();
 
   for (auto &&output : m_outputs) {
     auto example = output->example();
 
-    auto &&channels = *hello.mutable_channels();
+    auto &&channels = *event.mutable_hello()->mutable_channels();
     for (auto channel_it = channels.begin(); channel_it != channels.end();
          ++channel_it) {
       if (channel_it->eventexample().__case() == example.__case()) {
@@ -304,8 +333,8 @@ void ProtocolDecoder::hello_(protocol::Event &&event) {
 void ProtocolDecoder::bye_(protocol::Event &&event) {
   assert(event.has_bye());
 
+  m_stop.push({event.t()});
   m_bye = event;
-  auto &&bye = *event.mutable_bye();
 
   for (auto &&output : m_outputs) {
     output->skip(event.t());

@@ -3,6 +3,7 @@ include(GoogleTest REQUIRED)
 enable_testing()
 add_executable(magnetics-test
         csv_test.cpp
+        live_demo_task_test.cpp
         moving_average_test.cpp
         orientation_filter_test.cpp
         protocol_test.cpp

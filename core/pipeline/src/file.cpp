@@ -32,13 +32,14 @@ void FileReader::flush() {
 void FileReader::flush_until(const double time) {
   while (!m_exhausted) {
     if (!m_buffered) {
+      m_last_event.Clear();
       google::protobuf::util::ParseDelimitedFromCodedStream(
           &m_last_event, &m_coded, &m_exhausted);
+      if (m_exhausted) return;
       m_buffered = true;
     }
 
-    if (m_last_event.t() >= time)
-      return;
+    std::cout << m_last_event.t() << " " << m_last_event.channel() << " " << m_last_event.__case() << std::endl;
     m_output.push(m_last_event);
     m_buffered = false;
   }

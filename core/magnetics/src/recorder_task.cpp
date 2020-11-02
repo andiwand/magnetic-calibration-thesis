@@ -8,6 +8,9 @@ namespace indoors::magnetics {
 class RecorderTask::Impl {
 public:
   Impl(std::shared_ptr<pipeline::Platform> platform, std::string path) : m_file{path} {
+    platform->start()->plug(m_encoder.start());
+    platform->stop()->plug(m_encoder.stop());
+
     m_encoder.create_input(platform->tick());
 
     m_encoder.create_input(platform->clock());
@@ -27,8 +30,9 @@ public:
   void start() {
     m_looper = std::thread([this]() {
       while (!m_stop) {
-        // TODO
-        m_file.flush();
+        m_encoder.flush();
+        // TODO race condition because of read/write; use serializer node
+        //m_file.flush();
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
       }
     });
@@ -39,6 +43,7 @@ public:
 
     m_looper.join();
 
+    m_encoder.flush();
     m_file.flush();
   }
 

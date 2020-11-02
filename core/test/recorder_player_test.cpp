@@ -10,11 +10,14 @@ TEST(recorder, hello) {
   auto platform = std::make_shared<ForwardPlatform>("test");
 
   RecorderTask recorder(platform, "test.rec");
+  recorder.start();
 
+  platform->m_start.push({0});
   platform->m_tick.push({0});
   platform->m_tick.push({1});
+  platform->m_stop.push({2});
 
-  std::this_thread::sleep_for(std::chrono::seconds(1));
+  recorder.stop();
 }
 
 TEST(player, hello) {
@@ -22,8 +25,11 @@ TEST(player, hello) {
 
   {
     PlayerTask player("test.rec");
+    player.start();
+
     player.platform()->tick()->plug(&ticks);
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    player.stop();
   }
 
   ASSERT_EQ(2, ticks.swap().size());

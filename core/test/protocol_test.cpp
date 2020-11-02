@@ -16,6 +16,8 @@ TEST(protocol, hello) {
 
   encoder.output()->plug(decoder.input());
 
+  encoder.hello(0);
+
   channel_a->push({0});
   channel_a->push({1});
   decoder.flush();
@@ -27,4 +29,6 @@ TEST(protocol, hello) {
   decoder.flush();
   ASSERT_EQ(1, buffer_a.swap().size());
   ASSERT_EQ(1, buffer_b.swap().size());
+
+  encoder.bye(2);
 }

@@ -13,6 +13,9 @@ public:
   explicit Impl(std::shared_ptr<pipeline::Platform> platform)
       : m_filter_task{platform}, m_web_socket{m_encoder.output()}, m_ioc{1},
         m_web_server{m_ioc, "0.0.0.0", 8000} {
+    platform->start()->plug(m_encoder.start());
+    platform->stop()->plug(m_encoder.stop());
+
     m_encoder.create_input(m_filter_task.sampled_magnetometer_uncalibrated());
     m_encoder.create_input("system magnetometer",
                            m_filter_task.sampled_magnetometer());
@@ -28,6 +31,8 @@ public:
     // m_encoder.create_input("system compass", m_system_compass.heading());
     // m_encoder.create_input("naive compass", m_naive_compass.heading());
     // m_encoder.create_input("particle compass", m_particle_compass.heading());
+
+    m_web_server.set_web_socket_handler(&m_web_socket);
   }
 
   void start() {

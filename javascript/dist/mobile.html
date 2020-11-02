@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>magnetics</title>
-  </head>
-  <body>
-    <h2>augmented cube</h2>
-    <div id="cube"></div>
+</head>
+<body>
+<h2>augmented cube</h2>
+<div id="cube"></div>
 
-    <script src="./bundle.js"></script>
-  </body>
+<script src="./live_demo.js"></script>
+<script>
+    window.live_demo = new magnetics.LiveDemo("ws://127.0.0.1:8000");
+</script>
+</body>
 </html>

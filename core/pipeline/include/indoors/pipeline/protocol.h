@@ -29,7 +29,8 @@ public:
 
   template <typename T> Input<T> *create_input(std::string annotation) {
     const auto channel_id = m_next_channel_id++;
-    auto input = std::make_unique<EncoderInput<T>>(this, std::move(annotation), channel_id);
+    auto input = std::make_unique<EncoderInput<T>>(this, std::move(annotation),
+                                                   channel_id);
     auto result = input.get();
     m_inputs.push_back(std::move(input));
     return result;
@@ -44,12 +45,26 @@ public:
     output->plug(create_input<T>(std::move(annotation)));
   }
 
+  Input<Event<Void>> *start();
+  Input<Event<Void>> *stop();
   Output<protocol::Event> *output();
 
   void hello(double time);
   void bye(double time);
 
 private:
+  class StartInput final : public StandardInput<Event<Void>> {
+  public:
+    StartInput(std::string annotation, ProtocolEncoder *encoder);
+    void push(Event<Void> event) override;
+  };
+
+  class StopInput final : public StandardInput<Event<Void>> {
+  public:
+    StopInput(std::string annotation, ProtocolEncoder *encoder);
+    void push(Event<Void> event) override;
+  };
+
   class EncoderInputBase : virtual public Interface {
   public:
     explicit EncoderInputBase(std::uint32_t channel_id);
@@ -74,8 +89,8 @@ private:
     protocol::Event example() override { return encode(T()); }
 
     void push(T data) override {
-      EncoderInputBase::push(encode(data));
       StandardInput<T>::push(data);
+      EncoderInputBase::push(encode(data));
     }
   };
 
@@ -93,6 +108,8 @@ private:
   bool m_closed{false};
   std::uint32_t m_next_channel_id{0};
 
+  StartInput m_start;
+  StopInput m_stop;
   std::vector<std::unique_ptr<EncoderInputBase>> m_inputs;
   IntermediateOutput m_output;
 };
@@ -118,7 +135,8 @@ public:
   explicit ProtocolDecoder(std::string annotation);
 
   template <typename T> Output<T> *create_output(std::string annotation) {
-    auto output = std::make_unique<DecoderOutput<T>>(this, std::move(annotation));
+    auto output =
+        std::make_unique<DecoderOutput<T>>(this, std::move(annotation));
     auto result = output.get();
     m_outputs.push_back(std::move(output));
     return result;
@@ -134,6 +152,8 @@ public:
   }
 
   Input<protocol::Event> *input();
+  Output<Event<Void>> *start();
+  Output<Event<Void>> *stop();
 
   protocol::Event hello();
   protocol::Event bye();
@@ -154,7 +174,8 @@ private:
   };
 
   template <typename T>
-  class DecoderOutput final : public StandardOutput<T>, public DecoderOutputBase {
+  class DecoderOutput final : public StandardOutput<T>,
+                              public DecoderOutputBase {
   public:
     DecoderOutput(ProtocolDecoder *decoder, std::string annotation)
         : StandardOutput<T>(std::move(annotation), decoder) {}
@@ -167,15 +188,15 @@ private:
       StandardOutput<T>::push(decoded);
     }
 
-    void skip(const double time) override {
-      StandardOutput<T>::skip(time);
-    }
+    void skip(const double time) override { StandardOutput<T>::skip(time); }
   };
 
   void hello_(protocol::Event &&event);
   void bye_(protocol::Event &&event);
 
   DecoderInput m_input;
+  StandardOutput<Event<Void>> m_start;
+  StandardOutput<Event<Void>> m_stop;
   std::vector<std::unique_ptr<DecoderOutputBase>> m_outputs;
   std::unordered_map<std::uint32_t, DecoderOutputBase *> m_mapping;
 

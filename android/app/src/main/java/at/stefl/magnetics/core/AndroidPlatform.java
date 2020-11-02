@@ -11,12 +11,8 @@ public class AndroidPlatform {
         System.loadLibrary("magnetics-jni");
     }
 
-    private static native long create();
-    private static native void destroy(long handle);
-
-    private long handle;
-
-    private CollectorListener collectorListener = new CollectorListener() {
+    private final long handle;
+    private final CollectorListener collectorListener = new CollectorListener() {
         @Override
         public void onStart(double time) {
             pushStart(time);
@@ -78,6 +74,10 @@ public class AndroidPlatform {
         this.handle = create();
     }
 
+    private static native long create();
+
+    private static native void destroy(long handle);
+
     @Override
     protected void finalize() {
         destroy(handle);
@@ -88,6 +88,7 @@ public class AndroidPlatform {
     }
 
     public native void pushStart(double time);
+
     public native void pushStop(double time);
 
     public native void pushTick(double time);
@@ -95,10 +96,13 @@ public class AndroidPlatform {
     public native void pushClock(double time, double linuxUtc);
 
     public native void pushAccelerometer(double time, double x, double y, double z);
+
     public native void pushGyroscope(double time, double x, double y, double z);
+
     public native void pushMagnetometer(double time, double x, double y, double z);
 
     public native void pushMagnetometerUncalibrated(double time, double x, double y, double z);
+
     public native void pushMagnetometerBias(double time, double x, double y, double z);
 
     public native void pushOrientation(double time, double w, double x, double y, double z);

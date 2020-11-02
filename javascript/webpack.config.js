@@ -1,5 +1,8 @@
 module.exports = {
-  entry: './src/index.js',
+  entry: {
+    live_demo: './src/live_demo.js',
+    evaluation: './src/evaluation.js',
+  },
   module: {
     rules: [
       {
@@ -19,7 +22,9 @@ module.exports = {
   output: {
     path: __dirname + '/dist',
     publicPath: '/',
-    filename: 'bundle.js'
+    filename: '[name].js',
+    library: 'magnetics',
+    libraryTarget:'umd'
   },
   devServer: {
     contentBase: './dist'
