@@ -7,7 +7,16 @@ namespace indoors::magnetics {
 
 class HardIron final : public pipeline::StandardNode {
 public:
-  HardIron(std::uint_fast32_t seed, std::size_t population, float min_rotation);
+  struct Config {
+    std::size_t population{10000};
+    double min_rotation{0.1};
+    double init_std{100};
+    double drift_rate{1.0};
+    double prediction_std{5};
+    double resampling_rate{1e-2};
+  };
+
+  HardIron(std::uint_fast32_t seed, const Config &config);
   ~HardIron() override;
 
   pipeline::Input<pipeline::Event<pipeline::Vector3>> *
@@ -26,8 +35,6 @@ public:
 
 private:
   class Impl;
-
-  const float m_min_rotation;
 
   std::unique_ptr<Impl> m_impl;
   double m_last_update{0};

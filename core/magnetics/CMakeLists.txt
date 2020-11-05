@@ -3,6 +3,7 @@ add_library(magnetics STATIC
         src/filter_task.cpp
         src/hard_iron.cpp
         src/live_demo_task.cpp
+        src/magnetics_filter.cpp
         src/moving_average.cpp
         src/orientation_filter.cpp
         src/player_task.cpp

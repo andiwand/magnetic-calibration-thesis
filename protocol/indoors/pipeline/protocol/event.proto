@@ -2,6 +2,38 @@ syntax = "proto3";
 
 package indoors.pipeline.protocol;
 
+enum Channel {
+    /* generic platform clock that provides `Clock` */
+    CLOCK = 0;
+
+    /* calibrated generic platform accelerometer that provides `Vector3` */
+    ACCELEROMETER_CALIBRATED = 10;
+    /* calibrated generic platform gyroscope that provides `Vector3` */
+    GYROSCOPE_CALIBRATED = 11;
+    /* calibrated generic platform magnetometer that provides `Vector3` */
+    MAGNETOMETER_CALIBRATED = 12;
+
+    /* uncalibrated generic platform accelerometer that provides `Vector3` */
+    ACCELEROMETER_UNCALIBRATED = 20;
+    /* uncalibrated generic platform gyroscope that provides `Vector3` */
+    GYROSCOPE_UNCALIBRATED = 21;
+    /* uncalibrated generic platform magnetometer that provides `Vector3` */
+    MAGNETOMETER_UNCALIBRATED = 22;
+
+    /* generic platform accelerometer bias that provides `Vector3` */
+    ACCELEROMETER_BIAS = 30;
+    /* generic platform gyroscope bias that provides `Vector3` */
+    GYROSCOPE_BIAS = 31;
+    /* generic platform magnetometer bias that provides `Vector3` */
+    MAGNETOMETER_BIAS = 32;
+
+    /* generic platform orientation that provides `Quaternion` */
+    ORIENTATION = 40;
+
+    /* generic platform tick that provides `Void` */
+    TICK = 100;
+}
+
 message Hello {
     string from = 1;
     repeated ChannelHello channels = 2;

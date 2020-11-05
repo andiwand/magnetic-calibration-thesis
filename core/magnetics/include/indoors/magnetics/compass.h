@@ -17,7 +17,8 @@ public:
   void flush() override;
 
 private:
-  pipeline::BufferedSeriesInput<pipeline::Event<pipeline::Quaternion>> m_orientation;
+  pipeline::BufferedSeriesInput<pipeline::Event<pipeline::Quaternion>>
+      m_orientation;
   pipeline::StandardOutput<pipeline::Event<pipeline::Heading>> m_heading;
 };
 
@@ -36,15 +37,22 @@ public:
 private:
   pipeline::BufferedSeriesInput<pipeline::Event<pipeline::Vector3>>
       m_magnetometer_calibrated;
-  pipeline::BufferedSeriesInput<pipeline::Event<pipeline::Quaternion>> m_orientation;
+  pipeline::BufferedSeriesInput<pipeline::Event<pipeline::Quaternion>>
+      m_orientation;
 
   pipeline::StandardOutput<pipeline::Event<pipeline::Heading>> m_heading;
 };
 
 class ParticleCompass final : public pipeline::StandardNode {
 public:
-  ParticleCompass(std::uint_fast32_t seed, std::size_t population,
-                  float min_rotation);
+  struct Config {
+    std::size_t population{1000};
+    double min_rotation{1};
+    double drift_rate{0.01};
+    double resampling_rate{0.05};
+  };
+
+  ParticleCompass(std::uint_fast32_t seed, const Config &config);
   ~ParticleCompass() override;
 
   pipeline::Input<pipeline::Event<pipeline::Vector3>> *
@@ -64,8 +72,6 @@ public:
 private:
   class Impl;
 
-  const float m_min_rotation;
-
   bool m_initialized{false};
   double m_last_update{0};
   float m_last_total_rotation{0};
@@ -75,7 +81,8 @@ private:
       m_magnetometer_calibrated;
   pipeline::BufferedSeriesInput<pipeline::Event<pipeline::Vector3>>
       m_var_magnetometer_calibrated;
-  pipeline::BufferedSeriesInput<pipeline::Event<pipeline::Quaternion>> m_orientation;
+  pipeline::BufferedSeriesInput<pipeline::Event<pipeline::Quaternion>>
+      m_orientation;
   pipeline::BufferedSeriesInput<pipeline::Event<double>> m_total_rotation;
 
   pipeline::StandardOutput<pipeline::Event<pipeline::Heading>> m_heading;

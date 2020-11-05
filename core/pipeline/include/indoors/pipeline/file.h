@@ -29,6 +29,8 @@ public:
 
   Output<protocol::Event> *output();
 
+  bool exhausted() const;
+
   void flush() override;
   void flush_until(double time) override;
 

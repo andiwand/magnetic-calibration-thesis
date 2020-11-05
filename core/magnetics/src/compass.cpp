@@ -150,32 +150,31 @@ public:
     Eigen::Vector3f external = Eigen::Vector3f::Zero();
   };
 
-  Impl(const std::uint_fast32_t seed, const std::size_t population)
-      : m_population{population}, m_random{seed},
-        m_particles{new Particle[population]}, m_weight_wheel{
-                                                   new float[population]} {}
+  Impl(const std::uint_fast32_t seed, const Config &config)
+      : m_config{config}, m_random{seed},
+        m_particles{new Particle[config.population]},
+        m_weight_wheel{new float[config.population]} {}
 
   ~Impl() { delete[] m_particles; }
 
-  std::size_t population() const { return m_population; }
+  std::size_t population() const { return m_config.population; }
 
   Particle *particles() const { return m_particles; }
 
   void init() {
     std::uniform_real_distribution<float> north_dist(0, 2 * M_PI);
 
-    for (std::size_t i = 0; i < m_population; ++i) {
+    for (std::size_t i = 0; i < m_config.population; ++i) {
       m_particles[i].north = north_dist(m_random);
-      m_particles[i].log_likelihood = -std::log(m_population);
-      m_particles[i].weight = 1.0f / m_population;
+      m_particles[i].log_likelihood = -std::log(m_config.population);
+      m_particles[i].weight = 1.0f / m_config.population;
     }
   }
 
   void update(const float delta_time, const Eigen::Quaternionf &orientation,
               const Eigen::Vector3f &magnetic_field,
               const Eigen::Vector3f &var_magnetic_field) {
-    // TODO parameter
-    const float drift_std = delta_time * 0.01f;
+    const float drift_std = delta_time * m_config.drift_rate;
 
     std::normal_distribution<float> north_drift_dist(0, drift_std);
     std::normal_distribution<float> magnetic_field_x_dist(
@@ -185,7 +184,7 @@ public:
     std::normal_distribution<float> magnetic_field_z_dist(
         magnetic_field.z(), std::sqrt(var_magnetic_field.z()));
 
-    for (std::size_t i = 0; i < m_population; ++i) {
+    for (std::size_t i = 0; i < m_config.population; ++i) {
       const Eigen::Vector3f mag(magnetic_field_x_dist(m_random),
                                 magnetic_field_y_dist(m_random),
                                 magnetic_field_z_dist(m_random));
@@ -207,14 +206,14 @@ public:
 
   void weight() {
     float max_log_likelihood = std::log(0);
-    for (std::size_t i = 0; i < m_population; ++i) {
+    for (std::size_t i = 0; i < m_config.population; ++i) {
       if (m_particles[i].log_likelihood > max_log_likelihood) {
         max_log_likelihood = m_particles[i].log_likelihood;
       }
     }
 
     float weight_sum = 0;
-    for (std::size_t i = 0; i < m_population; ++i) {
+    for (std::size_t i = 0; i < m_config.population; ++i) {
       m_particles[i].weight =
           std::exp(m_particles[i].log_likelihood - max_log_likelihood);
       weight_sum += m_particles[i].weight;
@@ -224,27 +223,28 @@ public:
 
   float effective_particles() {
     float result = 0;
-    for (std::size_t i = 0; i < m_population; ++i) {
-      result +=
-          std::pow(m_particles[i].weight / m_weight_wheel[m_population - 1], 2);
+    for (std::size_t i = 0; i < m_config.population; ++i) {
+      result += std::pow(
+          m_particles[i].weight / m_weight_wheel[m_config.population - 1], 2);
     }
     return 1.0f / result;
   }
 
   void resample() {
-    const float weight_sum = m_weight_wheel[m_population - 1];
-    auto *new_particles = new Particle[m_population];
+    const float weight_sum = m_weight_wheel[m_config.population - 1];
+    auto *new_particles = new Particle[m_config.population];
 
     std::uniform_real_distribution<float> distribution(0, weight_sum);
 
-    for (std::size_t i = 0; i < m_population; ++i) {
+    for (std::size_t i = 0; i < m_config.population; ++i) {
       const auto d = distribution(m_random);
       const std::size_t j =
-          std::upper_bound(m_weight_wheel, m_weight_wheel + m_population, d) -
+          std::upper_bound(m_weight_wheel, m_weight_wheel + m_config.population,
+                           d) -
           m_weight_wheel;
       new_particles[i] = m_particles[j];
-      new_particles[i].log_likelihood = -std::log(m_population);
-      new_particles[i].weight = 1.0f / m_population;
+      new_particles[i].log_likelihood = -std::log(m_config.population);
+      new_particles[i].weight = 1.0f / m_config.population;
     }
 
     delete[] m_particles;
@@ -257,7 +257,7 @@ public:
     result.var_north = 0;
 
     float weight_sum = 0;
-    for (std::size_t i = 0; i < m_population; ++i) {
+    for (std::size_t i = 0; i < m_config.population; ++i) {
       weight_sum += m_particles[i].weight;
 
       result.north_confidence +=
@@ -275,7 +275,7 @@ public:
                                        result.north_confidence.x());
     result.confidence = result.north_confidence.norm();
 
-    for (std::size_t i = 0; i < m_population; ++i) {
+    for (std::size_t i = 0; i < m_config.population; ++i) {
       result.var_north +=
           std::pow(angle_distance(result.north, m_particles[i].north), 2.0f) *
           m_particles[i].weight;
@@ -289,10 +289,8 @@ public:
 
   const Estimate &last_estimate() const { return m_last_estimate; }
 
-private:
   const Eigen::Vector3f m_earth{0, 20, -44}; // middle europe
-
-  const std::size_t m_population;
+  const Config m_config;
 
   std::default_random_engine m_random;
 
@@ -303,11 +301,9 @@ private:
 };
 
 ParticleCompass::ParticleCompass(const std::uint_fast32_t seed,
-                                 const std::size_t population,
-                                 const float min_rotation)
+                                 const Config &config)
     : pipeline::StandardNode("particle compass"), m_impl{std::make_unique<Impl>(
-                                                      seed, population)},
-      m_min_rotation{min_rotation},
+                                                      seed, config)},
       m_magnetometer_calibrated{"magnetometer calibrated", this},
       m_var_magnetometer_calibrated{"magnetometer calibrated variance", this},
       m_orientation{"orientation", this}, m_heading{"heading", this},
@@ -382,12 +378,13 @@ void ParticleCompass::flush() {
     const Eigen::Vector3f magnetic_field{mag[i].data.x, mag[i].data.y,
                                          mag[i].data.z};
     const Eigen::Vector3f var_magnetic_field{
-            var_mag[i].data.x, var_mag[i].data.y, var_mag[i].data.z};
+        var_mag[i].data.x, var_mag[i].data.y, var_mag[i].data.z};
     const Eigen::Quaternionf orientation{ori[i].data.w, ori[i].data.x,
                                          ori[i].data.y, ori[i].data.z};
 
     // TODO we should only update when we moved
-    if (!m_initialized || rot[i].data - m_last_total_rotation >= m_min_rotation) {
+    if (!m_initialized ||
+        rot[i].data - m_last_total_rotation >= m_impl->m_config.min_rotation) {
       if (!m_initialized) {
         m_impl->init();
         m_impl->estimate();
@@ -399,8 +396,7 @@ void ParticleCompass::flush() {
         m_impl->weight();
         m_impl->estimate();
 
-        // TODO parameter
-        if (m_impl->effective_particles() <= m_impl->population() * 0.05) {
+        if (m_impl->effective_particles() <= m_impl->population() * m_impl->m_config.resampling_rate) {
           m_impl->resample();
         }
       }

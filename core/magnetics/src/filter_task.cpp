@@ -17,10 +17,9 @@ public:
   explicit Impl(std::shared_ptr<pipeline::Platform> platform)
       : m_platform{std::move(platform)}, m_synchronizer{0.1},
         m_moving_average{0.05, 0.05}, m_madgwick{0.05, 0.01},
-        m_hard_iron{std::random_device()(), 10000, 0.1},
+        m_hard_iron{std::random_device()(), {}},
         m_system_compass{"system compass"}, m_particle_compass{
-                                                std::random_device()(), 1000,
-                                                1} {
+                                                std::random_device()(), {}} {
     // synchronizer
     auto accelerometer =
         m_synchronizer.create_channel(m_platform->accelerometer());

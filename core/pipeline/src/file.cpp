@@ -25,6 +25,8 @@ FileReader::FileReader(const std::string &path)
 
 Output<protocol::Event> *FileReader::output() { return &m_output; }
 
+bool FileReader::exhausted() const { return m_exhausted; }
+
 void FileReader::flush() {
   flush_until(std::numeric_limits<double>::max());
 }
@@ -39,7 +41,8 @@ void FileReader::flush_until(const double time) {
       m_buffered = true;
     }
 
-    std::cout << m_last_event.t() << " " << m_last_event.channel() << " " << m_last_event.__case() << std::endl;
+    if (m_last_event.t() >= time) break;
+
     m_output.push(m_last_event);
     m_buffered = false;
   }

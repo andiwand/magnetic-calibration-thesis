@@ -6,7 +6,7 @@ using namespace indoors::magnetics;
 
 namespace {
 template<typename T>
-StandardInput<T> couter(Output<T> *output) {
+StandardInput<T> counter(Output<T> *output) {
   StandardInput<T> input("", nullptr);
   output->plug(&input);
   return input;
@@ -32,14 +32,15 @@ int main(int argc, char** argv) {
   auto platform = player_task.platform();
   auto start = buffer(platform->start());
   auto stop = buffer(platform->stop());
-  auto tick = couter(platform->tick());
-  auto clock = couter(platform->clock());
-  auto accelerometer = couter(platform->accelerometer());
-  auto gyroscope = couter(platform->gyroscope());
-  auto magnetometer = couter(platform->magnetometer());
-  auto magnetometer_uncalibrated = couter(platform->magnetometer_uncalibrated());
-  auto magnetometer_bias = couter(platform->magnetometer_bias());
-  auto orientation = couter(platform->orientation());
+  auto tick = counter(platform->tick());
+  auto clock = counter(platform->clock());
+  auto accelerometer = counter(platform->accelerometer());
+  auto gyroscope = counter(platform->gyroscope());
+  auto magnetometer = counter(platform->magnetometer());
+  auto magnetometer_uncalibrated =
+      counter(platform->magnetometer_uncalibrated());
+  auto magnetometer_bias = counter(platform->magnetometer_bias());
+  auto orientation = counter(platform->orientation());
 
   player_task.start();
   player_task.stop();

@@ -43,14 +43,18 @@ void MadgwickImu::flush() {
     }
 
     if (!m_initialized) {
-      // TODO
+      for (int j = 0; j < 1000; ++j) {
+        MadgwickAHRSupdateIMU(0.1, 0.1, 0, 0, 0, (float)acc[i].data.x,
+                              (float)acc[i].data.y, (float)acc[i].data.z, m_q0,
+                              m_q1, m_q2, m_q3);
+      }
       m_initialized = true;
+    } else {
+      MadgwickAHRSupdateIMU(m_delta_time, m_beta, (float)gyr[i].data.x, (float)gyr[i].data.y,
+                            (float)gyr[i].data.z, (float)acc[i].data.x,
+                            (float)acc[i].data.y, (float)acc[i].data.z, m_q0,
+                            m_q1, m_q2, m_q3);
     }
-
-    MadgwickAHRSupdateIMU(m_delta_time, m_beta, (float)gyr[i].data.x, (float)gyr[i].data.y,
-                          (float)gyr[i].data.z, (float)acc[i].data.x,
-                          (float)acc[i].data.y, (float)acc[i].data.z, m_q0,
-                          m_q1, m_q2, m_q3);
 
     m_orientation.push({acc[i].time, m_q0, m_q1, m_q2, m_q3});
   }

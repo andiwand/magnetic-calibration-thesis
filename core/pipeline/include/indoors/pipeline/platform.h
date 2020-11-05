@@ -102,7 +102,6 @@ public:
 
   Output<Event<Quaternion>> *orientation() override;
 
-protected:
   Output<Event<Void>> *m_start{nullptr};
   Output<Event<Void>> *m_stop{nullptr};
   Output<Event<Void>> *m_tick{nullptr};
