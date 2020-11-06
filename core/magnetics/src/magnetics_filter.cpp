@@ -139,12 +139,35 @@ MagneticsFilter::filter_magnetometer() {
   return m_hard_iron.magnetometer_calibrated();
 }
 
+pipeline::Output<pipeline::Event<pipeline::Vector3>> * MagneticsFilter::filter_var() {
+  return m_hard_iron.var_magnetometer_calibrated();
+}
+
 void MagneticsFilter::flush() {
   m_synchronizer.flush();
   m_moving_average.flush();
   m_madgwick.flush();
   m_total_rotation.flush();
   m_hard_iron.flush();
+
+  /*
+  static auto begin = std::chrono::steady_clock::now();
+  static double time_sum_hard_iron = 0;
+  static auto last_print = begin;
+
+  const auto begin_hi = std::chrono::steady_clock::now();
+  m_hard_iron.flush();
+  const auto end_hi = std::chrono::steady_clock::now();
+  const double time_hi = std::chrono::duration_cast<std::chrono::nanoseconds>(end_hi - begin_hi).count() * 1e-9;
+  time_sum_hard_iron += time_hi;
+
+  if (std::chrono::duration_cast<std::chrono::seconds>(end_hi - last_print).count() > 1) {
+    const double time = std::chrono::duration_cast<std::chrono::nanoseconds>(end_hi - begin).count() * 1e-9;
+    std::cout << "cpu usage " << time_sum_hard_iron / time << std::endl;
+    last_print = end_hi;
+  }
+   */
+
   m_system_compass.flush();
   m_naive_compass.flush();
   m_particle_compass.flush();

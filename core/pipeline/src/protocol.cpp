@@ -153,7 +153,8 @@ protocol::ChannelHello ProtocolEncoder::EncoderInputBase::hello() {
 
 void ProtocolEncoder::EncoderInputBase::push(protocol::Event event) {
   auto encoder = reinterpret_cast<ProtocolEncoder *>(node());
-  assert(encoder->m_opened);
+  //assert(encoder->m_opened);
+  if (!encoder->m_opened) return;
 
   event.set_channel(m_channel_id);
   encoder->m_output.push(event);

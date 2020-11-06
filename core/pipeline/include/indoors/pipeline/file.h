@@ -31,6 +31,8 @@ public:
 
   bool exhausted() const;
 
+  protocol::Event read();
+
   void flush() override;
   void flush_until(double time) override;
 

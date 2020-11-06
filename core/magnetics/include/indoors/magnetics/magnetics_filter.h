@@ -2,7 +2,6 @@
 #define INDOORS_MAGNETICS_MAGNETICS_FILTER_H
 
 #include <indoors/magnetics/compass.h>
-#include <indoors/magnetics/filter_task.h>
 #include <indoors/magnetics/hard_iron.h>
 #include <indoors/magnetics/moving_average.h>
 #include <indoors/magnetics/orientation_filter.h>
@@ -46,6 +45,7 @@ public:
 
   pipeline::Output<pipeline::Event<pipeline::Vector3>> *filter_hard_iron();
   pipeline::Output<pipeline::Event<pipeline::Vector3>> *filter_magnetometer();
+  pipeline::Output<pipeline::Event<pipeline::Vector3>> *filter_var();
 
   void flush() override;
 

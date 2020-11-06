@@ -27,6 +27,17 @@ Output<protocol::Event> *FileReader::output() { return &m_output; }
 
 bool FileReader::exhausted() const { return m_exhausted; }
 
+protocol::Event FileReader::read() {
+  if (m_exhausted) return {};
+
+  protocol::Event result;
+  google::protobuf::util::ParseDelimitedFromCodedStream(
+      &result, &m_coded, &m_exhausted);
+  if (m_exhausted) return {};
+  m_output.push(result);
+  return result;
+}
+
 void FileReader::flush() {
   flush_until(std::numeric_limits<double>::max());
 }

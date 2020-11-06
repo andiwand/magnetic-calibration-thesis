@@ -1,4 +1,4 @@
-#include <indoors/magnetics/filter_task.h>
+#include <indoors/magnetics/magnetics_filter.h>
 #include <indoors/pipeline/platform.h>
 #include <nlohmann/json.hpp>
 #include <iostream>
@@ -19,8 +19,7 @@ int main(int argc, char** argv) {
   }
 
   auto replay_platform = std::make_shared<ForwardPlatform>("tu replayed");
-  FilterTask filter_task(replay_platform);
-  filter_task.start();
+  MagneticsFilter filter({});
 
   const double interval = 0.1;
   double last_time = 0;
@@ -49,10 +48,9 @@ int main(int argc, char** argv) {
     }
 
     if (time - last_time > interval) {
+      filter.flush();
       std::this_thread::sleep_for(std::chrono::milliseconds(long(interval*1e3)));
       last_time = time;
     }
   }
-
-  filter_task.stop();
 }
