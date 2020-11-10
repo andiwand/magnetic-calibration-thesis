@@ -44,6 +44,8 @@ def load(path):
             event = {'t': msg.t}
             if msg.HasField('clock'):
                 event['unixUtc'] = msg.clock.unix_utc
+            elif msg.HasField('scalar'):
+                event['x'] = msg.scalar
             elif msg.HasField('vector2'):
                 event['x'] = msg.vector2.x
                 event['y'] = msg.vector2.y

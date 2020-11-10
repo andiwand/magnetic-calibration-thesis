@@ -1,0 +1,53 @@
+\usepackage[T1]{fontenc} % Wichtig für alles was mehr als ASCII verwendet
+\usepackage{csquotes} % Schöne Anführungsstriche mit \enquote{Text}
+\usepackage{amsmath} % Bessere und schönere mathematische Formeln
+\usepackage{mathtools} % Noch schönerere mathematische Formeln
+\usepackage{amstext} % \text{} Macro in mathematischen Formeln
+\usepackage{amsfonts} % Erweiterte Zeichensätze für mathematische Formeln
+\usepackage{amssymb} % Spezielle mathematische Symbole.
+\usepackage{array} % Matrizen in mathematischen Formeln
+\usepackage{textcomp} % Für textmu und textohm etc. um im Fließtext keine Mathematik 
+\usepackage{textalpha} % Damit können griechische Zeichen direkt im Text verwendet werden (siehe zeichen.txt)
+\usepackage{paralist} % Für compactitem und compactenum
+\usepackage{xstring} % Für IF in Titelseite
+\usepackage{bm}
+\usepackage{float}
+
+\usepackage[version=3]{mhchem} % Für Chemische Formeln
+\usepackage{braket} % Für das quantenmechanische Bra-Ket
+
+\usepackage{geometry} % Seitenränder und Seiteneigenschaften setzen
+%\usepackage[showframe]{geometry} % Anzeigen der Seitenränder, nützlich für debugging. http://ctan.org/pkg/geometry
+
+\usepackage[bottom]{footmisc} % Zwingt Fußnoten an das Ende der Seite
+\usepackage[pdftex]{hyperref} % Links richtig anzeigen. Sowohl innerhalb des Dokuments (Fußzeilen, Formeln), als auch ins Internet
+
+\usepackage[ % Biblatex für die Zitate und Referenzen
+	backend=biber,
+	hyperref=true,
+	sorting=none
+		]{biblatex}
+
+\usepackage{xkeyval} % Erlaubt "Variablen" zu definieren, wird für Titelseite gebraucht
+\usepackage{graphicx} % Wichtig für das Einbinden von Grafiken
+\usepackage{caption}
+\usepackage{subcaption} % Einbinden von mehreren Grafiken in einer figure
+
+\usepackage{dirtree} % Erlaubt das erstellen von Dateibäumen
+%\dirtreecomment{Text} erstellt einen Kommentar zu dem Verzeichnis bzw. der Datei
+\newcommand{\dirtreecomment}[1]{\dotfill{} \begin{minipage}[t]{0.5\textwidth}#1\end{minipage}}
+
+\usepackage{fancyvrb} % Mehr Optionen für Verbatim
+\usepackage{listings} % Zur Darstellung von Programmcode
+\usepackage{pdflscape} % Querformat Seiten
+
+\newcommand{\writeIn}[1]{\usepackage[#1]{babel}} % Definiert einen neuen Befehl um die Sprache des Dokuments zu setzen
+
+\usepackage[usenames,dvipsnames]{color} % Farben für den todo Befehl
+\newcommand{\todo}[1]{{\color{Cerulean}(TODO: #1)}} % Einfach \todo{Text} verwenden!
+
+\newcommand{\blankpage}{ \newpage \thispagestyle{empty} \mbox{} \newpage }
+
+\usepackage{glossaries}
+\usepackage{parskip}
+\usepackage[ruled,linesnumbered,algochapter]{algorithm2e} % Enables the writing of pseudo code.

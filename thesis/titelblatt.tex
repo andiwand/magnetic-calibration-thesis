@@ -1,0 +1,93 @@
+\makeatletter
+\define@cmdkey{AbschlussarbeitTUWienPhysikTitlePage}{autor}[Max Mustermann]{}
+\define@cmdkey{AbschlussarbeitTUWienPhysikTitlePage}{titel}[Titel]{}
+\define@cmdkey{AbschlussarbeitTUWienPhysikTitlePage}{institut}[Institut]{}
+\define@cmdkey{AbschlussarbeitTUWienPhysikTitlePage}{prof}[Professor]{}
+\define@cmdkey{AbschlussarbeitTUWienPhysikTitlePage}{adresse}[Adresse]{}
+\define@cmdkey{AbschlussarbeitTUWienPhysikTitlePage}{typ}[Typ der Arbeit]{}
+\newcommand{\AbschlussarbeitTUWienPhysikTitlePage}[1]{\setkeys{AbschlussarbeitTUWienPhysikTitlePage}{#1}}
+
+% Default Werte für die Variablen
+\setkeys{AbschlussarbeitTUWienPhysikTitlePage}{
+	autor=Max Mustermann,
+	titel=Titel,
+	institut=Institut,
+	prof=Professor,
+	adresse=Adresse des Autors,
+	typ=bacc
+}{}
+
+\newcommand*{\titelblattTUWienPhysik}{
+	\begingroup % Create the command for including the title page in the document
+	\newgeometry{bottom=2cm, top=2cm, left=3cm, right=2cm}
+	\begin{titlepage}
+	
+	
+	\begin{tabular}{ >{\centering}p{9cm} >{\centering}p{7cm} }
+		\space & {\line(1,0){120}\\Unterschrift BetreuerIn}
+	\end{tabular}
+	
+	\begin{center}
+
+	% Upper part of the page
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=0.5\textwidth]{figures/TU_Wien_Logo.pdf}
+		 %Logo gracefully taken from http://www.tuwien.ac.at/dle/pr/publishing_web_print/corporate_design/tu_logo/
+	\end{figure}
+	
+	\vspace{\stretch{1}}
+	\begin{LARGE}
+
+	\par\noindent%
+	 \IfStrEqCase{\cmdKV@AbschlussarbeitTUWienPhysikTitlePage@typ}{%
+	  {sem}{SEMINARARBEIT}%
+	  {bacc}{BACHELORARBEIT}%
+	  {proj}{PROJEKTARBEIT}%
+	  {mast}{DIPLOMARBEIT}% Laut Auskunft Dekanat muss auch eine Masterarbeit DIPLOMARBEIT heißen
+	  {dipl}{DIPLOMARBEIT}%
+	  {diss}{DISSERTATION}%
+	  }[\cmdKV@AbschlussarbeitTUWienPhysikTitlePage@typ]
+
+	\vspace{\stretch{1.8}}
+
+	\textbf{\cmdKV@AbschlussarbeitTUWienPhysikTitlePage@titel} \\
+
+	\end{LARGE}
+	
+	\vspace{\stretch{1.8}}
+	\begin{large}
+	ausgeführt am \cmdKV@AbschlussarbeitTUWienPhysikTitlePage@institut \\
+	der Technischen Universität Wien
+	
+	\vspace{\stretch{0.5}}
+	
+	unter der Anleitung von \\
+	\textbf{\cmdKV@AbschlussarbeitTUWienPhysikTitlePage@prof}
+	
+	\vspace{\stretch{1}}
+	
+	durch \\
+	
+	\vspace{\stretch{0.3}}
+	
+	\textbf{\cmdKV@AbschlussarbeitTUWienPhysikTitlePage@autor} \\
+	
+	\vspace{\stretch{0.3}}
+	
+	\cmdKV@AbschlussarbeitTUWienPhysikTitlePage@adresse \\
+	
+	\vspace{\stretch{2}}
+	
+	\begin{tabular}{ >{\centering}p{7cm} >{\centering}p{7cm} }
+	\centering
+	\today & \line(1,0){120}\\Unterschrift StudentIn
+	\end{tabular}
+	\end{large}
+	
+	\end{center}
+	\end{titlepage}
+	\restoregeometry
+	\endgroup
+}
+\makeatother

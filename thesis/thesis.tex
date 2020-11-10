@@ -1,0 +1,123 @@
+\documentclass[12pt,a4paper,twoside,open=right,bibliography=totoc,BCOR=10mm]{scrreprt}
+\usepackage[utf8]{inputenc}
+\usepackage[english,german]{babel}
+
+\input{header.tex}
+\input{titelblatt.tex}
+\input{titlepage.tex}
+
+\hypersetup{
+	pdfauthor={Andreas Stefl, BSc},
+	pdftitle={Particle filter for online calibration of three axis magnetometers in smartphones},
+	pdfsubject={Master thesis physics},
+	pdfkeywords={},
+	pdfdisplaydoctitle=true,
+	colorlinks=false, % for printing "false"!
+}
+
+\AbschlussarbeitTUWienPhysikTitlePage{
+	autor={Andreas Stefl, BSc},
+	titel={Particle Filter für automatische Laufzeit-Kalibrierung des 3-Achsen-Magnetometers in Smartphones},
+	institut={Institut für Angewandte Physik (IAP)},
+	prof={Ao.Univ.Prof. Dipl.-Ing. Dr.techn. Martin Gröschl\\Dr. Paolo Fogliaroni},
+	adresse={Wien},
+	typ={dipl},
+	% Vordefinierte Typen sind: sem (Seminararbeit), bacc (Bachelorarbeit), proj (Projektarbeit), mast (Diplomarbeit), dipl (Diplomarbeit), diss (Dissertation)
+	% Laut Auskunft des Dekants muss auch eine Masterarbeit den Titel "Diplomarbeit" tragen.
+	% Bei allen anderen Typen werden die Texte direkt übernommen.
+    }
+
+\ThesisTUWienPhysicsTitlePage{
+	author={Andreas Stefl, BSc},
+	title={Particle filter for online calibration of three axis magnetometers in smartphones},
+	institute={Institute of Applied Physics (IAP)},
+	prof={Ao.Univ.Prof. Dipl.-Ing. Dr.techn. Martin Gröschl\\Dr. Paolo Fogliaroni},
+	address={Wien},
+	type={dipl},
+	% Vordefinierte Typen sind: sem (Seminararbeit), bacc (Bachelorarbeit), proj (Projektarbeit), mast (Diplomarbeit), dipl (Diplomarbeit), diss (Dissertation)
+	% Laut Auskunft des Dekants muss auch eine Masterarbeit den Titel "Diplomarbeit" tragen.
+	% Bei allen anderen Typen werden die Texte direkt übernommen.
+	}
+
+\addbibresource{references.bib}
+
+\input{glossary.tex}
+\makeglossaries
+
+\begin{document}
+\pagenumbering{gobble}
+
+\selectlanguage{german}
+\titelblattTUWienPhysik
+\selectlanguage{english}
+
+\titlePageTUWienPhysik
+
+\selectlanguage{german}
+\chapter*{Kurzfassung}
+\addcontentsline{toc}{chapter}{Kurzfassung}
+\label{ch:kurzfassung}
+\input{chapters/00_kurzfassung.tex}
+\selectlanguage{english}
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\label{ch:abstract}
+\input{chapters/00_abstract.tex}
+
+\tableofcontents
+\addcontentsline{toc}{chapter}{Contents}
+\newpage
+\cleardoublepage % Macht, dass openright funktioniert. \chapter macht das automatisch, \tableofcontents und \printbibliography machen das nicht.  Falls es Probleme gibt hilft auch der Befehl \blankpage (siehe header.tex)
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\chapter{Introduction}
+\label{ch:introduction}
+\input{chapters/01_introduction.tex}
+
+\chapter{Theoretical Background}
+\label{ch:background}
+\input{chapters/02_background.tex}
+
+\chapter{Hard Iron Effect}
+\label{ch:problem}
+\input{chapters/03_problem.tex}
+
+\chapter{Particle Filter}
+\label{ch:particle}
+\input{chapters/04_particle_filter.tex}
+
+\chapter{Implementation}
+\label{ch:impl}
+\input{chapters/05_implementation.tex}
+
+\chapter{Empirical Evaluation}
+\label{ch:eval}
+\input{chapters/06_evaluation.tex}
+
+\chapter{Conclusion}
+\label{ch:conclusion}
+\input{chapters/07_conclusion.tex}
+
+\chapter{Outlook}
+\label{ch:outlook}
+\input{chapters/08_outlook.tex}
+
+%\cleardoublepage
+%\pagenumbering{roman}
+%\setcounter{page}{1}
+
+\listoffigures
+\addcontentsline{toc}{chapter}{List of Figures}
+\listoftables
+\addcontentsline{toc}{chapter}{List of Tables}
+\listofalgorithms
+\addcontentsline{toc}{chapter}{List of Algorithms}
+
+\printglossary[type=\acronymtype]
+\addcontentsline{toc}{chapter}{Glossary}
+
+\printbibliography
+
+\end{document}

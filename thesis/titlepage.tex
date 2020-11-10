@@ -1,0 +1,92 @@
+\makeatletter
+\define@cmdkey{ThesisTUWienPhysicsTitlePage}{author}[Max Mustermann]{}
+\define@cmdkey{ThesisTUWienPhysicsTitlePage}{title}[Titel]{}
+\define@cmdkey{ThesisTUWienPhysicsTitlePage}{institute}[Institut]{}
+\define@cmdkey{ThesisTUWienPhysicsTitlePage}{prof}[Professor]{}
+\define@cmdkey{ThesisTUWienPhysicsTitlePage}{address}[Adresse]{}
+\define@cmdkey{ThesisTUWienPhysicsTitlePage}{type}[Typ der Arbeit]{}
+\newcommand{\ThesisTUWienPhysicsTitlePage}[1]{\setkeys{ThesisTUWienPhysicsTitlePage}{#1}}
+
+\setkeys{ThesisTUWienPhysicsTitlePage}{
+	author=Max Mustermann,
+	title=Titel,
+	institute=Institut,
+	prof=Professor,
+	address=Adresse des Autors,
+	type=bacc
+}{}
+
+\newcommand*{\titlePageTUWienPhysik}{
+	\begingroup % Create the command for including the title page in the document
+	\newgeometry{bottom=2cm, top=2cm, left=3cm, right=2cm}
+	\begin{titlepage}
+	
+	
+	\begin{tabular}{ >{\centering}p{9cm} >{\centering}p{7cm} }
+		\space & {\line(1,0){120}\\Signature of Advisor}
+	\end{tabular}
+	
+	\begin{center}
+
+	% Upper part of the page
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=0.5\textwidth]{figures/TU_Wien_Logo.pdf}
+		% Logo gracefully taken from http://www.tuwien.ac.at/dle/pr/publishing_web_print/corporate_design/tu_logo/
+	\end{figure}
+	
+	\vspace{\stretch{1}}
+	\begin{LARGE}
+
+	\par\noindent
+	 \IfStrEqCase{\cmdKV@ThesisTUWienPhysicsTitlePage@type}{
+	  {sem}{SEMINARARBEIT}
+	  {bacc}{BACHELORARBEIT}
+	  {proj}{PROJEKTARBEIT}
+	  {mast}{DIPLOMARBEIT}
+	  {dipl}{DIPLOMARBEIT}
+	  {diss}{DISSERTATION}
+	  }[\cmdKV@ThesisTUWienPhysicsTitlePage@type]
+
+	\vspace{\stretch{1.8}}
+
+	\textbf{\cmdKV@ThesisTUWienPhysicsTitlePage@title} \\
+
+	\end{LARGE}
+	
+	\vspace{\stretch{1.8}}
+	\begin{large}
+	at \cmdKV@ThesisTUWienPhysicsTitlePage@institute \\
+	TU Wien
+	
+	\vspace{\stretch{0.5}}
+	
+	Supervisor \\
+	\textbf{\cmdKV@ThesisTUWienPhysicsTitlePage@prof}
+	
+	\vspace{\stretch{1}}
+	
+	by \\
+	
+	\vspace{\stretch{0.3}}
+	
+	\textbf{\cmdKV@ThesisTUWienPhysicsTitlePage@author} \\
+	
+	\vspace{\stretch{0.3}}
+	
+	\cmdKV@ThesisTUWienPhysicsTitlePage@address \\
+	
+	\vspace{\stretch{2}}
+	
+	\begin{tabular}{ >{\centering}p{7cm} >{\centering}p{7cm} }
+	\centering
+	\today & \line(1,0){120}\\Signature of Author
+	\end{tabular}
+	\end{large}
+	
+	\end{center}
+	\end{titlepage}
+	\restoregeometry
+	\endgroup
+}
+\makeatother

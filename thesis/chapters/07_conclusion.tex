@@ -1,0 +1,7 @@
+In this thesis, we proposed a particle filter to calibrate the hard iron effect of three-axis magnetometers in smartphones. Our algorithm can be updated iteratively and takes previous estimations into account. It does not depend on specific gestures that have to be communicated to the user. Any kind of rotations of the device can be taken into account. Additionally we can obtain a quantified error estimate for the hard iron which can be used as an input for other filters which are depending on the magnetic field like a compass.
+
+We compared the results of the particle filter to those of the system and to least squares estimates for reference. A test plan was developed with different calibration phases and a predefined track to make the measurements of the different test devices comparable.
+
+Our particle filter is producing promising results with a reasonable amount of CPU usage which promotes this algorithm to a viable solution for online calibration of magnetometers in smartphones. There is still a lot of room for improvements which is discussed in Chapter \ref{ch:outlook}.
+
+As discovered during the work on this thesis, not all Android devices with a magnetometer will offer uncalibrated readings. Unfortunately, this limits the scope of application for our particle filter. Possible solutions are discussed in Chapter \ref{ch:outlook}.
