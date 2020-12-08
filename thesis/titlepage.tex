@@ -1,92 +1,64 @@
-\makeatletter
-\define@cmdkey{ThesisTUWienPhysicsTitlePage}{author}[Max Mustermann]{}
-\define@cmdkey{ThesisTUWienPhysicsTitlePage}{title}[Titel]{}
-\define@cmdkey{ThesisTUWienPhysicsTitlePage}{institute}[Institut]{}
-\define@cmdkey{ThesisTUWienPhysicsTitlePage}{prof}[Professor]{}
-\define@cmdkey{ThesisTUWienPhysicsTitlePage}{address}[Adresse]{}
-\define@cmdkey{ThesisTUWienPhysicsTitlePage}{type}[Typ der Arbeit]{}
-\newcommand{\ThesisTUWienPhysicsTitlePage}[1]{\setkeys{ThesisTUWienPhysicsTitlePage}{#1}}
+\newgeometry{bottom=2cm, top=2cm, left=3cm, right=2cm}
+\begin{titlepage}
 
-\setkeys{ThesisTUWienPhysicsTitlePage}{
-	author=Max Mustermann,
-	title=Titel,
-	institute=Institut,
-	prof=Professor,
-	address=Adresse des Autors,
-	type=bacc
-}{}
 
-\newcommand*{\titlePageTUWienPhysik}{
-	\begingroup % Create the command for including the title page in the document
-	\newgeometry{bottom=2cm, top=2cm, left=3cm, right=2cm}
-	\begin{titlepage}
-	
-	
-	\begin{tabular}{ >{\centering}p{9cm} >{\centering}p{7cm} }
-		\space & {\line(1,0){120}\\Signature of Advisor}
-	\end{tabular}
-	
-	\begin{center}
+\begin{tabular}{ >{\centering}p{9cm} >{\centering}p{7cm} }
+	\space & {\line(1,0){120}\\Signature of Advisor}
+\end{tabular}
 
-	% Upper part of the page
-	\begin{figure}[h]
-		\centering
-		\includegraphics[width=0.5\textwidth]{figures/TU_Wien_Logo.pdf}
-		% Logo gracefully taken from http://www.tuwien.ac.at/dle/pr/publishing_web_print/corporate_design/tu_logo/
-	\end{figure}
-	
-	\vspace{\stretch{1}}
-	\begin{LARGE}
+\begin{center}
 
-	\par\noindent
-	 \IfStrEqCase{\cmdKV@ThesisTUWienPhysicsTitlePage@type}{
-	  {sem}{SEMINARARBEIT}
-	  {bacc}{BACHELORARBEIT}
-	  {proj}{PROJEKTARBEIT}
-	  {mast}{DIPLOMARBEIT}
-	  {dipl}{DIPLOMARBEIT}
-	  {diss}{DISSERTATION}
-	  }[\cmdKV@ThesisTUWienPhysicsTitlePage@type]
-
-	\vspace{\stretch{1.8}}
-
-	\textbf{\cmdKV@ThesisTUWienPhysicsTitlePage@title} \\
-
-	\end{LARGE}
-	
-	\vspace{\stretch{1.8}}
-	\begin{large}
-	at \cmdKV@ThesisTUWienPhysicsTitlePage@institute \\
-	TU Wien
-	
-	\vspace{\stretch{0.5}}
-	
-	Supervisor \\
-	\textbf{\cmdKV@ThesisTUWienPhysicsTitlePage@prof}
-	
-	\vspace{\stretch{1}}
-	
-	by \\
-	
-	\vspace{\stretch{0.3}}
-	
-	\textbf{\cmdKV@ThesisTUWienPhysicsTitlePage@author} \\
-	
-	\vspace{\stretch{0.3}}
-	
-	\cmdKV@ThesisTUWienPhysicsTitlePage@address \\
-	
-	\vspace{\stretch{2}}
-	
-	\begin{tabular}{ >{\centering}p{7cm} >{\centering}p{7cm} }
+% Upper part of the page
+\begin{figure}[h]
 	\centering
-	\today & \line(1,0){120}\\Signature of Author
-	\end{tabular}
-	\end{large}
-	
-	\end{center}
-	\end{titlepage}
-	\restoregeometry
-	\endgroup
-}
-\makeatother
+	\includegraphics[width=0.5\textwidth]{figures/TU_Wien_Logo.pdf}
+	% Logo gracefully taken from http://www.tuwien.ac.at/dle/pr/publishing_web_print/corporate_design/tu_logo/
+\end{figure}
+
+\vspace{\stretch{1}}
+\begin{LARGE}
+
+\par\noindent
+DIPLOMA THESIS
+
+\vspace{\stretch{1.6}}
+
+\textbf{Particle filter for online calibration of three axis magnetometers in smartphones} \\
+
+\end{LARGE}
+
+\vspace{\stretch{1.6}}
+\begin{large}
+carried out at the Institute of Applied Physics (IAP) \\
+at the TU Wien
+
+\vspace{\stretch{0.5}}
+
+with supervisor \\
+\textbf{Ao.Univ.Prof. Dipl.-Ing. Dr.techn. Martin Gröschl}
+
+\vspace{\stretch{0.5}}
+
+and co-supervisor \\
+\textbf{Dipl.-Ing. Dr.-Ing. Paolo Fogliaroni} \\
+Esri R\&D Center Vienna
+
+\vspace{\stretch{1}}
+
+by \\
+
+\vspace{\stretch{0.3}}
+
+\textbf{Andreas Stefl, BSc} \\
+
+\vspace{\stretch{2}}
+
+\begin{tabular}{ >{\centering}p{7cm} >{\centering}p{7cm} }
+\centering
+Vienna, \today & \line(1,0){120}\\Signature of Author
+\end{tabular}
+\end{large}
+
+\end{center}
+\end{titlepage}
+\restoregeometry

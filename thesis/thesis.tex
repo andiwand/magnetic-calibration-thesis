@@ -3,8 +3,6 @@
 \usepackage[english,german]{babel}
 
 \input{header.tex}
-\input{titelblatt.tex}
-\input{titlepage.tex}
 
 \hypersetup{
 	pdfauthor={Andreas Stefl, BSc},
@@ -15,30 +13,6 @@
 	colorlinks=false, % for printing "false"!
 }
 
-\AbschlussarbeitTUWienPhysikTitlePage{
-	autor={Andreas Stefl, BSc},
-	titel={Particle Filter für automatische Laufzeit-Kalibrierung des 3-Achsen-Magnetometers in Smartphones},
-	institut={Institut für Angewandte Physik (IAP)},
-	prof={Ao.Univ.Prof. Dipl.-Ing. Dr.techn. Martin Gröschl\\Dr. Paolo Fogliaroni},
-	adresse={Wien},
-	typ={dipl},
-	% Vordefinierte Typen sind: sem (Seminararbeit), bacc (Bachelorarbeit), proj (Projektarbeit), mast (Diplomarbeit), dipl (Diplomarbeit), diss (Dissertation)
-	% Laut Auskunft des Dekants muss auch eine Masterarbeit den Titel "Diplomarbeit" tragen.
-	% Bei allen anderen Typen werden die Texte direkt übernommen.
-    }
-
-\ThesisTUWienPhysicsTitlePage{
-	author={Andreas Stefl, BSc},
-	title={Particle filter for online calibration of three axis magnetometers in smartphones},
-	institute={Institute of Applied Physics (IAP)},
-	prof={Ao.Univ.Prof. Dipl.-Ing. Dr.techn. Martin Gröschl\\Dr. Paolo Fogliaroni},
-	address={Wien},
-	type={dipl},
-	% Vordefinierte Typen sind: sem (Seminararbeit), bacc (Bachelorarbeit), proj (Projektarbeit), mast (Diplomarbeit), dipl (Diplomarbeit), diss (Dissertation)
-	% Laut Auskunft des Dekants muss auch eine Masterarbeit den Titel "Diplomarbeit" tragen.
-	% Bei allen anderen Typen werden die Texte direkt übernommen.
-	}
-
 \addbibresource{references.bib}
 
 \input{glossary.tex}
@@ -48,10 +22,15 @@
 \pagenumbering{gobble}
 
 \selectlanguage{german}
-\titelblattTUWienPhysik
+\input{titelblatt.tex}
 \selectlanguage{english}
 
-\titlePageTUWienPhysik
+\input{titlepage.tex}
+
+\chapter*{Acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+\label{ch:acknowledgements}
+\input{chapters/00_acknowledgements.tex}
 
 \selectlanguage{german}
 \chapter*{Kurzfassung}
@@ -65,6 +44,7 @@
 \label{ch:abstract}
 \input{chapters/00_abstract.tex}
 
+\setcounter{tocdepth}{1}
 \tableofcontents
 \addcontentsline{toc}{chapter}{Contents}
 \newpage
@@ -96,9 +76,9 @@
 \label{ch:eval}
 \input{chapters/06_evaluation.tex}
 
-\chapter{Conclusion}
-\label{ch:conclusion}
-\input{chapters/07_conclusion.tex}
+\chapter{Conclusions}
+\label{ch:conclusions}
+\input{chapters/07_conclusions.tex}
 
 \chapter{Outlook}
 \label{ch:outlook}

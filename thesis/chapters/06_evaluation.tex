@@ -1,10 +1,12 @@
-In this chapter, we evaluate our implementation of the hard iron calibration presented in Chapter \ref{ch:impl}. First, we give an overview of the hardware used for evaluation. Then we take a look at the behaviour of the sensor data collection and a qualitative evaluation of the orientation filter. Finally, we will evaluate the quality of our hard iron calibration in comparison to the operating system, the error estimation, and its performance.
+% TODO section for explaining the evaluation process
+
+In this chapter, we evaluate our implementation of the hard iron calibration presented in Chapter \ref{ch:impl}. First, we give an overview of the hardware used for evaluation. Then we take a look at the behaviour of the sensor data collection and a qualitative evaluation of the orientation filter. Finally, we will evaluate the quality of our hard iron calibration in comparison to the one of the system, the error estimation, and its performance.
 
 \section{Hardware}
 
-Four different devices were available for evaluation. They are listed in Table \ref{tbl:hardware}. It was important to compare the results between multiple devices since sensors and hard iron calibration algorithms can vary greatly between them. Apart from that, we need be sure that the performance of our implementation is good enough for real-time processing across different devices to get maximal compatibility.
+Four different devices were available for evaluation. They are listed in Table \ref{tbl:hardware}. It was important to compare the results between multiple devices since sensors and hard iron calibration algorithms vary between them. Also, we need be sure that the performance of our implementation is good enough for real-time processing across different devices to achieve maximal compatibility.
 
-All these devices run a fairly recent Android version and have been released during the previous 5 years.
+All these devices run a fairly recent Android version and have been released during the last 5 years.
 
 \begin{table}[h]
     \centering
@@ -25,9 +27,12 @@ Another possible test device was the Nokia 3 released in 2017 but unfortunately 
 \section{Data collection}
 \label{sec:eval_sensor}
 
-The validation of the sensor data collection was important since all the following steps depend on it. Apart from that it was beneficial for building up intuition for the data which is used for filtering.
+The validation of the sensor data collection was a first and important step for evaluation, since all the following steps depend on it. Moreover, it was beneficial for building up intuition for the data which is used for filtering.
 
-As a first step only the timestamps of the magnetometer readings were used to calculate the measurement interval. Since Android is not a real-time system the interval will not be constant. Statistics of the interval are given in Table \ref{tbl:mag_interval}.
+This experiment was carried out on all the Android test devices listed in Table \ref{tbl:hardware}. The requested sampling interval was $1$ ms.
+
+As a first step, only the timestamps of the magnetometer readings were used to calculate the measurement interval. Since Android is not a real-time system the interval will not be constant. A histogram of the interval is shown in Figure \ref{fig:interval}. Statistics are given in Table \ref{tbl:mag_interval}.
+% TODO point out that the measured sampling intervals is very different from the one requested
 
 \begin{figure}[hbt!]
     \centering
@@ -46,7 +51,7 @@ As a first step only the timestamps of the magnetometer readings were used to ca
     Samsung Galaxy S7 & 10.0 & 2.6 & 0.3 &  9.3 & 10.0 & 10.7 & 115.5 \\ \hline
     LG Nexus 5X       & 19.7 & 2.6 & 0.8 & 19.0 & 19.7 & 20.4 &  86.5 \\ \hline
     \end{tabular}
-    \caption{Statistics of the magnetometer reading interval in $ms$.}
+    \caption{Statistics of the magnetometer reading interval in milliseconds.}
     \label{tbl:mag_interval}
 \end{table}
 
@@ -59,15 +64,17 @@ Secondary, the readings of the magnetometer were displayed as a three-dimensiona
     \label{fig:scatter}
 \end{figure}
 
-Without the hard iron effect we would expect the center of the plots at the origin. The maximal distance from the origin should be the magnitude of the Earth's magnetic field if other environmental sources are neglectable. Without considering the hard iron effect the estimation of the horizontal orientation would be meaningless.
+Without the hard iron effect we would expect the center of the plots at the origin. The maximal distance from the origin should be the magnitude of the Earth's magnetic field if other environmental sources are neglectable. Measuring the horizontal orientation involves $\arctantwo(y, x)$ for a two dimensional projection of the magnetic field. As we can see in Figure \ref{fig:scatter}, without considering the hard iron effect, the estimation of the horizontal orientation would be meaningless since $(x, y, z)$ are not zero-centered.
+% TODO there should be a sections for horizontal orientation estimation that we can reference here
 
 \section{Orientation filter}
+% TODO refer to impl section?
 
-Since the hard iron calibration depends highly on the orientation estimation it was necessary to validate the implementation and to evaluate its performance. A quantitative evaluation would require reference values for the orientation of the device for comparison. That could be achieved by tracking visual landmarks with a camera, rotating the device with a robotic arm or simulation of sensor data. Such experiments were carried out at the Department of Geodesy and Geoinformation at TU Wien.\cite{Ettlinger2018}
+Since our hard iron calibration depends highly on the orientation estimation, it was necessary to validate the implementation and to evaluate its performance. A quantitative evaluation would require reference values for the orientation of the device for comparison. This could be achieved by tracking visual landmarks with a camera, rotating the device with a robotic arm or simulation of sensor data. Such experiments were carried out at the Department of Geodesy and Geoinformation at TU Wien in order to evaluate their Kalman-based orientation estimation.\cite{Ettlinger2018} However, using their equipment and data was not part of this thesis.
 
-The implementation of the orientation filter needed at least a qualitative evaluation to guarantee its functionality. That was carried out with an augmented reality demo application. A cube was placed in the center of a 3D scene and the position and orientation of the camera in this scene was calculated based on the orientation of the phone in such a way that the cube seems to be stationary in world coordinates. This approach validates the local and global frame of reference, the transformation between them and the response to sensor updates.
+The implementation of the orientation filter required at least a qualitative evaluation to guarantee its functionality. This was carried out with an augmented reality demo application. A cube was placed at the origin of a 3D scene and the position and orientation of the camera in this scene were calculated based on the orientation of the phone in such a way, that the cube seems to be stationary in world coordinates. This approach validates the transformation between the local and global frames of reference and qualitatively evaluates the response to sensor updates.
 
-The 3D scene is illustrated in Figure \ref{fig:cube_scene}. Pictures of the augmented cube rendered by the LG Nexus 5X after rotation are show in Figure \ref{fig:cubes}.
+The 3D scene is illustrated in Figure \ref{fig:cube_scene}. Pictures of the augmented cube rendered by the LG Nexus 5X are show in Figure \ref{fig:cubes}.
 
 \begin{figure}[hbt!]
     \centering
@@ -97,11 +104,11 @@ The 3D scene is illustrated in Figure \ref{fig:cube_scene}. Pictures of the augm
     \label{fig:cubes}
 \end{figure}
 
-Since the interval of the sensor data is sampled to 50 ms, little delay and low refresh rate is expected. Apart from that the experience was very positive.
+The accelerometer and gyroscope have been down sampled to a 50 ms interval. Therefore, some delay and low refresh rate was expected. However, the experience was very positive.
 
-The orientation filter has only a single parameter \textsc{beta} apart from the update interval which models the reliability proportion between accelerometer and gyroscope measurements. This parameter has to be chosen carefully and in the best case individual for each phone or sensor composition since the expected error highly depends on that.
+The orientation filter has only a single parameter \textsc{beta}, apart from the update interval. \textsc{beta} models the reliability proportion between accelerometer and gyroscope measurements. This parameter has to be chosen carefully and in the best case individually for each sensor composition or smartphone model, since quality of the estimates depends highly upon that. Choosing one parameter across multiple devices might result in low accuracy or biased estimated.
 
-The test application can be used to hand-tune the parameter for a given device.
+Our demo application can be used to hand-tune \textsc{beta} for a given device. One could chose a parameter to start with and test it in the application. By observing the performance one might decide that the parameter is not optimal and change it. Following this process iteratively until the results are satisfying will lead to an optimized value for \textsc{beta}.
 
 \section{Hard iron calibration}
 % visualize particle cloud over time
@@ -109,20 +116,18 @@ The test application can be used to hand-tune the parameter for a given device.
 % left over oscillations might be due to latency in orientation estimation or soft iron effects (read somewhere that magnetization only takes ns so that might be bs)
 %  - rather small ~1µT so not that important for orientation but never the less interesting
 
-In order to evaluate our hard iron calibration, a test track with labels at each turn was set up as a spatial reference for sensor data collection across different devices. The recorded data was later used to simulate the sensor input and evaluate the output of our filter. The track had a total length of approximately 24 m with 4 turns and a total horizontal rotation angle of approximately 540$^{\circ}$. It is illustrated in Figure \ref{fig:eval_scenario}. The \textsc{tick} button in the test application (see Figure \ref{fig:app}) was used to mark the passing of each label.
+A test track was set up in order to evaluate our hard iron calibration. It is illustrated in Figure \ref{fig:eval_scenario}. Visual landmarks were placed at each turning point as a spatial reference for the collected sensor data across different devices. The track had a total length of approximately 24 meters with 4 turns and a total horizontal rotation angle of approximately 540 degrees. A button in the test application, called \textsc{tick} (see Figure \ref{fig:app}), was used to mark the passing of each landmark.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1.0\textwidth]{figures/scenario.png}
-    \caption{Illustration of the test scenario.}
+    \caption{Illustration of the test scenario for the hard iron calibration.}
     \label{fig:eval_scenario}
 \end{figure}
 
-At the beginning the device was placed on a table and a magnet was used to influence the hard iron effect. Afterwards the track was started with the first hit of the \textsc{tick} button with an average walking speed of approximately 1 m/s. At the end of the track the button was pressed one last time and the devices was rotated in multiple directions on the same position to achieve an optimal calibration for reference.
+Each test run was a sequence of three different phases. In the first phase the test device was placed on a table. Thereby, the orientation estimation would initialize in the same way across different test runs. Then a magnet was used in order to manipulate the hard iron effect of the test device. The second phase started by pressing the \textsc{tick} button in the application, followed by walking the test track. The average walking speed was approximately 1 m/s. The third phase started with a last press of the \textsc{tick} button at landmark 6. Then the test device was rotated in multiple directions on the same position. With the third and last phase we collected a large amount of reference data for an optimal magnetometer calibration.
 
-The different phases of the recording are distinguishable because the \textsc{tick} button was pressed in between and the timestamp of that event was stored along the sensor data.
-
-Table \ref{tbl:eval_params} contains the parameters used for the following evaluation.
+The test application would be started with the button \textsc{start rec} (see Figure \ref{fig:app}), an abbreviation for ``start recording''. By pressing this button, our application starts to record all the incoming data from the sensors. Our \textsc{tick} button is also treated like a sensor in this case. Each sensor reading is then stored in a file, along with its timestamp. The recorded data was later used to simulate the sensor input and to evaluate the output of our filter. Table \ref{tbl:eval_params} contains the parameters of our filter used during the simulation.
 
 \begin{table}[H]
     \centering
@@ -138,19 +143,19 @@ Table \ref{tbl:eval_params} contains the parameters used for the following evalu
     \textsc{minimalRotation}        & $0.1$ \\ \hline
     \textsc{resamplingRate}         & $0.01$ \\ \hline
     \end{tabular}
-    \caption{Chosen parameter for evaluation.}
+    \caption{Chosen parameter for the simulation.}
     \label{tbl:eval_params}
 \end{table}
 
-Least squares was used to fit a sphere\cite{Jekel2016} to the uncalibrated magnetometer readings for the last part of the recording. The least squares estimate was used for comparison with the estimates of our particle filter.
+The data of the third phase of our test runs was used to estimate an independent reference for the hard iron calibration. The chosen estimator was a least squares fit for a sphere with an unknown origin and radius.\cite{Jekel2016} 
 
-The following Figures \ref{fig:eval_simulation_pixel3}, \ref{fig:eval_simulation_pixel2}, \ref{fig:eval_simulation_s7}, and \ref{fig:eval_simulation_nexus5x} show the \textcolor{blue}{estimated hard iron bias and error} over time compared to the \textcolor{red}{least squares} estimate. The vertical lines represent the time when a label on the test track was passed.
+Figures \ref{fig:eval_simulation_pixel3}, \ref{fig:eval_simulation_pixel2}, \ref{fig:eval_simulation_s7}, and \ref{fig:eval_simulation_nexus5x} show the \textcolor{blue}{estimated hard iron bias and error} of our particle filter over time compared to the \textcolor{red}{least squares} estimate. The vertical lines represent the time when a landmark was passed on the test track.
 
-The following Tables \ref{tbl:eval_simulation_pixel3}, \ref{tbl:eval_simulation_pixel2}, \ref{tbl:eval_simulation_s7}, and \ref{tbl:eval_simulation_nexus5x} contain the values of the estimated hard iron bias and error after passing the labels on the test track from different methods. \textsc{PF} is our real-time particle filter estimate, \textsc{SYS} is the system's estimate, and \textsc{LS} the post processed least squares estimate. The label 7 denotes the end of the experiment after rotating the phone in multiple directions.
+Tables \ref{tbl:eval_simulation_pixel3}, \ref{tbl:eval_simulation_pixel2}, \ref{tbl:eval_simulation_s7}, and \ref{tbl:eval_simulation_nexus5x} contain the values of the estimated hard iron bias and error across different methods after passing the landmarks on the test track. \textsc{PF} is our real-time particle filter estimate, \textsc{SYS} is the system's estimate, and \textsc{LS} the post processed least squares estimate. Phase 2.x denotes passing the landmark x on the test track. Phase 3 denotes the end of the experiment after rotating the phone in multiple directions.
 
-In all our test cases the system calibration was not able to calibrate the hard iron effect while walking on the test track. Only in the last phase of the experiment when the device was rotated in multiple directions. The estimates of the systems were very close to the least squares estimates.
+In all our test cases the \gls{os} was not able to calibrate the hard iron effect while walking on the test track. Only in the last phase of the experiment, when the device was rotated in multiple directions. The estimates of the systems were very close to the least squares estimates.
 
-Figure \ref{fig:eval_simulation_pixel3} and Table \ref{tbl:eval_simulation_pixel3} show the convergence of the hard iron estimation for the Google Pixel 3. The particle filter calibration performs well but picks up a bias on the z axis after label 4 and during the calibration phase at the end there is a bias on the x axis.
+Figure \ref{fig:eval_simulation_pixel3} and Table \ref{tbl:eval_simulation_pixel3} show the convergence of the hard iron estimation for the Google Pixel 3. Our particle filter calibration performed very well, but picked up a bias on the z axis after landmark 4 (phase 2.4 in the table). During the calibration phase at the end of the experiment there was a bias on the x axis.
 
 \begin{figure}[H]
     \centering
@@ -164,7 +169,7 @@ Figure \ref{fig:eval_simulation_pixel3} and Table \ref{tbl:eval_simulation_pixel
     \resizebox{\columnwidth}{!}{
     \begin{tabular}{ | l | l | r | r | r | r | r | r | r | }
     \hline
-    \textbf{Method} & \textbf{Axis} & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{5} & \textbf{6} & \textbf{7} \\ \hline
+    \textbf{Method} & \textbf{Axis} & \textbf{Phase 2.1} & \textbf{Phase 2.2} & \textbf{Phase 2.3} & \textbf{Phase 2.4} & \textbf{Phase 2.5} & \textbf{Phase 2.6} & \textbf{Phase 3} \\ \hline
     PF  & X & $-0.5\pm100.5$ & $-9.3\pm24.0$ & $-5.8\pm7.2$ & $-5.3\pm4.6$ & $-5.3\pm3.9$ & $-4.9\pm3.7$ & $-8.4\pm1.1$ \\ \hline
     SYS &   & $1.0$ & $1.0$ & $1.0$ & $1.0$ & $1.0$ & $1.0$ & $-6.4$ \\ \hline
     LS  &   & & & & & & & $-5.4$ \\ \hline
@@ -180,7 +185,7 @@ Figure \ref{fig:eval_simulation_pixel3} and Table \ref{tbl:eval_simulation_pixel
     \label{tbl:eval_simulation_pixel3}
 \end{table}
 
-Figure \ref{fig:eval_simulation_pixel2} and Table \ref{tbl:eval_simulation_pixel2} show the convergence of the hard iron estimation for the Google Pixel 2. The particle filter calibration looks unbiased until label 6 but picks up a bias during the calibration phase at the end. There we get a small bias for the x and y axis.
+Figure \ref{fig:eval_simulation_pixel2} and Table \ref{tbl:eval_simulation_pixel2} show the convergence of the hard iron estimation for the Google Pixel 2. Our particle filter calibration looks unbiased until landmark 6 (phase 2.6 in the table) but picked up a bias during the calibration phase at the end. Here we got a small bias for the x and y axis.
 
 \begin{figure}[H]
     \centering
@@ -194,7 +199,7 @@ Figure \ref{fig:eval_simulation_pixel2} and Table \ref{tbl:eval_simulation_pixel
     \resizebox{\columnwidth}{!}{
     \begin{tabular}{ | l | l | r | r | r | r | r | r | r | }
     \hline
-    \textbf{Method} & \textbf{Axis} & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{5} & \textbf{6} & \textbf{7} \\ \hline
+    \textbf{Method} & \textbf{Axis} & \textbf{Phase 2.1} & \textbf{Phase 2.2} & \textbf{Phase 2.3} & \textbf{Phase 2.4} & \textbf{Phase 2.5} & \textbf{Phase 2.6} & \textbf{Phase 3} \\ \hline
     PF  & X & $1.4\pm99.7$ & $62.3\pm9.1$ & $63.4\pm6.7$ & $62.7\pm5.1$ & $62.6\pm4.7$ & $59.8\pm1.7$ & $58.7\pm1.0$ \\ \hline
     SYS &   & $63.6$ & $63.6$ & $63.6$ & $63.6$ & $63.6$ & $63.6$ & $62.0$ \\ \hline
     LS  &   & & & & & & & $63.3$ \\ \hline
@@ -210,7 +215,7 @@ Figure \ref{fig:eval_simulation_pixel2} and Table \ref{tbl:eval_simulation_pixel
     \label{tbl:eval_simulation_pixel2}
 \end{table}
 
-Figure \ref{fig:eval_simulation_s7} and Table \ref{tbl:eval_simulation_s7} show the convergence of the hard iron estimation for the Samsung Galaxy S7. The hard iron effect of the z axis is about 150 $\mu$T and therefore quite challenging. The filter will not initialize a lot of particles in close proximity since the \textsc{initialVariance} is just 100 $\mu$T. The y axis picks up a similar bias most likely due to the same reason as the z axis. During calibration the accuracy increases but a small bias remains on the x and y axis.
+Figure \ref{fig:eval_simulation_s7} and Table \ref{tbl:eval_simulation_s7} show the convergence of the hard iron estimation for the Samsung Galaxy S7. The hard iron effect of the z axis was about 150 $\mu$T and therefore quite challenging. The filter would not initialize a lot of particles in close proximity since the \textsc{initialVariance} is just $(100\ \mu T)^2$. The y axis picked up a bias most likely due to the same reason as the z axis. During calibration phase the accuracy increases but a small bias remained on the x and y axis.
 
 \begin{figure}[H]
     \centering
@@ -224,7 +229,7 @@ Figure \ref{fig:eval_simulation_s7} and Table \ref{tbl:eval_simulation_s7} show 
     \resizebox{\columnwidth}{!}{
     \begin{tabular}{ | l | l | r | r | r | r | r | r | r | }
     \hline
-    \textbf{Method} & \textbf{Axis} & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{5} & \textbf{6} & \textbf{7} \\ \hline
+    \textbf{Method} & \textbf{Axis} & \textbf{Phase 2.1} & \textbf{Phase 2.2} & \textbf{Phase 2.3} & \textbf{Phase 2.4} & \textbf{Phase 2.5} & \textbf{Phase 2.6} & \textbf{Phase 3} \\ \hline
     PF  & X & $1.1\pm100.0$ & $-20.9\pm17.2$ & $-24.1\pm7.0$ & $-24.9\pm5.5$ & $-25.8\pm4.4$ & $-26.1\pm4.2$ & $-27.2\pm1.1$ \\ \hline
     SYS &   & $0.0$ & $0.0$ & $0.0$ & $0.0$ & $0.0$ & $0.0$ & $-25.6$ \\ \hline
     LS  &   & & & & & & & $-26.1$ \\ \hline
@@ -240,7 +245,7 @@ Figure \ref{fig:eval_simulation_s7} and Table \ref{tbl:eval_simulation_s7} show 
     \label{tbl:eval_simulation_s7}
 \end{table}
 
-Figure \ref{fig:eval_simulation_nexus5x} and Table \ref{tbl:eval_simulation_nexus5x} show the convergence of the hard iron estimation for the LG Nexus 5X. Here the calibrations performs reasonable well and remains in $\pm \sigma$ until calibration phase. The estimation seems to pick up oscillations from the rotations of the devices. This might be due to a bias in the orientation estimation. \textsc{beta} might not be chosen optimal for this device.
+Figure \ref{fig:eval_simulation_nexus5x} and Table \ref{tbl:eval_simulation_nexus5x} show the convergence of the hard iron estimation for the LG Nexus 5X. Our calibration performed reasonably well and remained within $\pm 1 \sigma$ until calibration phase. Our particle filter seemed to pick up oscillations from the rotations of the devices. This might be due to a bias in the orientation estimation. \textsc{beta} might not have been chosen optimal in this case.
 
 \begin{figure}[H]
     \centering
@@ -254,7 +259,7 @@ Figure \ref{fig:eval_simulation_nexus5x} and Table \ref{tbl:eval_simulation_nexu
     \resizebox{\columnwidth}{!}{
     \begin{tabular}{ | l | l | r | r | r | r | r | r | r | }
     \hline
-    \textbf{Method} & \textbf{Axis} & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{5} & \textbf{6} & \textbf{7} \\ \hline
+    \textbf{Method} & \textbf{Axis} & \textbf{Phase 2.1} & \textbf{Phase 2.2} & \textbf{Phase 2.3} & \textbf{Phase 2.4} & \textbf{Phase 2.5} & \textbf{Phase 2.6} & \textbf{Phase 3} \\ \hline
     PF  & X & $0.4\pm99.4$ & $9.9\pm21.1$ & $7.1\pm9.6$ & $11.6\pm6.1$ & $11.3\pm4.4$ & $10.4\pm4.2$ & $2.9\pm1.1$ \\ \hline
     SYS &   & $-4.4$ & $-4.4$ & $-4.4$ & $-4.4$ & $-4.4$ & $-4.4$ & $10.6$ \\ \hline
     LS  &   & & & & & & & $9.2$ \\ \hline
@@ -270,13 +275,13 @@ Figure \ref{fig:eval_simulation_nexus5x} and Table \ref{tbl:eval_simulation_nexu
     \label{tbl:eval_simulation_nexus5x}
 \end{table}
 
-In all our test cases the particle filter was able to converge. The estimated error dropped to approximately $\pm$ 6 $\mu$T after 20 seconds while producing biases of about $\pm$ 10 $\mu$T in worst case. The accuracy of our filter was worse compared to the system and least squares but it produces results when the other methods did not. The biases might come from a previous signal processing step like the moving average or the orientation filter. Compared to the earth magnetic field the errors are reasonable small and should not effect the compass too dramatically.
+In all our test cases the particle filter was able to converge. The estimated error dropped to approximately $\pm$ 6 $\mu$T after 20 seconds while producing biases of about $\pm$ 10 $\mu$T in the worst case. In phase 3, the accuracy of our filter was worse compared to the \gls{os} and least squares estimates. However, our particle filter produced results when the other methods were not able to. The biases might come from a previous signal processing step like the moving average or the orientation filter. Compared to the earth magnetic field the errors are reasonably small and should not effect the compass too dramatically.
 
-\subsection{Performance}
+\subsection{Computational performance}
 
-Since we are targeting mobile devices and want to run our particle filter in real time we have to evaluate its performance. A faster algorithm has the benefit of being compatible with older devices and will consume less battery. Depending on the use case the performance can be tweaked with the amount of particles. Reducing the population of the particle filter will also reduce its stability. For a practical use case it is important to find a sweet spot with optimal performance and stability.
+Since we are targeting mobile devices and want to run our particle filter in real-time, the evaluation of the performance is indispensable. A fast algorithm has the benefit of being compatible with older and slower devices and will consume less battery which is a limited resource for mobile devices. Depending on the use case, the performance can be tweaked with the amount of particles. However, reducing the population of the particle filter will also reduce its stability. For a practical use case it is important to find a sweet spot with optimal performance and optimal stability.
 
-The parameter \textsc{minimalRotation} was set to zero to get an upper limit for the CPU consumption. Otherwise the parameters were the same as shown in Table \ref{tbl:eval_params}.
+The parameter \textsc{minimalRotation} was set to zero in order to measure an upper bound for the \gls{cpu} consumption. Otherwise the parameters were the same as shown in Table \ref{tbl:eval_params}.
 
 The performance measurements are summarized in Table \ref{tbl:eval_performance}. Each value is the result of a 10 second measurement of the CPU time spent in the particle filter divided by real-time passed.
 
@@ -290,6 +295,6 @@ The performance measurements are summarized in Table \ref{tbl:eval_performance}.
     Samsung Galaxy S7 & 0.01 & 0.14 & 0.79  \\ \hline
     LG Nexus 5X       & 0.01 & 0.10 & 0.59  \\ \hline
     \end{tabular}
-    \caption{CPU usage per device and particle filter population.}
+    \caption{CPU time spent in the particle filter divided by real-time passed per device and particle filter population.}
     \label{tbl:eval_performance}
 \end{table}

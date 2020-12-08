@@ -1,66 +1,57 @@
-% screenshot and photo of wrong heading on google maps?
+% TODO intro intro?
 
-Nowadays smartphones come with various sensors which can be used to measure environmental properties and to estimate the orientation and motion of the device and the user. Like all measurement devices, these sensors require calibration. The calibration could be built into the sensor by the manufacturer statically, as parameters, or dynamically, as a program. This might be infeasible in some situations. The manufacturer might not know in which environment the senors will be used and therefore static calibration is not viable. Apart from that online calibration might be an overhead to the customer or is simply too computational expensive for the small hardware in the chip. In such a case the consumer has to deal with calibration by himself.
+\section{Motivation}
+% in case of ips - Furthermore, the errors might propagate through the position estimation of the \gls{ips}.
 
-The hard iron effect of smartphones is caused by magnetic materials inside the device, like permanent magnets of the speaker, which retain their magnetism even after removal of the external magnetic fields. Since smartphones contain various components made of various materials and no model is like the other the burden of hard iron calibration is passed down to the operating system. The hard iron effect will change over time because of magnetization by strong external fields which gives the effect a dynamical component.
+Nowadays smartphones come with various sensors that can be used to measure environmental properties and to estimate the orientation and motion of the device and the user. Like all measurement devices, these sensors require calibration. One of the most common sensors in the smartphone is the magnetometer, which is usually used to estimate the horizontal orientation of the phone, similar to a compass. Accurate orientation, and therefore magnetometer calibration, is crucial in pedestrian navigation, localization and wayfinding scenarios (e.g. \gls{ips}, see Section \ref{sec:ips} for more details) since users usually rely on the orientation shown on the map displayed on their smartphone.
 
-Apart from the hard iron effect there is also a soft iron effect and temperature dependency of the magnetometer. In case of Android and iOS these are compensated by the manufacturer of the sensor or smartphone.\cite{android_sdk_sensorevent}
+In principle, the magnetometer calibration could be built into the sensor by the manufacturer statically (as parameters) or dynamically (as a program). This is not feasible in some situations. The manufacturer might not know in which environment the senors will be used and therefore static calibration is not viable. Online calibration might be an overhead for the user or is simply too computational expensive for the small sensor hardware. In these cases the user of the sensor has to deal with calibration by himself.
 
-Usually the hard iron calibration is operating system or manufacturer depending. Treating these estimates equally across different platforms will be an additional and unforeseeable source of error since the operating system does not provide any quantitative estimates about the accuracy of the calibration. Apart from that, the manufacturer usually require unnatural movements of the phone for the hard iron calibration which is hard to communicate to the user.
+In case of smartphones, the calibration of the magnetometer is implemented by the \gls{os} or manufacturer. These implementations are usually optimized for low computational effort and will not update the calibration continuously. Moreover, they require the user to perform unnatural movements of the phone which is difficult to communicate. Since there are a lot of different smartphone models on the market, the implementations will behave differently and it will not be clear when the calibration is completed. As a consequence, the calibration and therefore the measurements of the magnetometer depend highly on the \gls{os} and manufacturer. Treating these measurements equally across different devices is an additional and unforeseeable source of error since the \gls{os} does not provide any quantitative estimates about the accuracy of the calibration.
 
-This thesis should be the first step towards an unbiased compass for \gls{ips} which is a critical feature since users usually rely on the orientation shown on the map. A meaningful error estimation of the calibrated magnetic field vector is beneficial for heading estimation and positioning of an \gls{ips}.
+The calibration of the magnetometer is usually decomposed into different effects: hard iron, soft iron, temperature, and misalignment.
 
-% compare particle filter approach to existing methods
-%  - why online? why particles?
+The hard iron effect is usually the dominant measurement error.\cite{vectornav} In case of magnetometers in smartphones, this effect is caused by magnetic materials inside the device, like permanent magnets of the speaker, which retain their magnetism even after removal of external magnetic fields. Since smartphones contain various components made of various materials and no model is like the other, the burden of hard iron calibration is passed down to the \gls{os}. Additionally, the hard iron effect will change over time because of magnetization by sufficiently strong external fields which gives this effect a dynamical component.
 
-\section{Aims of this Thesis}
+As discovered during working on this thesis, measurements without soft iron and temperature compensation are not available on Android and iOS.\cite{android_sdk_sensorevent}\cite{ios_cmmagneticfield} Soft iron and temperature calibration are performed by the manufacturer of the sensor or smartphone in this case.
 
-The main objectives of this thesis are:
+\section{Our solution}
+% IDEA:
+%  - trade cpu usage for more accurate / more continuous calibration
+% GOALS:
+%  - particle filter for hard iron calibration which supports continuous calibration and is able to run in real time on a modern smartphone
+%  - error estimates for the hard iron calibration and the magnetic field estimates
+
+In this thesis we introduce a new algorithm to compensate the hard iron effect of magnetometers in smartphones for pedestrian navigation, localization and wayfinding scenarios. The main idea was to overcome the limitations of the \gls{os} and manufacturer hard iron calibration. This included:
 
 \begin{itemize}
-  \item Design a particle filter that is capable of handling the hard iron calibration.
-  \item Implementation of a system that is able to read sensor data from Android, process it in real-time and present the results to the user.
-  \item Statistical evaluation of our proposed algorithm and subsequent manual parameter tuning.
-  \item Comparison to state-of-the-art results.
+  \item No dependence on special gestures that have to be performed by the user in order to progress the calibration.
+  \item As a consequence of the first item, the calibration should run continuously and in real-time.
+  \item Using one algorithm across different devices and platforms.
+  \item Quantification of the calibration uncertainty. This is crucial for error propagation and bias prevention.
 \end{itemize}
 
-\section{Methodology}
+Since existing methods of the \gls{os} and manufacturers optimize for low computational effort, we believed that we can overcome their limitations by trading off computational performance.
 
-In order to design, implement and evaluate a real-time hard iron calibration, two different approaches were taken into consideration. First, using existing tools to collect the required sensor data and process and evaluate it offline. Second, design a system from scratch that collects, processes and visualizes sensor data in real time. Since the outcome of this thesis should be a real-time algorithm, prototyping with that paradigm from the beginning seemed to be the more target-oriented approach. Apart from that, we lack references for some intermediate results, like the orientation, which required qualitative evaluation and is preferable in the real-time scenario because of the immediate response in the visualization.
+An existing algorithm was used to form an \gls{imu} by the accelerometer and gyroscope. The \gls{imu} provides information about the orientation of the device. This is beneficial for the calibration of the magnetometer because it can be used to predict upcoming measurements for comparison.
 
-Post-processing was used for the quantitative evaluation of the hard iron calibration after coming up with an adequate measure for that.
+This thesis should be the first step towards an unbiased compass in pedestrian navigation, localization and wayfinding scenarios. This is a critical feature, since users usually rely on the orientation displayed on the map on their smartphone. Additionally, a meaningful error estimation of the calibrated magnetic field is beneficial for error propagation and unbiased estimates for heading positioning in an \gls{ips}.
 
-\section{Structure}
+In order to achieve an online hard iron calibration, a particle filter was designed and implemented. Particle filters can be updated recursively, similar to Kalman filters. These filters have a state with constant memory complexity and perform updates on that state based on new observations. This is a desirable feature for real-time algorithms, since time and memory complexity is foreseeable.
 
-The thesis is structured as follows. Chapter \ref{ch:background} gives an theoretical overview of the physics and mathematics this thesis is based on. In Chapter \ref{ch:problem} , we give a formal definition of the hard iron effect and take a look at related work in literature. The implementation is extensively described in Chapter \ref{ch:impl}. In Chapter \ref{ch:eval}, we compare different parameter settings for our algorithm, evaluate its performance, and compare it to existing results. Finally, we present our conclusions in Chapter \ref{ch:conclusion} as well as possible future research in Chapter \ref{ch:outlook}.
+In general, a particle filter is computationally more expensive compared to a Kalman filter and depends on a random number generator, while Kalman filtering is a direct method. On the other hand, a particle filter is most likely easier to implement and easier to adopt which is desirable for prototyping. Furthermore, the particle filter does not depend on linearity or specific probability distributions and can embed constraints for the state variables. Moreover, modern smartphones are perfectly capable of running a particle filter.
+
+In addition to the hard iron calibration, this thesis contributes a system that can be used to prototype, test and evaluate real-time algorithms that depend on smartphone sensors.
+
+\section{Outline of this thesis}
+
+The thesis is structured as follows. Chapter \ref{ch:background} gives a theoretical overview of the physics and mathematics this thesis is based on. In Chapter \ref{ch:problem}, we give a formal definition of the hard iron effect and take a look at conventional methods. An introduction to particle filtering is given in Chapter \ref{ch:particle}. The implementation is extensively described in Chapter \ref{ch:impl}. In Chapter \ref{ch:eval}, we evaluate the data collection, the orientation filter, and the performance of our particle filter. Finally, we present our conclusions in Chapter \ref{ch:conclusions} as well as possible future work in Chapter \ref{ch:outlook}.
 
 \section{Indoor positioning system}
+\label{sec:ips}
 
-An \gls{ips} replaces \gls{gnss} where coverage and precision become critical because of obstacles like buildings (airports, train stations, headquarters, offices, garages) and underground locations. There is a large variety of methods to achieve indoor positioning, for example: existing Wi-Fi installations or Bluetooth beacons to distribute signals which can be received with a smartphone; real time image processing to detect optical landmarks; mounted \gls{imu}. \gls{ips} does not have an official standard and is dominated by several commercial systems on the market. The implementation of an \gls{ips} depends a lot on spatial dimensions, building materials, expected accuracy, and budget and is often tailored to fit its environment. While \gls{gps} achieves about 5 meters accuracy outdoors on average, \gls{ips} highly depends on the installation and can get down to 20 cm.
+An \gls{ips} replaces \gls{gnss} when coverage and precision become critical because of obstacles that block satellite signals. Examples are buildings (e.g. airports, train stations, headquarters, offices, garages) and underground locations. There is a large variety of methods to achieve indoor positioning. Examples are existing Wi-Fi installations or Bluetooth beacons to distribute signals that can be received by a smartphone, real time image processing to detect optical landmarks, and mounted \glspl{imu}. \gls{ips} does not have an official standard and is dominated by several commercial systems on the market. The implementation of an \gls{ips} highly depends on spatial dimensions, building materials, expected accuracy, and budget and is often tailored to fit its environment. While \gls{gps} achieves about 5 meters accuracy outdoors on average, \gls{ips} highly depends on the installation and can achieve sub-meter accuracy.
 
-A common target device for \gls{ips} is the smartphone. They usually come with various sensors and a huge amount of users. The \gls{ips} can be used to help the users to navigate through buildings or track their locations for analytics and placement strategy. Asset tracking is also a common use case for \gls{ips}.
+A common target device for \gls{ips} is the smartphone. They usually come with various sensors and a large amount of users. The \gls{ips} can be used to help the users to navigate through buildings or track their locations for analytical purposes and placement strategies. Asset tracking is also a common use case for \gls{ips}.
 
-\gls{ips} comes with a wide range of technology: anchor nodes with fixed positions like Wi-Fi access points, Bluetooth beacons, sound, optical signals, optical structures for absolute positioning; magnetic field and dead reckoning for motion dependent positioning.
-
-\section{Smartphone sensors}
-
-Nowadays smartphones come with various sensors which can be used to measure environmental properties and to estimate the orientation and motion of the device and the user.
-
-\begin{table}[h]
-    \centering
-    \begin{tabular}{ | l | p{10cm} | }
-    \hline
-    \textbf{Sensor type} & \textbf{Description} \\ \hline
-    Accelerometer        & Measures the acceleration applied to the device in $m/s^2$. \\ \hline
-    Gyroscope            & Measures the rate of rotation around the device's local X, Y and Z axis. All values are in $rad/s$. \\ \hline
-    Magnetometer         & Measures the ambient magnetic field in the X, Y and Z axis. All values are in micro-Tesla $\mu T$. \\ \hline
-    Barometer            & Measures the atmospheric pressure in $hPa$ (millibar). \\ \hline
-    Lux meter            & Measures the ambient light level in SI $lux$. \\ \hline
-    \end{tabular}
-    \caption{Various smartphone sensors and their measurements.}
-    \label{tbl:particle}
-\end{table}
-
-For example the Google Pixel 3 comes with a accelerometer and gyroscope called BMI160 from Bosch, a magnetometer called LIS2MDL from STMicro, and a barometer called BMP380 from Bosch.
-
-In this thesis we will use the accelerometer and gyroscope to form an \gls{imu} and combine that with the magnetometer to estimate the hard iron offset.
+\gls{ips} comes with a wide range of technology: anchor nodes with fixed positions like Wi-Fi access points, Bluetooth beacons, sound, optical signals, optical structures, magnetic fields, and dead reckoning.

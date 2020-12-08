@@ -1,3 +1,19 @@
+@article{earth_magnetic_bible,
+    author = {Finlay, C. C. and Maus, S. and Beggan, C. D. and Bondar, T. N. and Chambodut, A. and Chernova, T. A. and Chulliat, A. and Golovkov, V. P. and Hamilton, B. and Hamoudi, M. and Holme, R. and Hulot, G. and Kuang, W. and Langlais, B. and Lesur, V. and Lowes, F. J. and Lühr, H. and Macmillan, S. and Mandea, M. and McLean, S. and Manoj, C. and Menvielle, M. and Michaelis, I. and Olsen, N. and Rauberg, J. and Rother, M. and Sabaka, T. J. and Tangborn, A. and Tøffner-Clausen, L. and Thébault, E. and Thomson, A. W. P. and Wardinski, I. and Wei, Z. and Zvereva, T. I.},
+    title = "{International Geomagnetic Reference Field: the eleventh generation}",
+    journal = {Geophysical Journal International},
+    volume = {183},
+    number = {3},
+    pages = {1216-1230},
+    year = {2010},
+    month = {12},
+    abstract = "{The eleventh generation of the International Geomagnetic Reference Field (IGRF) was adopted in December 2009 by the International Association of Geomagnetism and Aeronomy Working Group V-MOD. It updates the previous IGRF generation with a definitive main field model for epoch 2005.0, a main field model for epoch 2010.0, and a linear predictive secular variation model for 2010.0–2015.0. In this note the equations defining the IGRF model are provided along with the spherical harmonic coefficients for the eleventh generation. Maps of the magnetic declination, inclination and total intensity for epoch 2010.0 and their predicted rates of change for 2010.0–2015.0 are presented. The recent evolution of the South Atlantic Anomaly and magnetic pole positions are also examined.}",
+    issn = {0956-540X},
+    doi = {10.1111/j.1365-246X.2010.04804.x},
+    url = {https://doi.org/10.1111/j.1365-246X.2010.04804.x},
+    eprint = {https://academic.oup.com/gji/article-pdf/183/3/1216/1785065/183-3-1216.pdf},
+}
+
 @book{earth_magnetic,
     author = {Ronald T. Merrill and Michael W. McElhinny and Phillip L. McFadden},
     title = {The magnetic field of the earth: paleomagnetism, the core, and the deep mantle},
@@ -15,7 +31,14 @@
     pages = {29--33}
 }
 
-@book{magnetometer_1,
+@misc{WWM2015,
+    author = {Chulliat Arnaud and others},
+    title = {The US/UK World Magnetic Model for 2015-2020},
+    publisher = {NOAA},
+    url = {https://www.ngdc.noaa.gov/geomag/WMM/data/WMMReports/WMM2015_Report.pdf}
+}
+
+@book{magnetometer_ios,
     author = {Alasdair Allan},
     title = {Basic sensors in iOS},
     publisher = {O'Reilly},
@@ -24,7 +47,7 @@
     pages = {57--70}
 }
 
-@misc{magnetometer_2,
+@misc{magnetometer_price,
     author = {Willie D. Jones},
     title = {A Compass in Every Smartphone},
     publisher = {IEEE Spectrum},
@@ -143,6 +166,13 @@
     pages = {414}
 }
 
+@misc{ios_cmmagneticfield,
+    title = {iOS Documentation CMMagneticField},
+    url = {https://developer.apple.com/documentation/coremotion/cmmagnetometerdata/1616084-magneticfield},
+    urldate = {2020-10-18},
+    author = {Apple}
+}
+
 @misc{android_sdk_sensorevent,
     title = {Android SDK SensorEvent},
     url = {https://developer.android.com/reference/android/hardware/SensorEvent},
@@ -172,14 +202,95 @@
     URL = {https://doi.org/10.1117/12.2280794}
 }
 
+@misc{vectornav,
+    title = {Educational Material, 3.5 Magnetometer Errors \& Calibration},
+    url = {https://www.vectornav.com/resources/magnetometer-errors-calibration},
+    urldate = {2020-10-18},
+    author = {Vectornav}
+}
+
+@article{Gebre2006,
+    author = {Gebre-Egziabher, Demoz and Elkaim, Gabriel and Powell, J.D. and Parkinson, Bradford},
+    year = {2006},
+    month = {04},
+    pages = {},
+    title = {Calibration of Strapdown Magnetometers in Magnetic Field Domain},
+    volume = {19},
+    journal = {Journal of Aerospace Engineering - J AEROSP ENG},
+    doi = {10.1061/(ASCE)0893-1321(2006)19:2(87)}
+}
+
+@article{Vasconcelos2011,
+    author = {Vasconcelos, José and Elkaim, G. and Silvestre, Carlos and Oliveira, Paulo and Cardeira, Bruno},
+    year = {2011},
+    month = {05},
+    pages = {1293 - 1306},
+    title = {Geometric Approach to Strapdown Magnetometer Calibration in Sensor Frame},
+    volume = {47},
+    journal = {Aerospace and Electronic Systems, IEEE Transactions on},
+    doi = {10.1109/TAES.2011.5751259}
+}
+
+@article{Kuncar2016,
+    author = {Kuncar, Ales and Sysel, Martin and Urbanek, Tomas},
+    year = {2016},
+    month = {10},
+    pages = {05008},
+    title = {Calibration of low-cost triaxial magnetometer},
+    volume = {76},
+    journal = {MATEC Web of Conferences},
+    doi = {10.1051/matecconf/20167605008}
+}
+
+@article{Kok2016,
+    author = {M. {Kok} and T. B. {Schön}},
+    journal = {IEEE Sensors Journal}, 
+    title = {Magnetometer Calibration Using Inertial Sensors}, 
+    year = {2016},
+    volume = {16},
+    number = {14},
+    pages = {5679-5689},
+    doi = {10.1109/JSEN.2016.2569160}
+}
+
+@article{Guo2008,
+    author = {{Pengfei Guo} and {Haitao Qiu} and {Yunchun Yang} and {Zhang Ren}},
+    booktitle = {2008 IEEE/ION Position, Location and Navigation Symposium}, 
+    title = {The soft iron and hard iron calibration method using extended kalman filter for attitude and heading reference system},
+    publisher = {IEEE},
+    year = {2008},
+    pages = {1167--1174},
+    doi = {10.1109/PLANS.2008.4570003}
+}
+
+@article{Wu2018,
+    author = {Y. {Wu} and D. {Zou} and P. {Liu} and W. {Yu}},
+    journal = {IEEE Transactions on Control Systems Technology}, 
+    title = {Dynamic Magnetometer Calibration and Alignment to Inertial Sensors by Kalman Filtering}, 
+    year = {2018},
+    volume = {26},
+    number = {2},
+    pages = {716-723},
+    doi = {10.1109/TCST.2017.2670527}
+}
+
+@article{Cao2020,
+    author = {Cao and Xu, Shicai and Xu, Xiang},
+    year = {2020},
+    month = {01},
+    pages = {535},
+    title = {Real-Time Calibration of Magnetometers Using the RLS/ML Algorithm},
+    volume = {20},
+    journal = {Sensors},
+    doi = {10.3390/s20020535}
+}
+
 @article{madgwick,
     author = {S. O. H. {Madgwick} and A. J. L. {Harrison} and R. {Vaidyanathan}},
-    booktitle = {2011 IEEE International Conference on Rehabilitation Robotics}, 
-    title = {Estimation of IMU and MARG orientation using a gradient descent algorithm}, 
+    booktitle = {2011 IEEE International Conference on Rehabilitation Robotics},
+    title = {Estimation of IMU and MARG orientation using a gradient descent algorithm},
     publisher = {IEEE},
     year = {2011},
-    volume = {},
-    number = {},
     pages = {1-7},
     doi = {10.1109/ICORR.2011.5975346}
 }
@@ -196,8 +307,15 @@
 }
 
 @misc{compiler_explorer,
-    title = "Compiler Exploerer",
-    url = "https://godbolt.org/",
-    urldate = "2020-11-08",
-    author = "Matt Godbolt"
+    title = {Compiler Exploerer},
+    url = {https://godbolt.org/},
+    urldate = {2020-11-08},
+    author = {Matt Godbolt}
+}
+
+@misc{matlab_magcal,
+    titel = {Magnetometer calibration coefficients},
+    url = {https://www.mathworks.com/help/nav/ref/magcal.html},
+    urldate = {2020-11-08},
+    author = {MathWorks}
 }
