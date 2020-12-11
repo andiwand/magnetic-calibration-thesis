@@ -20,7 +20,11 @@
 %\usepackage[showframe]{geometry} % Anzeigen der Seitenränder, nützlich für debugging. http://ctan.org/pkg/geometry
 
 \usepackage[bottom]{footmisc} % Zwingt Fußnoten an das Ende der Seite
+
+\usepackage[hyphens]{url}
 \usepackage[pdftex]{hyperref} % Links richtig anzeigen. Sowohl innerhalb des Dokuments (Fußzeilen, Formeln), als auch ins Internet
+\hypersetup{breaklinks=true}
+\urlstyle{same}
 
 \usepackage[ % Biblatex für die Zitate und Referenzen
 	backend=biber,

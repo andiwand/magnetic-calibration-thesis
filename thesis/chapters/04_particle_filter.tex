@@ -8,9 +8,9 @@ The term \textit{filtering} in this context means extracting information about a
 
 Particle filters were originally developed for object tracking and time series analysis for nonlinear, non-Gaussian state-space models.\cite{Gordon1993} The term particle filter was first used by Del Moral in 1996.\cite{Moral1996}
 
-Particle filters are \gls{smc} methods and a subset of \gls{mc} algorithms. They can be used to solve filtering problems arising in signal processing and Bayesian statistical inference. The goal is to compute the posterior distributions of states in a Markov process, given the prior distribution of states and some partial and noisy observations.
+Particle filters are \gls{smc} methods and a subset of \gls{mc} algorithms. They can be used to solve filtering problems arising in signal processing and Bayesian statistical inference. The goal is to compute the posterior distributions of states in a Markov process, given the prior distribution of states and some partial and noisy observations.\cite{Doucet2011}
 
-The particle filter uses a set of particles to represent the current state of the system. There is no limitation to the state-space model, the initial state, and the noise distribution of observations. However, in practice the particle filter does not perform well in very high-dimensional systems.
+The particle filter uses a set of particles to represent the current state of the system. There is no limitation to the state-space model, the initial state, and the noise distribution of observations. However, in practice the particle filter does not perform well in very high-dimensional systems.\cite{Doucet2011}
 
 Each particle has a weight (or likelihood) that represents an approximate probability measure of that particle being sampled from the usually analytically unknown probability density function. The weights are updated when new evidence about the true state is available. A resampling step is necessary to avoid weight disparity leading to weight collapse. There are several adaptive resampling criteria that can be used to reduce noise, including the variance of the weights and the relative entropy with respect to the uniform distribution. In the resampling step, the particles with negligible weights are replaced by new particles in the proximity of the particles with higher weights.\cite{Moral1996}\cite{Moral2012}
 
@@ -18,7 +18,7 @@ Each particle has a weight (or likelihood) that represents an approximate probab
 
 According to Hans Künsch\cite{Kuensch2013}, in the last 50 years filtering has been mainly studied in the framework of state-space or hidden Markov models, assuming a Markovian time evolution of the signal and observations, which are instantaneous functions of the signal, and subject to white observation noise.
 
-The objective of a filter is to estimate the hidden state variables $X_k$ (also called signal) given the observation variables $Y_k$ at iteration $k$. The observable variables $Y_k$ are related to the hidden variables $X_k$ by some conditional probability density $g(y_k|x_k)$ that is known. Similarly, the dynamics of the state process is also known $f(x_k|x_{k-1})$. A generic state and observation process is illustrated below.
+The objective of a filter is to estimate the hidden state variables $X_k$ (also called signal) given the observation variables $Y_k$ at iteration $k$. The observable variables $Y_k$ are related to the hidden variables $X_k$ by some conditional probability density $g(y_k|x_k)$ that is known. Similarly, the dynamics of the state process is also known $f(x_k|x_{k-1})$. A generic state and observation process is illustrated below.\cite{Kuensch2013}
 
 \[\begin{array}{cccccccccc}
 X_0 & \to & X_1 & \to & X_2 & \to & X_3 & \to & \cdots & \text{signal} \\

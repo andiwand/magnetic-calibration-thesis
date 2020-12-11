@@ -1,4 +1,4 @@
-This chapter walks through the chosen technologies, shows the architecture, frames the implementation effort, and explains the decisions taken while working on this thesis. First we will introduce the different technologies and how they play together. Second we will shortly define the frames of reference and the architecture of the implementation. Then the particle filter implementation will be explained in detail, followed by the filter routine and its parameters. Afterwards a few intermediate steps and solved issues that should come up while working on this thesis are discussed. Finally the platform implementation in case of Android and the effort made on visualization is described.
+This chapter walks through the chosen technologies, shows the architecture, frames the implementation effort, and explains the decisions taken while working on this thesis. First we will introduce the different technologies and how they play together. Second we will shortly define the frames of reference and the architecture of the implementation. Then the particle filter implementation will be explained in detail, followed by the filter routine and its parameters. Afterwards a few intermediate steps and solved issues that should arise while working on this thesis are discussed. Finally the platform implementation for Android and the effort made on visualization is described.
 
 In order to design, implement and evaluate an online hard iron calibration, two different approaches were taken into consideration. Approach \textit{One}: using existing tools to collect the required sensor data and to process and evaluate it offline. Approach \textit{Two}: designing a system from scratch that collects, processes and visualizes sensor data in real time. Since the outcome of this thesis should be an online algorithm and it seemed to be more target-oriented, the prototyping was created with the paradigm of approach \textit{Two}. Moreover, the orientation estimation (see Section \ref{sec:ori_est}) required qualitative evaluation which was preferable in the online scenario because of the immediate response in the visualization. Approach \textit{One} was later used for the quantitative evaluation of the hard iron calibration.
 
@@ -6,7 +6,7 @@ In order to design, implement and evaluate an online hard iron calibration, two 
 
 The major criteria for the choice of technology was \textit{platform independence} and \textit{real-time processing}. Platform independence because we are targeting two different mobile platforms with Android and iOS and the need of an evaluation framework that runs on a desktop environment like Ubuntu. Since our calibration should be online, real-time processing is necessary and therefore a critical performance limit is attached to our problem: When one second of real-time has passed we have to process at least one second of input data.
 
-Visualization was planned for prototyping and evaluation purposes. Similar to our calibration algorithm, the visualization was planned to be platform independent with the benefit of displaying it on the smartphone and on the desktop by the same implementation. The first attempt was to use OpenGL from C++ but that introduced a lot of overhead to the implementation. Since all target platforms have an HTML5 compatible browser, the second and final attempt was to use JavaScript for that purpose. To communicate with C++ in real-time, WebSocket was used to exchange Protocol Buffers (see Subsection \ref{sec:protobuf}).
+Visualization was planned for prototyping and evaluation purposes. Similar to our calibration algorithm, the visualization was planned to be platform independent with the benefit of displaying it on the smartphone and on the desktop with the same implementation. The first attempt was to use OpenGL from C++ but that introduced a lot of overhead to the implementation. Since all target platforms have an HTML5 compatible browser, the second and final attempt was to use JavaScript for that purpose. To communicate with C++ in real-time, WebSocket was used to exchange Protocol Buffers (see Subsection \ref{sec:protobuf}).
 
 The target platform for the demo application was chosen to be Android. It was developed in Java, responsible for reading the sensors and providing a small user interface.
 
@@ -32,7 +32,7 @@ Table \ref{tbl:code_lines} gives a quick overview about the chosen technologies 
 
 The programming language that was used the most in this project is C++ for various reasons. C++ is platform independent and can reach major smartphone platforms like Android and iOS. Performance was critical for the implementation which is a major purpose of C++. Since C++11 there is a sufficient standard library for common data structures, random variables and common algorithms. Besides that, C++ is a modern programming language with multiple paradigms for example it is object-oriented and generic.
 
-Along with C++ multiple tools, frameworks, and libraries were used which are shortly described in the following.
+Along with C++ multiple tools, frameworks, and libraries were used which are listed and briefly described below.
 
 \begin{itemize}
   \item \textbf{boost} is a popular C++ library that comes in handy where the standard library is missing functionality. This thesis only depends on \textbf{boost asio} for networking and \textbf{boost beast} for HTTP and WebSocket.
@@ -51,9 +51,9 @@ Android is one of the target platforms for this thesis. Native applications can 
 
 \subsection{JavaScript}
 
-JavaScript was used to realize platform independent visualization that can be displayed on desktop and mobile devices. In contrast to the original approach via OpenGL it was more straight forward to use with \textbf{plotly}\footnote{High level plotting library for Javascript and Python. \url{https://plotly.com/}} and a \textbf{matplotlib}\footnote{High level plotting library for Python. \url{https://matplotlib.org/}} background in Python. Moreover, modern browsers come with a WebSocket implementation which reduced the complexity of communication to C++ code.
+JavaScript was used to realize platform independent visualization that can be displayed on desktop and mobile devices. In contrast to the original approach via OpenGL it was more straight forward to use with \textbf{plotly}\footnote{High level plotting library for Javascript and Python. \url{https://plotly.com}} and a \textbf{matplotlib}\footnote{High level plotting library for Python. \url{https://matplotlib.org}} background in Python. Moreover, modern browsers come with a WebSocket implementation which reduced the complexity of communication to C++ code.
 
-Along with JavaScript multiple tools, frameworks, and libraries were used which are shortly described in the following.
+Along with JavaScript multiple tools, frameworks, and libraries were used which are listed and briefly described below.
 
 \begin{itemize}
   \item \textbf{webpack} is a module bundler. Its main purpose is to bundle JavaScript files for usage in a browser.
@@ -64,7 +64,7 @@ Along with JavaScript multiple tools, frameworks, and libraries were used which 
 \subsection{Protocol Buffers}
 \label{sec:protobuf}
 
-Protocol Buffers\footnote{\url{https://developers.google.com/protocol-buffers}} (short Protobuf) are Google's language-neutral, platform-neutral, extensible mechanism for serializing structured data. It is useful for programs which communicate over a wire or for storing data. Protocol Buffers involve an interface description language which defines the structure of the data. Additionally it comes with a program that generates source code from that definition. The generated code deals with the encoding and decoding of byte streams which represent the structured data.
+Protocol Buffers\footnote{\url{https://developers.google.com/protocol-buffers}} (short Protobuf) is Google's language-neutral, platform-neutral, extensible mechanism for serializing structured data. It is useful for programs which communicate over a wire or for storing data. Protocol Buffers involve an interface description language which defines the structure of the data. Additionally it comes with a program that generates source code from that definition. The generated code deals with the encoding and decoding of byte streams which represent the structured data.
 
 The data can be serialized in binary representation which takes up less space compared to a text representation like JSON. Therefore it needs less bandwidth while communicating over network.
 
@@ -72,7 +72,7 @@ The data can be serialized in binary representation which takes up less space co
 % quaternion transforms from what to what?
 % TODO ref images https://developer.android.com/reference/android/hardware/SensorEvent
 
-An important choice while dealing with sensors that have spatial orientation is the frame of reference. Two frames had to be chosen. A local one for the phone and its sensors and a global one for the user and his environment. The chosen axis for the frames of reference are shown in Figure \ref{fig:frames_of_reference} and align with those defined in the Android sensor SDK. While magnetometer readings are taken in the phone's frame of reference it is important to transform those measurements to the global frame of reference since there the magnetic field is expected to be constant in close proximity.\cite{android_sdk_sensorevent}
+An important choice while dealing with sensors that have spatial orientation is the frame of reference. Two frames had to be chosen. A local one for the phone and its sensors and a global one for the user and his environment. The chosen axes for the frames of reference are shown in Figure \ref{fig:frames_of_reference} and align with those defined in the Android sensor SDK. While magnetometer readings are taken in the phone's frame of reference it is important to transform those measurements to the global frame of reference since there the magnetic field is expected to be constant in close proximity.\cite{android_sdk_sensorevent}
 
 The transformation between those two frames is estimated by the orientation filter which forms an \gls{imu} based on the accelerometer and gyroscope. While the accelerometer provides information about two orientation angles, the gyroscope can be used to make the estimate more reliable. Additionally, with the gyroscope we can give an relative estimate about the horizontal orientation between two points in time. That angle will drift due to measurement errors which accumulate over time essentially generating a random walk.
 
@@ -88,17 +88,17 @@ In this thesis an algorithm designed by Madgwick was used to estimate the orient
         \includegraphics[height=1.0\linewidth]{figures/coords_global.png}
         \caption{}
     \end{subfigure}
-    \caption{Chosen frames of reference. With (a) the \textit{local frame of reference} or \textit{device coordinates} and (b) the \textit{global frame of reference} or \textit{world coordinates}. Gracefully taken from Android documentation.\cite{android_sdk_sensorevent}}
+    \caption{Chosen frames of reference. With (a) the \textit{local frame of reference} or \textit{device coordinates} and (b) the \textit{global frame of reference} or \textit{world coordinates}. Images gracefully taken from Google's Android SDK documentation.\cite{android_sdk_sensorevent}}
     \label{fig:frames_of_reference}
 \end{figure}
 
 \section{Software architecture}
 
-Since the implementation was growing fast in complexity, it was important to structure the project into logical and modular components. A lot of thoughts went into code architecture and design decisions which will be shortly discussed here.
+Since the implementation was growing fast in complexity, it was important to structure the project into logical and modular components. Many thoughts went into code architecture and design decisions which will be shortly discussed here.
 
-The desired architecture had to deal with multiple programming languages and potential concurrency issues. Moreover, algorithms should be modules that only depend on their input and output which makes it easy to swap them and to test them in a generalized way. Another advantage could be the ability to systematically detect bottle necks.
+The desired architecture had to deal with multiple programming languages and potential concurrency issues. Moreover, algorithms should be modules that only depend on their inputs and generate outputs, which makes it easy to exchange them and test them in a generalized way. Another advantage could be the ability to systematically detect bottle necks.
 
-The different algorithms ended up as plugable components in a pipelining scheme. Sensor and filtered data is passed through pipes from processing entity to processing entity. These processing entities were called nodes. The architecture was applied to the C++ code and the messaging protocol defined with Protocol Buffers. It was also applied in JavaScript but in a more simplified fashion. On Android, Java was used to call \gls{jni} wrapper functions to C++ and therefore did not require any particular architecture.
+The various algorithms ended up being pluggable components in a pipelining scheme. Sensor and filtered data is passed through pipes from processing entity to processing entity. These processing entities were called nodes. The architecture was applied to the C++ code and the messaging protocol defined with Protocol Buffers. It was also applied in JavaScript but in a more simplified fashion. On Android, Java was used to call \gls{jni} wrapper functions to C++ and therefore did not require any particular architecture.
 
 The overall architecture and different modules are shown in Figure \ref{fig:architecture}.
 
@@ -145,7 +145,7 @@ One particle represents the state of one realization of the hard iron calibratio
 
 \subsection{Initialization}
 
-The particle filter has to be initialized with a prior distribution for the hard iron calibration. Pseudocode for the initialization step is given in Algorithm \ref{alg:pf_init}. Without taking further assumptions, a Gaussian distribution $\text{N}(0, \sigma^2)$ was chosen to sample each component of the hard iron vector. In order to enforce the constraint $\bm{B}_\text{measure} = \bm{B}_\text{phone} + \bm{B}$ (see Equation \ref{eq:decomposition}), we need an initial magnetometer observation $\bm{B}_\text{measure}$.
+The particle filter has to be initialized with a prior distribution for the hard iron calibration. Pseudocode for the initialization step is given in Algorithm \ref{alg:pf_init}. Without making any further assumptions, a Gaussian distribution $\text{N}(0, \sigma^2)$ was chosen to sample each component of the hard iron vector. In order to enforce the constraint $\bm{B}_\text{measure} = \bm{B}_\text{phone} + \bm{B}$ (see Equation \ref{eq:decomposition}), we need an initial magnetometer observation $\bm{B}_\text{measure}$.
 
 Two potential improvements to the initialization were identified. First, if the device was calibrated in the past, we could choose that as the center of our distribution or mix it with the one at the origin. Second, the current calibration of the operating system might also be a reasonable starting point of our calibration.
 
@@ -295,7 +295,7 @@ Pseudocode of the filter routine is given in Algorithm \ref{alg:routine}. We ini
 \section{Synchronization}
 \label{sec:impl_synchro}
 
-Our work targets mobile devices with Android and iOS. Since those are no real-time systems one has to deal with unpredictable latency and concurrency. These effects play a role while receiving data of multiple sensors, possibly through multiple threads. The receiver might then observe that some events are out of order. Recursive filters rely on the causal order of the events because the state of the filter evolves with each observation and its timestamp. They cannot include events that are older than the current state. When we combine multiple sensor streams into one result, we have to be careful with potential latency differences given by each stream.
+Our work targets mobile devices with Android and iOS. Since those are no real-time systems one has to deal with unpredictable latency and concurrency. These effects play a role while receiving data of multiple sensors, possibly through multiple threads. The receiver might observe that some events are out of order. Recursive filters rely on the causal order of the events because the state of the filter evolves with each observation and its timestamp. They cannot include events that are older than the current state. When we combine multiple sensor streams into one result, we have to be careful with potential latency differences given by each stream.
 
 This problem was solved with a synchronization step at the beginning of the pipeline (see Figure \ref{fig:architecture}). Buffers are used to hold all the incoming sensor data until it is guaranteed that all streams reached the same point in time. Additionally, this guarantees that any other component after the synchronization will only receive events in order and does not have to deal with synchronization by itself.
 
@@ -316,11 +316,11 @@ In our implementation we relied on Madgwick's \gls{imu} algorithm\cite{madgwick}
 \begin{figure}[hbt!]
     \centering
     \includegraphics[width=1.0\textwidth]{figures/madgwick_imu.png}
-    \caption{Block diagram representation of the orientation estimation algorithm.\cite{madgwick}}
+    \caption{Block diagram representation of the orientation estimation algorithm. Image gracefully taken from Madgwick's paper.\cite{madgwick}}
     \label{fig:madgwick_imu}
 \end{figure}
 
-Implementations for various programming languages are available online\footnote{\url{https://x-io.co.uk/open-source-imu-and-ahrs-algorithms/}}, including an implementation for C. This C implementation was adopted for C++ and slightly modified. One of the modifications was the replacement of the ``fast inverse square-root'' by a more conventional implementation. The ``fast inverse square-root'' was producing biases and the computational performance was not too critical in our case anyway.
+Implementations for various programming languages are available online\footnote{\url{https://x-io.co.uk/open-source-imu-and-ahrs-algorithms}}, including an implementation for C. This C implementation was adopted for C++ and slightly modified. One of the modifications was the replacement of the ``fast inverse square-root'' by a more conventional implementation. The ``fast inverse square-root'' was producing biases and the computational performance was not too critical in our case anyway.
 
 With an \gls{imu} based on accelerometer and gyroscope, the x and y-axis in world coordinates (see Figure \ref{fig:frames_of_reference}) will be rotated by an unknown angle around the z-axis. This is due to missing information of the horizontal orientation, which can only be observed by the magnetometer (in case of those three sensors). Moreover, this angle will be drifting due to accumulated errors coming from the gyroscope.
 
@@ -348,7 +348,7 @@ The summation over $\Delta \omega_i$ is our desired quantity ``total rotation''.
 
 \section{Android}
 
-Java was used to develop a small demo application that is able to read sensor data and pass it down to C++ through \gls{jni}. A webview was used to display the visualization written in JavaScript. The whole life cycle of the application was managed in Java.
+Java was used to develop a small demo application that is able to read sensor data and pass it down to C++ through \gls{jni}. A \textsc{WebView} was used to display the visualization written in JavaScript. The whole life cycle of the application was managed in Java.
 
 The Android sensor \gls{api} offers a high-level interface to read sensor values by registering to a specific sensor type, like accelerometer, providing a sampling rate, and a callback for incoming data. The \gls{api} is presenting calibrated and uncalibrated sensor readings in the same way and is distinguishing between them by different identifiers. \textsc{TYPE\_MAGNETIC\_FIELD} can be used to read the system calibrated magnetic field and \textsc{TYPE\_MAGNETIC\_FIELD\_UNCALIBRATED} for the uncalibrated magnetic field, which is required by this thesis.\cite{android_sdk_sensormanager}
 
@@ -365,11 +365,11 @@ A screenshot of the demo application is shown in Figure \ref{fig:app}.
 
 \section{Visualization}
 
-One goal for the visualization was to build it platform independent use have the same code for desktop and mobile devices. This was beneficial because the visualization could also be driven by simulated and real-time sensor data.
+One goal of the visualization was to make it platform independent and to use the same code for desktop and mobile devices. This was beneficial because the visualization could also be driven by simulated and real-time sensor data.
 
 % TODO dont tell the whole story. just state two options. then why one was preferred over the other
-The initial idea was to use OpenGL ES for visualization purposes. Android and on common desktop \gls{os} support OpenGL. One visualization idea was a three-dimensional scatter plot for the acquired magnetic field sensor data to build up intuition for the data we are going to filter. This might require to plot thousands of data points in real time. Since OpenGL is executed by the \gls{gpu} there were no performance concerns.
+The initial idea was to use OpenGL ES for visualization purposes. Android and common desktop \gls{os} support OpenGL. One visualization idea was a three-dimensional scatter plot for the acquired magnetic field sensor data to build up intuition for the data we are going to filter. This might require to plot thousands of data points in real time. Since OpenGL is executed by the \gls{gpu} there were no performance concerns.
 
 Since implementation progress was rather slow and the effort was growing quickly the desire for an alternative was growing. JavaScript with plotly seemed to be a good solution for platform independence. It also claimed to have good performance with a WebGL backend for 3D plots.
 
-The HTML and JavaScript code was stored as an asset along the demo application and was displayed with a webview on Android. On the desktop it is sufficient to use any modern browser to run the visualization.
+The HTML and JavaScript code was stored as an asset along the demo application and was displayed by a \textsc{WebView} on Android. On the desktop it is sufficient to use any modern browser to run the visualization.

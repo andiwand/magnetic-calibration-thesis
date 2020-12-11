@@ -1,3 +1,30 @@
+@book{demtroeder_mw,
+    author = {Wolfgang Demtröder},
+    title = {Experimentalphysik 2},
+    publisher = {Springer},
+    year = {2012},
+    isbn = {978-3-642-29943-8},
+    pages = {136}
+}
+
+@book{demtroeder_hall,
+    author = {Wolfgang Demtröder},
+    title = {Experimentalphysik 2},
+    publisher = {Springer},
+    year = {2012},
+    isbn = {978-3-642-29943-8},
+    pages = {99}
+}
+
+@book{demtroeder_hysteresis,
+    author = {Wolfgang Demtröder},
+    title = {Experimentalphysik 2},
+    publisher = {Springer},
+    year = {2012},
+    isbn = {978-3-642-29943-8},
+    pages = {111}
+}
+
 @article{earth_magnetic_bible,
     author = {Finlay, C. C. and Maus, S. and Beggan, C. D. and Bondar, T. N. and Chambodut, A. and Chernova, T. A. and Chulliat, A. and Golovkov, V. P. and Hamilton, B. and Hamoudi, M. and Holme, R. and Hulot, G. and Kuang, W. and Langlais, B. and Lesur, V. and Lowes, F. J. and Lühr, H. and Macmillan, S. and Mandea, M. and McLean, S. and Manoj, C. and Menvielle, M. and Michaelis, I. and Olsen, N. and Rauberg, J. and Rother, M. and Sabaka, T. J. and Tangborn, A. and Tøffner-Clausen, L. and Thébault, E. and Thomson, A. W. P. and Wardinski, I. and Wei, Z. and Zvereva, T. I.},
     title = "{International Geomagnetic Reference Field: the eleventh generation}",
@@ -55,6 +82,45 @@
     url = {https://spectrum.ieee.org/semiconductors/devices/a-compass-in-every-smartphone}
 }
 
+@misc{wikimedia_magcoords_image,
+    title = {Illustration of magnetic field coordinates},
+    url = {https://commons.wikimedia.org/wiki/File:XYZ-DIS_magnetic_field_coordinates.svg},
+    urldate = {2020-10-18},
+    author = {Wikimedia user Chymæra}
+}
+
+@article{Hall1878,
+    author = {Edwin Hall},
+    journal = {American Journal of Mathematics}, 
+    title = {On a New Action of the Magnet on Electric Currents}, 
+    year = {1879},
+    volume = {2},
+    pages = {287–-292},
+    doi = {10.2307/2369245}
+}
+
+@misc{hyperphysics_hall_image,
+    title = {Illustration of the Hall effect},
+    url = {http://hyperphysics.phy-astr.gsu.edu/hbase/magnetic/Hall.html},
+    urldate = {2020-11-08},
+    author = {HyperPhysics}
+}
+
+@misc{wikimedia_euleraxisangle_image,
+    title = {Illustration of euler axis and angle},
+    url = {https://commons.wikimedia.org/wiki/File:Euler_AxisAngle.png},
+    urldate = {2020-10-18},
+    author = {Wikimedia user Juansempere}
+}
+
+@misc{quaternions,
+    author = {Yan-Bin Jia},
+    title = {Quaternions and Rotations},
+    year = {2013},
+    url = {http://graphics.stanford.edu/courses/cs348a-17-winter/Papers/quaternion.pdf},
+    urldate = {2020-10-18}
+}
+
 @book{bayes_1,
     author = {Andrew Gelman and John B. Carlin and Hal S. Stern and David B. Dunson and Aki Vehtari and Donald B. Rubin},
     title = {Bayesian Data Analysis, Third Edition},
@@ -84,10 +150,15 @@
 
 @article{Moral1996,
     author = {Pierre Del Moral},
-    year = {1996},
-    title = {Non Linear Filtering: Interacting Particle Solution.},
-    url = {http://people.bordeaux.inria.fr/pierre.delmoral/delmoral96nonlinear.pdf},
-    pages = {555--580}
+    title = {Nonlinear filtering: Interacting particle resolution},
+    journal = {Comptes Rendus de l'Académie des Sciences - Series I - Mathematics},
+    volume = {325},
+    number = {6},
+    pages = {653--658},
+    year = {1997},
+    issn = {0764-4442},
+    doi = {https://doi.org/10.1016/S0764-4442(97)84778-7},
+    url = {http://www.sciencedirect.com/science/article/pii/S0764444297847787}
 }
 
 @article{Moral2012,
@@ -121,13 +192,6 @@
     number = {Series D},
     pages = {35--45},
     year = {1960}
-}
-
-@misc{resampling_image,
-    title = {Object Tracking: Particle Filter with Ease},
-    url = {https://www.codeproject.com/Articles/865934/Object-Tracking-Particle-Filter-with-Ease},
-    urldate = {2020-10-18},
-    author = {Darko Jurić}
 }
 
 @article{particle_resample,
@@ -166,6 +230,13 @@
     pages = {414}
 }
 
+@misc{wikimedia_hysteresis_image,
+    title = {Illustration of the magnetic hysteresis},
+    url = {https://commons.wikimedia.org/wiki/File:Magnetic_hysteresis.png},
+    urldate = {2020-10-18},
+    author = {Wikimedia user Tem5psu}
+}
+
 @misc{ios_cmmagneticfield,
     title = {iOS Documentation CMMagneticField},
     url = {https://developer.apple.com/documentation/coremotion/cmmagnetometerdata/1616084-magneticfield},
@@ -190,16 +261,14 @@
 @article{hard_soft_iron,
     author = {Aleksander Sawicki and Zdenek  Slanina and Arturas Linkel},
     title = {Compensation of hard- and soft-iron distortions is magnetometer measurement data},
-    volume = {10445},
     booktitle = {Photonics Applications in Astronomy, Communications, Industry, and High Energy Physics Experiments 2017},
     editor = {Ryszard S. Romaniuk and Maciej Linczuk},
     organization = {International Society for Optics and Photonics},
     publisher = {SPIE},
     pages = {1715--1723},
-    keywords = {MEMS, Soft-Iron, Hard-Iron, Magnetometer},
     year = {2017},
     doi = {10.1117/12.2280794},
-    URL = {https://doi.org/10.1117/12.2280794}
+    url = {https://doi.org/10.1117/12.2280794}
 }
 
 @misc{vectornav,
@@ -308,7 +377,7 @@
 
 @misc{compiler_explorer,
     title = {Compiler Exploerer},
-    url = {https://godbolt.org/},
+    url = {https://godbolt.org},
     urldate = {2020-11-08},
     author = {Matt Godbolt}
 }
@@ -318,4 +387,14 @@
     url = {https://www.mathworks.com/help/nav/ref/magcal.html},
     urldate = {2020-11-08},
     author = {MathWorks}
+}
+
+@article{magnetometers,
+    author = {Sung, Fan-Yu and Fang, Shih-Hau and Chien, Ying-Ren},
+    year = {2014},
+    month = {5},
+    pages = {227--228},
+    title = {An experimental study of MEMS-based magnetometers on Android mobile phones},
+    journal = {Digest of Technical Papers - IEEE International Conference on Consumer Electronics},
+    doi = {10.1109/ICCE-TW.2014.6904071}
 }

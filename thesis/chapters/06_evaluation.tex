@@ -4,7 +4,7 @@ In this chapter, we evaluate our implementation of the hard iron calibration pre
 
 \section{Hardware}
 
-Four different devices were available for evaluation. They are listed in Table \ref{tbl:hardware}. It was important to compare the results between multiple devices since sensors and hard iron calibration algorithms vary between them. Also, we need be sure that the performance of our implementation is good enough for real-time processing across different devices to achieve maximal compatibility.
+Four different devices were available for evaluation. They are listed in Table \ref{tbl:hardware}. It was important to compare the results between multiple devices since sensors and hard iron calibration algorithms vary between them. Also, we need to be sure that the performance of our implementation is good enough for real-time processing across different devices to achieve maximum compatibility.
 
 All these devices run a fairly recent Android version and have been released during the last 5 years.
 
@@ -143,7 +143,7 @@ The test application would be started with the button \textsc{start rec} (see Fi
     \textsc{minimalRotation}        & $0.1$ \\ \hline
     \textsc{resamplingRate}         & $0.01$ \\ \hline
     \end{tabular}
-    \caption{Chosen parameter for the simulation.}
+    \caption{Chosen parameters for the simulation.}
     \label{tbl:eval_params}
 \end{table}
 
@@ -155,7 +155,7 @@ Tables \ref{tbl:eval_simulation_pixel3}, \ref{tbl:eval_simulation_pixel2}, \ref{
 
 In all our test cases the \gls{os} was not able to calibrate the hard iron effect while walking on the test track. Only in the last phase of the experiment, when the device was rotated in multiple directions. The estimates of the systems were very close to the least squares estimates.
 
-Figure \ref{fig:eval_simulation_pixel3} and Table \ref{tbl:eval_simulation_pixel3} show the convergence of the hard iron estimation for the Google Pixel 3. Our particle filter calibration performed very well, but picked up a bias on the z axis after landmark 4 (phase 2.4 in the table). During the calibration phase at the end of the experiment there was a bias on the x axis.
+Figure \ref{fig:eval_simulation_pixel3} and Table \ref{tbl:eval_simulation_pixel3} show the convergence of the hard iron estimation for the Google Pixel 3. Our particle filter calibration performed very well, but picked up a bias on the z-axis after landmark 4 (phase 2.4 in the table). During the calibration phase at the end of the experiment there was a bias on the x-axis.
 
 \begin{figure}[H]
     \centering
@@ -185,7 +185,7 @@ Figure \ref{fig:eval_simulation_pixel3} and Table \ref{tbl:eval_simulation_pixel
     \label{tbl:eval_simulation_pixel3}
 \end{table}
 
-Figure \ref{fig:eval_simulation_pixel2} and Table \ref{tbl:eval_simulation_pixel2} show the convergence of the hard iron estimation for the Google Pixel 2. Our particle filter calibration looks unbiased until landmark 6 (phase 2.6 in the table) but picked up a bias during the calibration phase at the end. Here we got a small bias for the x and y axis.
+Figure \ref{fig:eval_simulation_pixel2} and Table \ref{tbl:eval_simulation_pixel2} show the convergence of the hard iron estimation for the Google Pixel 2. Our particle filter calibration looks unbiased until landmark 6 (phase 2.6 in the table) but picked up a bias during the calibration phase at the end. Here we got a small bias for the x- and y-axis.
 
 \begin{figure}[H]
     \centering
@@ -215,7 +215,7 @@ Figure \ref{fig:eval_simulation_pixel2} and Table \ref{tbl:eval_simulation_pixel
     \label{tbl:eval_simulation_pixel2}
 \end{table}
 
-Figure \ref{fig:eval_simulation_s7} and Table \ref{tbl:eval_simulation_s7} show the convergence of the hard iron estimation for the Samsung Galaxy S7. The hard iron effect of the z axis was about 150 $\mu$T and therefore quite challenging. The filter would not initialize a lot of particles in close proximity since the \textsc{initialVariance} is just $(100\ \mu T)^2$. The y axis picked up a bias most likely due to the same reason as the z axis. During calibration phase the accuracy increases but a small bias remained on the x and y axis.
+Figure \ref{fig:eval_simulation_s7} and Table \ref{tbl:eval_simulation_s7} show the convergence of the hard iron estimation for the Samsung Galaxy S7. The hard iron effect of the z-axis was about 150 $\mu$T and therefore quite challenging. The filter would not initialize a lot of particles in close proximity since the \textsc{initialVariance} is just $(100\ \mu T)^2$. The y-axis picked up a bias most likely due to the same reason as the z-axis. During calibration phase the accuracy increases but a small bias remained on the x- and y-axis.
 
 \begin{figure}[H]
     \centering
@@ -275,7 +275,7 @@ Figure \ref{fig:eval_simulation_nexus5x} and Table \ref{tbl:eval_simulation_nexu
     \label{tbl:eval_simulation_nexus5x}
 \end{table}
 
-In all our test cases the particle filter was able to converge. The estimated error dropped to approximately $\pm$ 6 $\mu$T after 20 seconds while producing biases of about $\pm$ 10 $\mu$T in the worst case. In phase 3, the accuracy of our filter was worse compared to the \gls{os} and least squares estimates. However, our particle filter produced results when the other methods were not able to. The biases might come from a previous signal processing step like the moving average or the orientation filter. Compared to the earth magnetic field the errors are reasonably small and should not effect the compass too dramatically.
+In all our test cases the particle filter was able to converge. The estimated error dropped to approximately $\pm$ 6 $\mu$T after 20 seconds while producing biases of about $\pm$ 10 $\mu$T in the worst case. In phase 3, the accuracy of our filter was worse compared to the \gls{os} and least squares estimates. However, our particle filter produced results when the other methods were not able to. The biases might come from a previous signal processing step like the moving average or the orientation filter. Compared to the earth magnetic field the errors are reasonably small and should not affect the compass too dramatically.
 
 \subsection{Computational performance}
 

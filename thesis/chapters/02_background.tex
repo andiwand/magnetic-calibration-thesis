@@ -1,12 +1,12 @@
-This chapter provides a theoretical overview of the physics and mathematics this thesis is based on. First, we will define magnetic fields and provide a mathematical description. Then we will shortly discuss how magnetic fields can be measured, what the Earth's magnetic field is and how it can be approximated. Afterwards we give an introduction to quaternions and how they can be used to represent tree-dimensional rotations. At the end, we introduce Bayesian statistics, which is related to particle filters.
+This chapter provides a theoretical overview of the physics and mathematics this thesis is based on. First, we will define magnetic fields and provide a mathematical description. Then we will shortly discuss how magnetic fields can be measured, what the Earth's magnetic field is and how it can be approximated. Afterwards we give an introduction to quaternions and how they can be used to represent three-dimensional rotations. At the end, we introduce Bayesian statistics, which is related to particle filters.
 
 \section{Magnetic fields}
 
-A magnetic field is a vector field that describes the physical influence of moving electric charges and magnetic materials. Moving electric charges in a magnetic field experience a force perpendicular to their velocity and to the magnetic flux density, which is described by the Lorenz force. Additionally, the effects of the magnetic fields can be seen with permanent magnets which do not rely on macroscopic electrical currents. Permanent magnets attract or repel each other depending on their orientation and can pull on magnetic materials such as iron. The origin of macroscopic stationary magnetic fields are electrical currents and clusters of ordered magnetic moments of atoms. Magnetic moments of atoms are caused by orbital angular momentum of subatomic particles. Those are quantum mechanical effects and cannot be described by classical physics.
+A magnetic field is a vector field that describes the physical influence of moving electric charges and magnetic materials. Moving electric charges in a magnetic field experience a force perpendicular to their velocity and to the magnetic flux density, which is described by the Lorentz force. Additionally, the effects of the magnetic fields can be seen with permanent magnets which do not rely on macroscopic electrical currents. Permanent magnets attract or repel each other depending on their orientation and can pull on magnetic materials such as iron. The origin of macroscopic stationary magnetic fields are electrical currents and clusters of ordered magnetic moments of atoms. Magnetic moments of atoms are caused by orbital angular momentum of subatomic particles. Those are quantum mechanical effects and cannot be described by classical physics.
 
 A magnetic field is only a part of the more general electromagnetic field. Since special relativity, we know that electric and magnetic fields can be transformed into each other by choosing different frames of reference.
 
-In classical physics, electromagnetism has its foundation in the four microscopic Maxwell's equations and the Lorentz force. In SI units the equations are the following.
+In classical physics, electromagnetism has its foundation in the four microscopic Maxwell's equations and the Lorentz force. In SI units the equations are the following.\cite{demtroeder_mw}
 
 \begin{equation}
 \label{eq:maxwell_micro}
@@ -22,17 +22,17 @@ In classical physics, electromagnetism has its foundation in the four microscopi
 \end{equation}
 
 \begin{equation}
-\label{eq:lorenz}
+\label{eq:lorentz}
     \bm{F} = q\ (\bm{E} + \bm{v} \times \bm{B})
 \end{equation}
 
 The microscopic Maxwell Equations \ref{eq:maxwell_micro} are composed of the electric field strength vector $\bm{E}$, the magnetic flux density vector $\bm{B}$, the total electric charge density $\rho$, the total electrical current density vector $\bm{J}$, the permittivity of free space $\varepsilon_0$, and the permeability of free space $\mu_0$.
 
-The Lorenz force $\bm{F}$ in Equation \ref{eq:lorenz} is the force acting on the charge $q$, that is moving with a velocity $\bm{v}$ through the electric field $\bm{E}$ and magnetic field $\bm{B}$.
+The Lorentz force $\bm{F}$ in Equation \ref{eq:lorentz} is the force acting on the charge $q$, that is moving with a velocity $\bm{v}$ through the electric field $\bm{E}$ and magnetic field $\bm{B}$.
 
 Maxwell's equations are a set of coupled linear partial differential equations. Therefore the sum of two solutions yields another solution and the fields can be decomposed into the components of their origins.
 
-There are two major variants of Maxwell's equations. The microscopic Maxwell Equations \ref{eq:maxwell_micro} have universal applicability in classical physics but are unpractical for analytical calculations and extensive numerical simulations. Solids contain approximately $10^{23}$ atoms per cm$^3$ which interact with each other, the bound electrons, and free electrons in case of a metal. The macroscopic Maxwell Equations \ref{eq:maxwell_macro} define two additional auxiliary fields \ref{eq:maxwell_aux} which describe the macroscopic response of the material to electromagnetic fields by neglecting microscopic structures and phenomena like atoms and spins. Their use requires material specific parameters which have to be measured experimentally or calculated with great numerical effort.
+There are two major variants of Maxwell's equations. The microscopic Maxwell Equations \ref{eq:maxwell_micro} have universal applicability in classical physics but are unpractical for analytical calculations and extensive numerical simulations. Solids contain approximately $10^{23}$ atoms per cm$^3$ which interact with each other, the bound electrons, and free electrons in case of a metal. The macroscopic Maxwell Equations \ref{eq:maxwell_macro} define two additional auxiliary fields (see Equations \ref{eq:maxwell_aux}) which describe the macroscopic response of the material to electromagnetic fields by neglecting microscopic structures and phenomena like atoms and spins. Their use requires material specific parameters which have to be measured experimentally or calculated with great numerical effort.\cite{demtroeder_mw}
 
 \begin{equation}
 \label{eq:maxwell_macro}
@@ -61,22 +61,22 @@ The auxiliary fields are defined in the Equations \ref{eq:maxwell_aux}. Where $\
 
 \section{Magnetometer}
 
-A magnetometer is an instrument that measures the local strength, direction or relative change of the magnetic field. There are many different types of magnetometers which rely on different physical phenomena of magnetic fields. Examples for these effects are induction currents, linear force or torque experienced by a magnetic dipole in a magnetic field, and the Lorenz force. 
+A magnetometer is an instrument that measures the local strength, direction or relative change of the magnetic field. There are many different types of magnetometers which rely on different physical phenomena of magnetic fields. Examples for these effects are induction currents, linear force or torque experienced by a magnetic dipole in a magnetic field, and the Lorentz force. 
 
-In recent years, magnetometers have been miniaturized to the extent that they can be built into integrated circuits at very low cost. In 2009, the price of three-axis magnetometers dipped below one US dollar per device and dropped rapidly.\cite{magnetometer_price} As \gls{mems}, magnetometers are increasingly used as miniaturized compasses in smartphones and other devices. Compensation for temperature, hard iron, and soft iron effects are necessary.
+In recent years, magnetometers have been miniaturized to the extent that they can be built into integrated circuits at very low cost. In 2009, the price of three-axis magnetometers dipped below one US dollar per device and dropped rapidly.\cite{magnetometer_price} As \gls{mems}, magnetometers are increasingly used as miniaturized compasses in smartphones and other devices. Compensation for temperature, hard iron, and soft iron effects are necessary.\cite{magnetometers}
 
 \subsection{Hall-effect sensor}
 
 \begin{figure}[hbt!]
     \centering
     \includegraphics[width=0.5\textwidth]{figures/hall_effect.png}
-    \caption{Schematic of a Hall probe measuring the magnetic field.}
+    \caption{Schematic of a Hall probe measuring the magnetic field. Image gratefully taken from HyperPhysics.\cite{hyperphysics_hall_image}}
     \label{fig:hall_effect}
 \end{figure}
 
-The Hall-effect can be used to measure the magnitude of magnetic fields in one direction and is called after Edwin Hall who discovered it in 1879. As \gls{mems}, Hall-effect sensors are a popular alternative to magnetoresistive sensors.
+The Hall-effect can be used to measure the magnitude of magnetic fields in one direction and is named after Edwin Hall who discovered it in 1879. As \gls{mems}, Hall-effect sensors are a popular alternative to magnetoresistive sensors.\cite{Hall1878}\cite{demtroeder_hall}
 
-The effect is illustrated in Figure \ref{fig:hall_effect}. Magnetic fields exert a transverse force on moving charge carriers. This includes electrical currents in conductors. There, the magnetic field is pushing the charges to one side of the material which is most evident in thin flat conductors. The imbalance of the charges results in a measurable voltage between two sides of the conductor. Its output voltage $V_H$ is directly proportional to the magnetic field strength passing through the sensor, and is equal to:
+The effect is illustrated in Figure \ref{fig:hall_effect}. Magnetic fields exert a transverse force on moving charge carriers. This includes electrical currents in conductors. There, the magnetic field is pushing the charges to one side of the material which is most evident in thin flat conductors. The imbalance of the charges results in a measurable voltage between two sides of the conductor. Its output voltage $V_H$ is directly proportional to the magnetic field strength passing through the sensor, and is equal to:\cite{demtroeder_hall}
 
 \begin{equation}
 \label{eq:hall_effect}
@@ -95,7 +95,7 @@ At any location, the Earth's magnetic field can be represented by a three dimens
 \begin{figure}[hbt!]
     \centering
     \includegraphics[width=1.0\textwidth]{figures/earth_magnetic_field_coords.png}
-    \caption{Common coordinate systems used for representing the Earth's magnetic field.}
+    \caption{Common coordinate systems used for representing the Earth's magnetic field. Image gracefully taken from Wikimedia.\cite{wikimedia_magcoords_image}}
     \label{fig:earth_magnetic_field_coords}
 \end{figure}
 
@@ -122,7 +122,7 @@ This approximation is very practical for our purposes since it is easy to calcul
 % TODO pauli matrices are a possible basis for quaternions
 % TODO relation between pauli matrices, SU(2), SO(3)
 
-Quaternions are a number system that extends the complex numbers with two additional imaginary axis. In 1843, they were described by the Irish mathematician William Rowan Hamilton and applied to mechanics in three-dimensional space.
+Quaternions are a number system that extends the complex numbers with two additional imaginary axis. In 1843, they were described by the Irish mathematician William Rowan Hamilton and applied to mechanics in three-dimensional space.\cite{quaternions}
 
 Quaternions are generally represented in the form
 
@@ -175,7 +175,7 @@ Rotations can be composed by multiplying quaternions and reversed with the inver
 \begin{figure}[hbt!]
     \centering
     \includegraphics[width=0.5\textwidth]{figures/quaternion_rot.png}
-    \caption{Illustration of a rotation represented by an Euler axis and angle.}
+    \caption{Illustration of a rotation represented by an Euler axis and angle. Image gracefully taken from Wikimedia.\cite{wikimedia_euleraxisangle_image}}
     \label{fig:quaternion_rot}
 \end{figure}
 
