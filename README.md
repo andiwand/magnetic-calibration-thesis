@@ -7,3 +7,5 @@ Nowadays smartphones usually come with a built-in magnetometer that can be used 
 In this thesis, we propose a particle filter to realize a different type of magnetome- ter calibration which is performed continuously and without forcing the user to perform special gestures. This comes at the cost of being computationally more expensive. However, in contrast to the OS calibration, our technique will be able to quantitatively estimate the progress of the calibration.
 
 We will show that our calibration is superior compared to those of the OS in pedestrian navigation, localization and wayfinding scenarios most of the time. Additionally, a wide range of devices is supported.
+
+letex inspired by https://github.com/joerg/abschlussarbeit-tuwien-physik
