@@ -1,6 +1,0 @@
-short comings:
- - (horizontal) orientation section
-   - what is it?
-   - how to measure/estimate?
- - magnetization section in background?
- - describe hard iron particle filter outside of impl?
