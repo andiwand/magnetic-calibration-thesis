@@ -8,4 +8,6 @@ In this thesis, we propose a particle filter to realize a different type of magn
 
 We will show that our calibration is superior compared to those of the OS in pedestrian navigation, localization and wayfinding scenarios most of the time. Additionally, a wide range of devices is supported.
 
+## Other
+
 letex inspired by https://github.com/joerg/abschlussarbeit-tuwien-physik
